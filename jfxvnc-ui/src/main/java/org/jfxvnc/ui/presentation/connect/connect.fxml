@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?scenebuilder-stylesheet main.css?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<TitledPane expanded="true" text="%connect.header" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jfxvnc.ui.presentation.connect.ConnectViewPresenter">
+	<content>
+		<ScrollPane fitToWidth="true" prefHeight="800.0" prefViewportWidth="400.0">
+			<content>
+				<GridPane hgap="3.0" vgap="3.0">
+					<children>
+						<Label text="Host (IP):" GridPane.rowIndex="1" />
+						<Label text="Port:" GridPane.rowIndex="2" />
+						<Label text="User:" GridPane.rowIndex="3" />
+						<Label text="Password:" GridPane.rowIndex="4" />
+						<Label text="Authentication:" GridPane.rowIndex="5" />
+						<Label text="SSL/TLS:" GridPane.rowIndex="6" />
+						<Label text="Shared View:" GridPane.rowIndex="7" />
+						<Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="8" />
+						<Label text="Encodings" GridPane.rowIndex="9">
+							<font>
+								<Font name="System Bold" size="12.0" />
+							</font>
+						</Label>
+						<Label text="RAW (default):" GridPane.rowIndex="10" />
+
+						<Label text="Copy Rect:" GridPane.rowIndex="11" />
+						<Label text="Hextile:" GridPane.rowIndex="12" />
+						<Label text="Server">
+							<font>
+								<Font name="System Bold" size="12.0" />
+							</font>
+						</Label>
+						<Label text="Cursor:" GridPane.rowIndex="13" />
+                  <Label text="Desktop Size:" GridPane.rowIndex="14" />
+						<Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="15" />
+						<Label text="History" GridPane.rowIndex="16">
+							<font>
+								<Font name="System Bold" size="12.0" />
+							</font>
+						</Label>
+						<TextField fx:id="ipField" promptText="host" text="" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+						<TextField fx:id="portField" promptText="default (5900)" text="" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+						<TextField fx:id="userField" disable="true" promptText="user" text="" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+						<PasswordField fx:id="pwdField" promptText="password" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+						<ComboBox fx:id="securityCombo" prefWidth="500.0" promptText="Authentication" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
+						<CheckBox fx:id="sslCB" mnemonicParsing="false" text="" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+						<CheckBox fx:id="sharedCB" mnemonicParsing="false" selected="true" text="" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+						<CheckBox fx:id="rawCB" disable="true" mnemonicParsing="false" selected="true" text="" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+						<CheckBox fx:id="copyrectCB" mnemonicParsing="false" selected="true" text="" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+						<CheckBox fx:id="hextileCB" disable="true" mnemonicParsing="false" text="" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+						<CheckBox fx:id="cursorCB" mnemonicParsing="false" selected="true" text="" GridPane.columnIndex="1" GridPane.rowIndex="13" />
+                  <CheckBox fx:id="desktopCB" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="14" />
+
+						<ListView fx:id="historyList" GridPane.columnSpan="2" GridPane.rowIndex="17" />
+						<Button fx:id="clearBtn" mnemonicParsing="false" text="Clear" GridPane.rowIndex="18" />
+					</children>
+					<columnConstraints>
+						<ColumnConstraints hgrow="SOMETIMES" maxWidth="-1.0" minWidth="110.0" />
+						<ColumnConstraints hgrow="ALWAYS" minWidth="100.0" prefWidth="250.0" />
+					</columnConstraints>
+					<padding>
+						<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+					</padding>
+					<rowConstraints>
+	                  		<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+							<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+							<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+							<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+							<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+							<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+	                  		<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+							<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+							<RowConstraints prefHeight="20.0" vgrow="SOMETIMES" />
+		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+		                  <RowConstraints prefHeight="20.0" vgrow="SOMETIMES" />
+		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+		                  <RowConstraints minHeight="100.0" prefHeight="150.0" vgrow="SOMETIMES" />
+		                  <RowConstraints minHeight="30.0" prefHeight="50.0" />
+					</rowConstraints>
+				</GridPane>
+			</content>
+		</ScrollPane>
+	</content>
+</TitledPane>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?scenebuilder-stylesheet main.css?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<ScrollPane fx:id="vncScrollPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jfxvnc.ui.presentation.vnc.VncViewPresenter">
+  <content>
+      <StackPane fx:id="vncPane">
+         <children>
+            <ImageView fx:id="vncView" pickOnBounds="true" />
+            <Canvas fx:id="cursorView" mouseTransparent="true"/>
+         </children>
+      </StackPane>
+  </content>
+</ScrollPane>
