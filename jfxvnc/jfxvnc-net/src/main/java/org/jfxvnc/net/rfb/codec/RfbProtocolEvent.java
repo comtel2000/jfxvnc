@@ -1,0 +1,7 @@
+package org.jfxvnc.net.rfb.codec;
+
+public enum RfbProtocolEvent {
+
+    HANDSHAKE_STARTED, SECURITY_STARTED, SECURITY_FAILED, SECURITY_COMPLETE, HANDSHAKE_COMPLETE, FBU_REQUEST, CLOSED
+
+}
