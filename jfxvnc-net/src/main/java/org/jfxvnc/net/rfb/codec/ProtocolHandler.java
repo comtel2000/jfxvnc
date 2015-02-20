@@ -27,11 +27,9 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.IntPredicate;
 
 import org.jfxvnc.net.rfb.ProtocolConfiguration;
 import org.jfxvnc.net.rfb.codec.decoder.ServerEvent;
@@ -164,7 +162,7 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 	details.setServerName(serverInit.getServerName());
 	details.setFrameWidth(serverInit.getFrameBufferWidth());
 	details.setFrameHeight(serverInit.getFrameBufferHeight());
-	details.setRfbProtocol(config.versionProperty().getName().toString().trim());
+	details.setRfbProtocol(config.versionProperty().get().toString().trim());
 	details.setSecurity(config.securityProperty().get());
 	details.setServerPF(serverInit.getPixelFormat());
 	details.setClientPF(handler.getSupportedPixelFormat());
