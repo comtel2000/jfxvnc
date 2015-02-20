@@ -36,6 +36,7 @@ JFxVNC is a Java VNC viewer based on <a href="https://github.com/netty/netty">Ne
 The VNC viewer app (jfxvnc-ui) use a lot of great <a href="https://bitbucket.org/controlsfx/controlsfx/">ControlsFX goodies.</a> 
 
 <img src="https://raw.githubusercontent.com/comtel2000/jfxvnc/gh-pages/images/screen_info.png">
+<img src="https://raw.githubusercontent.com/comtel2000/jfxvnc/gh-pages/images/screen_rasp.png">
 
 <h3>Bundles</h3>
 <li>jfxvnc-net (netty based VNC / RFB protocol)</li>
@@ -53,6 +54,16 @@ The VNC viewer app (jfxvnc-ui) use a lot of great <a href="https://bitbucket.org
 <li>more than 'VNC Auth' security</li>
 <li>Touch gesture support</li>
 <li>...</li>
+
+<h3>How to build and run</h3>
+What is required:
+
+<li>Latest stable <a href="http://www.oracle.com/technetwork/java/">Oracle JDK 8</a></li>
+<li>Latest stable <a href="http://maven.apache.org/">Apache Maven</a></li>
+
+<code>mvn clean install<br>
+java -jar jfxvnc-ui/target/jfxvnc-ui-0.0.1-SNAPSHOT.jar
+</code>
 
 <h3>License</h3>
 <li><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a></li>
