@@ -61,9 +61,13 @@ public class FramebufferUpdateDecoder implements FrameDecoder {
     }
 
     public int[] getSupportedEncodings() {
-	return new int[] {IEncodings.COPY_RECT, IEncodings.RAW, IEncodings.CURSOR, IEncodings.DESKTOP_SIZE };
+	return new int[] {IEncodings.COPY_RECT, IEncodings.RAW, IEncodings.CURSOR, IEncodings.DESKTOP_SIZE};
     }
 
+    public boolean isPixelFormatSupported() {
+	return PixelFormat.RGB_888.equals(pixelFormat);
+    }
+    
     @Override
     public boolean decode(ChannelHandlerContext ctx, ByteBuf m, List<Object> out) throws Exception {
 
@@ -73,7 +77,7 @@ public class FramebufferUpdateDecoder implements FrameDecoder {
 		return false;
 	    }
 	    if (m.getByte(0) != ServerEventType.FRAMEBUFFER_UPDATE) {
-		logger.error("no FBS type!!! {}", m.getByte(0));
+		logger.error("no FBU type!!! {}", m.getByte(0));
 		ctx.fireChannelReadComplete();
 		return false;
 	    }
@@ -126,18 +130,21 @@ public class FramebufferUpdateDecoder implements FrameDecoder {
 
     private void sendRect(List<Object> out) {
 	int[] pixels;
+	int redPos = pixelFormat.isBigEndian() ? 0 : 2;
+	int bluePos = pixelFormat.isBigEndian() ? 2 : 0;
+
 	switch (enc) {
 	case IEncodings.RAW:
 	    // TODO: optimize me
 	    pixels = new int[framebuffer.capacity() / 4];
-	    if (pixelFormat.isBigEndian()) {
-		Arrays.setAll(pixels,
-			(i) -> framebuffer.getUnsignedByte(i * 4) << pixelFormat.getRedShift() | framebuffer.getUnsignedByte((i * 4) + 1) << pixelFormat.getGreenShift()
-				| framebuffer.getUnsignedByte((i * 4) + 2) << pixelFormat.getBlueShift() | 0xff000000);
+	    if (pixels.length > 1000) {
+		Arrays.parallelSetAll(pixels, (i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift()
+			| framebuffer.getUnsignedByte((i * 4) + 1) << pixelFormat.getGreenShift() | framebuffer.getUnsignedByte((i * 4) + bluePos) << pixelFormat.getBlueShift()
+			| 0xff000000);
 	    } else {
 		Arrays.setAll(pixels,
-			(i) -> framebuffer.getUnsignedByte((i * 4) + 2) << pixelFormat.getRedShift() | framebuffer.getUnsignedByte((i * 4) + 1) << pixelFormat.getGreenShift()
-				| framebuffer.getUnsignedByte(i * 4) << pixelFormat.getBlueShift() | 0xff000000);
+			(i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift() | framebuffer.getUnsignedByte((i * 4) + 1) << pixelFormat.getGreenShift()
+				| framebuffer.getUnsignedByte((i * 4) + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
 	    }
 	    out.add(new RawImageRect(x, y, w, h, pixels));
 	    break;
@@ -146,34 +153,14 @@ public class FramebufferUpdateDecoder implements FrameDecoder {
 	    break;
 	case IEncodings.CURSOR:
 	    pixels = new int[(w * h * pixelFormat.getBytePerPixel()) / 4];
-	    if (pixelFormat.isBigEndian()) {
-		Arrays.setAll(pixels,
-			(i) -> framebuffer.getUnsignedByte(i * 4) << pixelFormat.getRedShift() | framebuffer.getUnsignedByte((i * 4) + 1) << pixelFormat.getGreenShift()
-				| framebuffer.getUnsignedByte((i * 4) + 2) << pixelFormat.getBlueShift() | 0xff000000);
-	    } else {
-		Arrays.setAll(pixels,
-			(i) -> framebuffer.getUnsignedByte((i * 4) + 2) << pixelFormat.getRedShift() | framebuffer.getUnsignedByte((i * 4) + 1) << pixelFormat.getGreenShift()
-				| framebuffer.getUnsignedByte(i * 4) << pixelFormat.getBlueShift() | 0xff000000);
-	    }
+	    Arrays.setAll(pixels,
+		    (i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift() | framebuffer.getUnsignedByte((i * 4) + 1) << pixelFormat.getGreenShift()
+			    | framebuffer.getUnsignedByte((i * 4) + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
 	    byte[] bitmask = new byte[framebuffer.capacity() - (pixels.length * 4)];
 	    framebuffer.getBytes(framebuffer.capacity() - bitmask.length, bitmask);
-	    
-	    //TODO: set bitmask transparency
-	    int[] data = new int[w * h];
-	    byte[] mask = new byte[bitmask.length];
 
-	    int maskBytesPerRow = Math.floorDiv((w + 7), 8);
-	    for (int y = 0; y < h; y++) {
-		for (int x = 0; x < w; x++) {
-		    int byte_ = y * maskBytesPerRow + x / 8;
-		    int bit = 7 - x % 8;
-		    if ((bitmask[byte_] & (1 << bit)) > 0) {
-			data[y * w + x] = (0xff << 24) | (pixels[y * w + x] << 16) | (pixels[y * w + x] << 8) | (pixels[y * w + x]);
-		    }
-		}
-		System.arraycopy(bitmask, y * maskBytesPerRow, mask, y * ((w + 7) / 8), maskBytesPerRow);
-	    }
-	    out.add(new CursorImageRect(x, y, w, h, data, mask));
+	    out.add(new CursorImageRect(x, y, w, h, pixels, bitmask));
+
 	    break;
 	case IEncodings.DESKTOP_SIZE:
 	    out.add(new DesktopSizeRect(x, y, w, h));

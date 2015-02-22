@@ -21,7 +21,11 @@ package org.jfxvnc.net.rfb;
  */
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.jfxvnc.net.rfb.codec.ProtocolVersion;
 import org.junit.Test;
@@ -33,11 +37,12 @@ public class RfbVersionTest {
 	
 	ProtocolVersion v1 = new ProtocolVersion("RFB 003.003\n");
 	assertNotNull(v1);
-	assertEquals("RFB 003.003\n", v1.toString());
+	assertEquals("RFB 003.003", v1.toString());
 	
-	ProtocolVersion v2 = new ProtocolVersion("RFB 003.003\n");
+	ProtocolVersion v2 = new ProtocolVersion("RFB 003.003");
 	assertNotNull(v2);
 
+	assertArrayEquals(new byte[]{82, 70, 66, 32, 48, 48, 51, 46, 48, 48, 51, 10}, v2.getBytes());
 	assertEquals(v1, v2);
 	assertFalse(v1.isGreaterThan(v2));
 	assertFalse(v2.isGreaterThan(v1));
@@ -63,7 +68,7 @@ public class RfbVersionTest {
 	
 	ProtocolVersion v5 = new ProtocolVersion("RFB 003.889\n");
 	assertNotNull(v5);
-	assertEquals("RFB 003.889\n", v5.toString());
+	assertEquals("RFB 003.889", v5.toString());
 	assertTrue(v5.isGreaterThan(ProtocolVersion.RFB_3_8));
     }
 }

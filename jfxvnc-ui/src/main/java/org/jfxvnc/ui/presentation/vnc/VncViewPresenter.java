@@ -22,22 +22,20 @@ package org.jfxvnc.ui.presentation.vnc;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.stream.IntStream;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Dimension2D;
 import javafx.scene.Cursor;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.ImageCursor;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.Effect;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 import javax.inject.Inject;
 
@@ -56,7 +54,7 @@ import org.jfxvnc.ui.service.PointerEventHandler;
 import org.jfxvnc.ui.service.VncRenderService;
 import org.slf4j.LoggerFactory;
 
-
+import com.airhacks.afterburner.injection.Injector;
 
 public class VncViewPresenter implements Initializable {
 
@@ -73,27 +71,22 @@ public class VncViewPresenter implements Initializable {
 
     @FXML
     private ImageView vncView;
-    @FXML
-    private Canvas cursorView;
 
     private WritableImage vncImage;
-    private WritableImage cursor;
 
     private PointerEventHandler pointerHandler;
+    private CutTextEventHandler cutTextHandler;
 
     private KeyButtonEventHandler keyHandler;
-    private CutTextEventHandler cutTextHandler;
 
     private final Effect blurEffect = new BoxBlur();
 
-    @FXML StackPane vncPane;
-
-    @FXML ScrollPane vncScrollPane;
-
-    private Rectangle mouseRect;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+	vncView.setOnMouseEntered((event) -> vncView.requestFocus());
+	vncView.setPreserveRatio(true);
+
 	con.imageProperty().addListener((l, old, image) -> Platform.runLater(() -> {
 	    render(image);
 	}));
@@ -106,6 +99,22 @@ public class VncViewPresenter implements Initializable {
 	    }
 	});
 	con.inputProperty().addListener((l) -> registerInputEventListener(con.inputProperty().get()));
+	prop.clientCursorProperty().addListener((l) -> {
+	    if (!prop.clientCursorProperty().get()) {
+		vncView.setCursor(Cursor.DEFAULT);
+	    }
+	});
+
+	con.zoomLevelProperty().addListener((l) -> {
+	    if (vncView.getImage() != null) {
+		vncView.setFitHeight(vncView.getImage().getHeight() * con.zoomLevelProperty().get());
+	    }
+
+	    // vncView.getTransforms().clear();
+	    // vncView.getTransforms().add(new Scale(con.scaleProperty().get(),
+	    // con.scaleProperty().get()));
+	    });
+
     }
 
     /** in FX render thread */
@@ -115,16 +124,15 @@ public class VncViewPresenter implements Initializable {
 		vncImage = new WritableImage(rect.getWidth(), rect.getHeight());
 		vncView.setEffect(null);
 		vncView.setImage(vncImage);
-
 		return;
 	    }
 	    if (rect instanceof DesktopSizeRect) {
 		WritableImage copyRect = new WritableImage(rect.getWidth(), rect.getHeight());
-		copyRect.getPixelWriter().setPixels(0, 0, Math.min(rect.getWidth(), (int)vncImage.getWidth()), Math.min(rect.getHeight(), (int)vncImage.getHeight()), vncImage.getPixelReader(), 0, 0);
-		
+		copyRect.getPixelWriter().setPixels(0, 0, Math.min(rect.getWidth(), (int) vncImage.getWidth()), Math.min(rect.getHeight(), (int) vncImage.getHeight()),
+			vncImage.getPixelReader(), 0, 0);
+
 		vncImage = copyRect;
 		vncView.setImage(vncImage);
-		
 		return;
 	    }
 	    if (vncImage == null) {
@@ -147,21 +155,29 @@ public class VncViewPresenter implements Initializable {
 		vncImage.getPixelWriter().setPixels(rawRect.getX(), rawRect.getY(), rawRect.getWidth(), rawRect.getHeight(), copyRect.getPixelReader(), 0, 0);
 		return;
 	    }
+
 	    if (prop.clientCursorProperty().get() && rect instanceof CursorImageRect) {
-		CursorImageRect rawRect = (CursorImageRect) rect;
-		cursor = new WritableImage(rawRect.getWidth(), rawRect.getHeight());
-		cursor.getPixelWriter().setPixels(0, 0, rawRect.getWidth(), rawRect.getHeight(), PixelFormat.getIntArgbInstance(), rawRect.getPixels(), 0, rawRect.getWidth());
-		// TODO optimize it!!
-		cursorView.getGraphicsContext2D().clearRect(0, 0, cursorView.getWidth(), cursorView.getHeight());
+		CursorImageRect cRect = (CursorImageRect) rect;
 
-		mouseRect = new Rectangle(rawRect.getX(), rawRect.getY(), rawRect.getWidth(), rawRect.getHeight());
-	        mouseRect.setFill(Color.BLUE);
-	        
-		cursorView.setWidth(cursor.getWidth());
-		cursorView.setHeight(cursor.getHeight());
-		cursorView.getGraphicsContext2D().drawImage(cursor, 0, 0);
+		if (cRect.getHeight() < 2 && cRect.getWidth() < 2) {
+		    vncView.setCursor(Cursor.NONE);
+		    return;
+		}
 
+		if (cRect.getBitmask() != null && cRect.getBitmask().length > 0) {
+		    // remove transparent pixels
+		    int maskBytesPerRow = Math.floorDiv((cRect.getWidth() + 7), 8);
+		    IntStream.range(0, cRect.getHeight()).forEach(
+			    y -> IntStream.range(0, cRect.getWidth())
+				    .filter(x -> (cRect.getBitmask()[(y * maskBytesPerRow) + Math.floorDiv(x, 8)] & (1 << 7 - Math.floorMod(x, 8))) < 1)
+				    .forEach(x -> cRect.getPixels()[y * cRect.getWidth() + x] = 0));
+		}
 
+		Dimension2D dim = ImageCursor.getBestSize(cRect.getWidth(), cRect.getHeight());
+		WritableImage cImage = new WritableImage((int) dim.getWidth(), (int) dim.getHeight());
+		cImage.getPixelWriter().setPixels(0, 0, cRect.getWidth(), cRect.getHeight(), PixelFormat.getIntArgbInstance(), cRect.getPixels(), 0, cRect.getWidth());
+		ImageCursor cursor = new ImageCursor(cImage, cRect.getHotspotX(), cRect.getHotspotY());
+		vncView.setCursor(cursor);
 	    }
 	} catch (Exception e) {
 	    logger.error(e.getMessage(), e);
@@ -169,60 +185,30 @@ public class VncViewPresenter implements Initializable {
     }
 
     public void registerInputEventListener(InputEventListener listener) {
-
 	if (listener == null) {
-	    logger.error("input listener must not be null");
-	    return;
+	    throw new IllegalArgumentException("input listener must not be null");
 	}
-	vncView.setOnMouseEntered((event) -> {
-	    vncView.requestFocus();
-	});
-
-
-	
 	if (pointerHandler == null) {
-	    pointerHandler = new PointerEventHandler();
+
+	    pointerHandler = (PointerEventHandler) Injector.instantiateModelOrService(PointerEventHandler.class);
 	    pointerHandler.register(vncView);
 	    pointerHandler.enabledProperty().bind(con.connectProperty());
-	    
 	}
 	pointerHandler.setInputEventListener(listener);
 
 	if (keyHandler == null) {
-	    keyHandler = new KeyButtonEventHandler();
+	    keyHandler = (KeyButtonEventHandler) Injector.instantiateModelOrService(KeyButtonEventHandler.class);
 	    keyHandler.register(vncView.getScene());
 	    keyHandler.enabledProperty().bind(con.connectProperty());
 	}
 	keyHandler.setInputEventListener(listener);
 
 	if (cutTextHandler == null) {
-	    cutTextHandler = new CutTextEventHandler();
+	    cutTextHandler = (CutTextEventHandler) Injector.instantiateModelOrService(CutTextEventHandler.class);
 	    cutTextHandler.enabledProperty().bind(con.connectProperty());
 	}
 	cutTextHandler.setInputEventListener(listener);
-	
-	Platform.runLater(() -> {
-	    if (prop.clientCursorProperty().get()) {
-		vncView.setCursor(Cursor.NONE);
-		cursorView.translateXProperty().bind(pointerHandler.xPosProperty().subtract(cursorView.widthProperty().divide(2)).subtract(cursorView.layoutXProperty()));
-		cursorView.translateYProperty().bind(pointerHandler.yPosProperty().subtract(cursorView.heightProperty().divide(2)).subtract(cursorView.layoutYProperty()));
-	    } else {
-		vncView.setCursor(Cursor.DEFAULT);
-		cursorView.translateXProperty().unbind();
-		cursorView.translateYProperty().unbind();
-	    }
-	});
-	prop.clientCursorProperty().addListener((l, a, b) -> {
-	    if (b) {
-		vncView.setCursor(Cursor.NONE);
-		cursorView.translateXProperty().bind(pointerHandler.xPosProperty().subtract(cursorView.widthProperty().divide(2)).subtract(cursorView.layoutXProperty()));
-		cursorView.translateYProperty().bind(pointerHandler.yPosProperty().subtract(cursorView.heightProperty().divide(2)).subtract(cursorView.layoutYProperty()));
-	    } else {
-		vncView.setCursor(Cursor.DEFAULT);
-		cursorView.translateXProperty().unbind();
-		cursorView.translateYProperty().unbind();
-	    }
-	});
+
     }
 
 }

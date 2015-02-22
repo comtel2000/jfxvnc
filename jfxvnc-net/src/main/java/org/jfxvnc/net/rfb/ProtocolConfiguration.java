@@ -30,12 +30,15 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import org.jfxvnc.net.rfb.codec.PixelFormat;
 import org.jfxvnc.net.rfb.codec.ProtocolVersion;
 import org.jfxvnc.net.rfb.codec.security.ISecurityType;
 
 public class ProtocolConfiguration {
     
-    private final ObjectProperty<ProtocolVersion> versionProperty = new SimpleObjectProperty<ProtocolVersion>(ProtocolVersion.RFB_3_8);
+    private final ObjectProperty<ProtocolVersion> versionProperty = new SimpleObjectProperty<>(ProtocolVersion.RFB_3_8);
+    private final ObjectProperty<PixelFormat> clientPixelFormatProperty = new SimpleObjectProperty<>(PixelFormat.RGB_888);
+    
     private final StringProperty hostProperty = new SimpleStringProperty("127.0.0.1");
     private final IntegerProperty portProperty = new SimpleIntegerProperty(5900);
     private final StringProperty passwordProperty = new SimpleStringProperty();
@@ -46,6 +49,7 @@ public class ProtocolConfiguration {
     private final BooleanProperty rawEncProperty = new SimpleBooleanProperty(true);
     private final BooleanProperty copyRectEncProperty = new SimpleBooleanProperty(true);
     private final BooleanProperty hextileEncProperty = new SimpleBooleanProperty(false);
+    private final BooleanProperty zlibEncProperty = new SimpleBooleanProperty(false);
     private final BooleanProperty clientCursorProperty = new SimpleBooleanProperty(false);
     private final BooleanProperty desktopSizeProperty = new SimpleBooleanProperty(true);
 
@@ -95,6 +99,14 @@ public class ProtocolConfiguration {
 
     public BooleanProperty desktopSizeProperty() {
 	return desktopSizeProperty;
+    }
+
+    public BooleanProperty zlibEncProperty() {
+	return zlibEncProperty;
+    }
+
+    public ObjectProperty<PixelFormat> clientPixelFormatProperty() {
+	return clientPixelFormatProperty;
     }
     
 }

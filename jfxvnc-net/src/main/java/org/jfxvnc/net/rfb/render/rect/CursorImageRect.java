@@ -33,6 +33,14 @@ public class CursorImageRect extends ImageRect {
 	this.bitmask = bitmask;
     }
 
+    public int getHotspotX() {
+	return x;
+    }
+    
+    public int getHotspotY() {
+	return y;
+    }
+    
     public int[] getPixels() {
 	return pixels;
     }
@@ -48,7 +56,7 @@ public class CursorImageRect extends ImageRect {
     
     @Override
     public String toString() {
-	return "CursorImageRect [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + ", bitmask.length=" + (bitmask != null ? bitmask.length : "null")
+	return "CursorImageRect [hotspotX=" + x + ", hotspotY=" + y + ", width=" + width + ", height=" + height + ", bitmask.length=" + (bitmask != null ? bitmask.length : "null")
 		+ ", pixels.length=" + (pixels != null ? pixels.length : "null") + "]";
     }
 

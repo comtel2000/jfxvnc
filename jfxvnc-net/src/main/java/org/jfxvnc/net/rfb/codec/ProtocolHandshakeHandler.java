@@ -20,11 +20,10 @@ package org.jfxvnc.net.rfb.codec;
  * #L%
  */
 
-
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+
+import java.util.Arrays;
 
 import org.jfxvnc.net.rfb.ProtocolConfiguration;
 import org.jfxvnc.net.rfb.codec.decoder.ProtocolVersionDecoder;
@@ -59,7 +58,6 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelActive(final ChannelHandlerContext ctx) throws Exception {
-	super.channelActive(ctx);
 	ctx.pipeline().addBefore(ctx.name(), "rfb-version-decoder", new ProtocolVersionDecoder());
     }
 
@@ -86,24 +84,20 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	if (msg instanceof ServerInitEvent) {
-	    ctx.fireChannelRead(msg);
-	} else {
-	    logger.warn("unknown message: {}", msg);
-	}
-
-	if (handshaker != null && !handshaker.isHandshakeComplete()) {
 	    handshaker.finishHandshake(ctx.channel(), config.versionProperty().get());
 	    ctx.fireUserEventTriggered(ProtocolState.HANDSHAKE_COMPLETE);
 	    ctx.pipeline().remove(this);
+	    ctx.fireChannelRead(msg);
 	    return;
 	}
-	throw new IllegalStateException("RFB handshaker should have been non finished yet");
+
+	throw new ProtocolException("unknown message occurred: " + msg);
 
     }
 
     private void handleServerVersion(final ChannelHandlerContext ctx, ProtocolVersion version) {
 
-	logger.info("server version: {}", version.toString().trim());
+	logger.info("server version: {}", version);
 	if (version.isGreaterThan(config.versionProperty().get())) {
 	    logger.info("set client version: {}", config.versionProperty().get());
 	    version = config.versionProperty().get();
@@ -111,17 +105,13 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 
 	RfbClientHandshakerFactory hsFactory = new RfbClientHandshakerFactory();
 	handshaker = hsFactory.newRfbClientHandshaker(version);
-	handshaker.handshake(ctx.channel()).addListener(new ChannelFutureListener() {
-	    @Override
-	    public void operationComplete(ChannelFuture future) throws Exception {
-		future.channel().pipeline().remove("rfb-version-decoder");
-		if (!future.isSuccess()) {
-		    ctx.fireExceptionCaught(future.cause());
-		} else {
-		    ctx.fireUserEventTriggered(ProtocolState.HANDSHAKE_STARTED);
-		}
-
+	handshaker.handshake(ctx.channel()).addListener((future) -> {
+	    if (!future.isSuccess()) {
+		ctx.fireExceptionCaught(future.cause());
+	    } else {
+		ctx.fireUserEventTriggered(ProtocolState.HANDSHAKE_STARTED);
 	    }
+
 	});
     }
 
@@ -133,52 +123,48 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 	    return;
 	}
 
-	RfbSecurityHandshakerFactory secFactory = new RfbSecurityHandshakerFactory();
 	int userSecType = config.securityProperty().get();
-
-	for (int type : supportTypes) {
-	    if (type == userSecType) {
-		if (type == ISecurityType.NONE) {
-		    logger.info("no security supported");
-		    ctx.fireUserEventTriggered(ProtocolState.SECURITY_COMPLETE);
-		    return;
-		}
-		secHandshaker = secFactory.newRfbSecurityHandshaker(userSecType);
-		if (secHandshaker == null) {
-		    ctx.fireExceptionCaught(new ProtocolException(String.format("Authentication: '%s' is not supported yet", StringUtils.getSecurityName(userSecType))));
-		    return;
-		}
-		secHandshaker.handshake(ctx.channel()).addListener(new ChannelFutureListener() {
-		    @Override
-		    public void operationComplete(ChannelFuture future) throws Exception {
-			if (!future.isSuccess()) {
-			    ctx.fireExceptionCaught(future.cause());
-			} else {
-			    ctx.fireUserEventTriggered(ProtocolState.SECURITY_STARTED);
-			}
-		    }
-		});
-		return;
-	    }
+	boolean isSupported = Arrays.stream(supportTypes).anyMatch(i -> i == userSecType);
+	if (!isSupported) {
+	    ctx.fireExceptionCaught(new ProtocolException(String.format("Authentication: '%s' is not supported. The server supports only (%s)",
+		    StringUtils.getSecurityName(userSecType), StringUtils.getSecurityNames(supportTypes))));
+	    return;
 	}
 
-	ctx.fireExceptionCaught(new ProtocolException(String.format("Authentication: '%s' is not supported. The server supports only (%s)", StringUtils.getSecurityName(userSecType), StringUtils.getSecurityNames(supportTypes))));
+	if (userSecType == ISecurityType.NONE) {
+	    logger.info("no security available");
+	    ctx.fireUserEventTriggered(ProtocolState.SECURITY_COMPLETE);
+	    return;
+	}
+
+	RfbSecurityHandshakerFactory secFactory = new RfbSecurityHandshakerFactory();
+
+	secHandshaker = secFactory.newRfbSecurityHandshaker(userSecType);
+	if (secHandshaker == null) {
+	    ctx.fireExceptionCaught(new ProtocolException(String.format("Authentication: '%s' is not supported yet", StringUtils.getSecurityName(userSecType))));
+	    return;
+	}
+	secHandshaker.handshake(ctx.channel()).addListener((future) -> {
+	    if (!future.isSuccess()) {
+		ctx.fireExceptionCaught(future.cause());
+	    } else {
+		ctx.fireUserEventTriggered(ProtocolState.SECURITY_STARTED);
+	    }
+
+	});
 
     }
 
     private void handleSecurityMessage(final ChannelHandlerContext ctx, final RfbSecurityMessage msg) {
 	msg.setCredentials(config);
-	ctx.writeAndFlush(msg).addListener(new ChannelFutureListener() {
-	    @Override
-	    public void operationComplete(ChannelFuture future) throws Exception {
-		if (secHandshaker != null && !secHandshaker.isHandshakeComplete()) {
-		    secHandshaker.finishHandshake(ctx.channel(), msg);
-		}
-		if (!future.isSuccess()) {
-		    ctx.fireExceptionCaught(future.cause());
-		}
-
+	ctx.writeAndFlush(msg).addListener((future) -> {
+	    if (secHandshaker != null && !secHandshaker.isHandshakeComplete()) {
+		secHandshaker.finishHandshake(ctx.channel(), msg);
 	    }
+	    if (!future.isSuccess()) {
+		ctx.fireExceptionCaught(future.cause());
+	    }
+
 	});
     }
 
@@ -186,14 +172,11 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 	if (msg.isPassed()) {
 	    logger.info("security passed: {}", msg);
 	    boolean sharedFlag = config.sharedProperty().get();
-	    ctx.writeAndFlush(new SharedEvent(sharedFlag)).addListener(new ChannelFutureListener() {
-		@Override
-		public void operationComplete(ChannelFuture future) throws Exception {
-		    if (!future.isSuccess()) {
-			ctx.fireExceptionCaught(future.cause());
-		    } else {
-			ctx.fireUserEventTriggered(ProtocolState.SECURITY_COMPLETE);
-		    }
+	    ctx.writeAndFlush(new SharedEvent(sharedFlag)).addListener((future) -> {
+		if (!future.isSuccess()) {
+		    ctx.fireExceptionCaught(future.cause());
+		} else {
+		    ctx.fireUserEventTriggered(ProtocolState.SECURITY_COMPLETE);
 		}
 	    });
 	    return;

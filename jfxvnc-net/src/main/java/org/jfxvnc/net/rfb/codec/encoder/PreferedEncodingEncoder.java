@@ -20,28 +20,24 @@ package org.jfxvnc.net.rfb.codec.encoder;
  * #L%
  */
 
-
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageEncoder;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.Arrays;
 
 import org.jfxvnc.net.rfb.codec.ClientEventType;
 
-public class ClientCutTextEncoder extends MessageToMessageEncoder<ClientCutText> {
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToByteEncoder;
+
+public class PreferedEncodingEncoder extends MessageToByteEncoder<PreferedEncoding> {
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ClientCutText msg, List<Object> out) throws Exception {
-	byte[] text = msg.getText().getBytes(StandardCharsets.ISO_8859_1);
-	ByteBuf buf = ctx.alloc().buffer(8 + text.length);
-	buf.writeByte(ClientEventType.CLIENT_CUT_TEXT);
-	buf.writeZero(3);
-	buf.writeInt(text.length);
-	buf.writeBytes(text);
-
-	out.add(buf);
+    protected void encode(ChannelHandlerContext ctx, PreferedEncoding enc, ByteBuf out) throws Exception {
+	out.writeByte(ClientEventType.SET_ENCODINGS);
+	out.writeZero(1); // padding
+	out.writeShort(enc.getEncodings().length);
+	Arrays.stream(enc.getEncodings()).forEach((i) -> out.writeInt(i));
+	
+	ctx.pipeline().remove(this);
     }
 
 }

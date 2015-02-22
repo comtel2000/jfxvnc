@@ -41,6 +41,7 @@ import javax.inject.Inject;
 
 import org.controlsfx.control.MasterDetailPane;
 import org.controlsfx.control.Notifications;
+import org.controlsfx.control.PlusMinusSlider;
 import org.controlsfx.control.StatusBar;
 import org.jfxvnc.net.rfb.ProtocolConfiguration;
 import org.jfxvnc.ui.persist.SessionContext;
@@ -65,16 +66,12 @@ public class MainViewPresenter implements Initializable {
     @FXML
     BorderPane mainPane;
 
-    StatusBar statusBar;
-
     private MasterDetailPane mdPane;
 
     private final StringProperty statusProperty = new SimpleStringProperty("-", "mainview.status");
 
     @Override
     public void initialize(URL location, ResourceBundle rb) {
-
-	logger.info("init main view presenter");
 
 	ctx.addBinding(statusProperty);
 
@@ -88,10 +85,11 @@ public class MainViewPresenter implements Initializable {
 	ctx.bind(mdPane.dividerPositionProperty(), "detailDividerPosition");
 	mdPane.setShowDetailNode(true);
 
+	StatusBar statusBar = new StatusBar();
+	statusBar.setId("status-bar");
+	
 	mainPane.setCenter(mdPane);
-	mainPane.setBottom(statusBar = new StatusBar());
-
-	statusBar.setStyle("-fx-padding: 4 8 4 8;");
+	mainPane.setBottom(statusBar);
 
 	statusBar.textProperty().bind(statusProperty);
 
@@ -99,27 +97,36 @@ public class MainViewPresenter implements Initializable {
 	gearButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 	gearButton.setId("menu-settings");
 	gearButton.selectedProperty().bindBidirectional(mdPane.showDetailNodeProperty());
-	Pane spaceRight = new Pane();
-	spaceRight.setPrefSize(10, 20);
+
 	Button connectBtn = new Button(rb.getString("connect.button"));
-	connectBtn.setPrefWidth(80);
+	connectBtn.setPrefWidth(100);
 	connectBtn.setOnAction((a) -> con.restart());
 
 	Button disconnectBtn = new Button(rb.getString("disconnect.button"));
-	disconnectBtn.setPrefWidth(80);
+	disconnectBtn.setPrefWidth(100);
 	disconnectBtn.disableProperty().bind(connectBtn.disabledProperty().not());
 	disconnectBtn.setOnAction((a) -> con.disconnect());
 
-	statusBar.getRightItems().addAll(connectBtn, disconnectBtn, spaceRight, gearButton);
+	ProgressIndicator progressIndicator = new ProgressIndicator(-1);
+	progressIndicator.visibleProperty().bind(con.runningProperty());
+	progressIndicator.setPrefSize(16, 16);
 
-	ProgressIndicator pi = new ProgressIndicator(-1);
-	pi.visibleProperty().bind(con.runningProperty());
-	pi.setPrefSize(16, 16);
 
-	Pane spaceLeft = new Pane();
-	spaceLeft.setPrefSize(5, 16);
+	
+	
+	PlusMinusSlider zoomSlider = new PlusMinusSlider();
+	zoomSlider.setStyle("-fx-translate-y: 5;");
+	zoomSlider.setOnValueChanged((e)->{
+	    double zoom = e.getValue() + 1;
+	    if (zoom >= con.getMinZoomLevel()) {
+		statusProperty.set("zoom: " + (int) Math.floor(zoom * 100) + "%");
+		con.zoomLevelProperty().set(zoom);
+	    }
+	});
+	
+	
+	statusBar.getRightItems().addAll(progressIndicator, createSpace(10, 20), zoomSlider, createSpace(10, 20), connectBtn, disconnectBtn, createSpace(10, 20), gearButton);
 
-	statusBar.getLeftItems().addAll(pi, spaceLeft);
 
 	con.protocolStateProperty().addListener((l, o, event) -> Platform.runLater(() -> {
 	    switch (event) {
@@ -145,7 +152,7 @@ public class MainViewPresenter implements Initializable {
 
 	}));
 	con.connectProperty().addListener((l, o, n) -> Platform.runLater(() -> connectBtn.setDisable(n)));
-	
+
 	con.exceptionCaughtProperty().addListener((l, o, n) -> {
 	    Platform.runLater(() -> {
 		Notifications.create().owner(mainPane).position(Pos.TOP_CENTER).text(n.getMessage()).showError();
@@ -156,5 +163,11 @@ public class MainViewPresenter implements Initializable {
 
 	    });
 	});
+    }
+
+    private Pane createSpace(double w, double h) {
+	Pane space = new Pane();
+	space.setPrefSize(w, h);
+	return space;
     }
 }

@@ -20,21 +20,24 @@ package org.jfxvnc.ui.service;
  * #L%
  */
 
-import java.util.concurrent.TimeUnit;
-
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+
+import java.util.concurrent.TimeUnit;
+
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
@@ -73,6 +76,9 @@ public class VncRenderService extends Service<Boolean> implements IRender {
     private final ReadOnlyObjectWrapper<ImageRect> imageProperty = new ReadOnlyObjectWrapper<>();
     private final ReadOnlyObjectWrapper<Throwable> exceptionCaughtProperty = new ReadOnlyObjectWrapper<>();
 
+    private final double minZoomLevel = 0.2;
+    private final DoubleProperty zoomLevelProperty = new SimpleDoubleProperty(1);
+    
     private EventLoopGroup workerGroup;
 
     public VncRenderService() {
@@ -226,4 +232,13 @@ public class VncRenderService extends Service<Boolean> implements IRender {
 	return serverCutTextProperty.getReadOnlyProperty();
     }
 
+    public DoubleProperty zoomLevelProperty() {
+	return zoomLevelProperty;
+    }
+
+    public double getMinZoomLevel() {
+	return minZoomLevel;
+    }
+
+    
 }

@@ -20,6 +20,8 @@ package org.jfxvnc.ui.service;
  * #L%
  */
 
+import javax.inject.Inject;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
@@ -34,6 +36,9 @@ import org.jfxvnc.net.rfb.codec.encoder.KeyButtonMap;
 import org.jfxvnc.net.rfb.codec.encoder.PointerEvent;
 
 public class PointerEventHandler implements KeyButtonMap {
+
+    @Inject
+    VncRenderService con;
 
     private InputEventListener listener;
 
@@ -90,8 +95,9 @@ public class PointerEventHandler implements KeyButtonMap {
     }
 
     private void sendMouseEvents(MouseEvent event) {
-	xPosProperty.set((int) event.getX());
-	yPosProperty.set((int) event.getY());
+
+	xPosProperty.set((int) Math.floor(event.getX() / con.zoomLevelProperty().get()));
+	yPosProperty.set((int) Math.floor(event.getY() / con.zoomLevelProperty().get()));
 
 	byte buttonMask = 0;
 	if (event.getEventType() == MouseEvent.MOUSE_PRESSED || event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
@@ -112,7 +118,8 @@ public class PointerEventHandler implements KeyButtonMap {
     }
 
     private void sendScrollEvents(ScrollEvent event) {
-	fire(new PointerEvent(event.getDeltaY() < 0 ? (byte) 8 : (byte) 16, (int) event.getX(), (int) event.getY()));
+	fire(new PointerEvent(event.getDeltaY() < 0 ? (byte) 8 : (byte) 16, (int) Math.floor(event.getX() / con.zoomLevelProperty().get()), (int) Math.floor(event.getY()
+		/ con.zoomLevelProperty().get())));
     }
 
     private synchronized void fire(PointerEvent msg) {

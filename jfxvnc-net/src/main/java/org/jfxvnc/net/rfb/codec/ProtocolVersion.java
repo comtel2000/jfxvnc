@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.codec;
  * #L%
  */
 
-
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,13 +89,17 @@ public class ProtocolVersion implements Comparable<ProtocolVersion> {
 	return -1;
     }
 
+    /**
+     * encoded ASCII bytes include LF
+     * 
+     * @return
+     */
     public byte[] getBytes() {
-	return toString().getBytes(StandardCharsets.US_ASCII);
+	return String.format("RFB %03d.%03d\n", majorVersion, minorVersion).getBytes(StandardCharsets.US_ASCII);
     }
-    
-    
+
     @Override
     public String toString() {
-	return String.format("RFB %03d.%03d\n", majorVersion, minorVersion);
+	return String.format("RFB %03d.%03d", majorVersion, minorVersion);
     }
 }

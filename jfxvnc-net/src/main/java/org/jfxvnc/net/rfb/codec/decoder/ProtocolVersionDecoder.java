@@ -50,6 +50,7 @@ public class ProtocolVersionDecoder extends ByteToMessageDecoder {
 	in.readBytes(rfb);
 	String rfbVersion = new String(rfb, ASCII);
 	out.add(new ProtocolVersion(rfbVersion));
+	ctx.pipeline().remove(this);
     }
 
 }

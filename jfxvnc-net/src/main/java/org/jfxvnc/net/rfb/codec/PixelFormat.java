@@ -144,4 +144,53 @@ public class PixelFormat {
 	return "PixelFormat [bitPerPixel=" + bitPerPixel + ", depth=" + depth + ", bigEndian=" + bigEndian + ", trueColor=" + trueColor + ", redMax=" + redMax
 		+ ", greenMax=" + greenMax + ", blueMax=" + blueMax + ", redShift=" + redShift + ", greenShift=" + greenShift + ", blueShift=" + blueShift + "]";
     }
+
+    @Override
+    public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	result = prime * result + (bigEndian ? 1231 : 1237);
+	result = prime * result + bitPerPixel;
+	result = prime * result + blueMax;
+	result = prime * result + blueShift;
+	result = prime * result + depth;
+	result = prime * result + greenMax;
+	result = prime * result + greenShift;
+	result = prime * result + redMax;
+	result = prime * result + redShift;
+	result = prime * result + (trueColor ? 1231 : 1237);
+	return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+	if (this == obj)
+	    return true;
+	if (obj == null)
+	    return false;
+	if (getClass() != obj.getClass())
+	    return false;
+	PixelFormat other = (PixelFormat) obj;
+	if (bigEndian != other.bigEndian)
+	    return false;
+	if (bitPerPixel != other.bitPerPixel)
+	    return false;
+	if (blueMax != other.blueMax)
+	    return false;
+	if (blueShift != other.blueShift)
+	    return false;
+	if (depth != other.depth)
+	    return false;
+	if (greenMax != other.greenMax)
+	    return false;
+	if (greenShift != other.greenShift)
+	    return false;
+	if (redMax != other.redMax)
+	    return false;
+	if (redShift != other.redShift)
+	    return false;
+	if (trueColor != other.trueColor)
+	    return false;
+	return true;
+    }
 }

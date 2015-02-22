@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.codec;
  * #L%
  */
 
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
@@ -37,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 public class FrameDecoderHandler extends ByteToMessageDecoder {
     private static Logger logger = LoggerFactory.getLogger(FrameDecoderHandler.class);
-    
+
     enum State {
 	NEXT, BELL, CUT_TEXT, COLORMAP, FBU
     }
@@ -57,13 +56,13 @@ public class FrameDecoderHandler extends ByteToMessageDecoder {
     }
 
     public int[] getSupportedEncodings() {
-	return ((FramebufferUpdateDecoder)framebufferDecoder).getSupportedEncodings();
+	return ((FramebufferUpdateDecoder) framebufferDecoder).getSupportedEncodings();
     }
-    
-    public PixelFormat getSupportedPixelFormat() {
-	return PixelFormat.RGB_888;
+
+    public boolean isPixelFormatSupported() {
+	return ((FramebufferUpdateDecoder) framebufferDecoder).isPixelFormatSupported();
     }
-    
+
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 	if (!in.isReadable()) {
@@ -73,7 +72,7 @@ public class FrameDecoderHandler extends ByteToMessageDecoder {
 	switch (state) {
 	case NEXT:
 	    int msg = in.getUnsignedByte(0);
-	    if (msg != 0){
+	    if (msg != 0) {
 		logger.info("server type message type: {} ({})", msg, in.readableBytes());
 	    }
 	    switch (msg) {

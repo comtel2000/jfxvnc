@@ -20,28 +20,32 @@ package org.jfxvnc.net.rfb.codec.encoder;
  * #L%
  */
 
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageEncoder;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
+import io.netty.handler.codec.MessageToByteEncoder;
 
 import org.jfxvnc.net.rfb.codec.ClientEventType;
+import org.jfxvnc.net.rfb.codec.PixelFormat;
 
-public class ClientCutTextEncoder extends MessageToMessageEncoder<ClientCutText> {
+public class PixelFormatEncoder extends MessageToByteEncoder<PixelFormat> {
+
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, ClientCutText msg, List<Object> out) throws Exception {
-	byte[] text = msg.getText().getBytes(StandardCharsets.ISO_8859_1);
-	ByteBuf buf = ctx.alloc().buffer(8 + text.length);
-	buf.writeByte(ClientEventType.CLIENT_CUT_TEXT);
-	buf.writeZero(3);
-	buf.writeInt(text.length);
-	buf.writeBytes(text);
-
-	out.add(buf);
+    protected void encode(ChannelHandlerContext ctx, PixelFormat pf, ByteBuf out) throws Exception {
+	out.writeByte(ClientEventType.SET_PIXEL_FORMAT);
+	out.writeZero(3); // padding
+	out.writeByte(pf.getBitPerPixel());
+	out.writeByte(pf.getDepth());
+	out.writeBoolean(pf.isBigEndian());
+	out.writeBoolean(pf.isTrueColor());
+	out.writeShort(pf.getRedMax());
+	out.writeShort(pf.getGreenMax());
+	out.writeShort(pf.getBlueMax());
+	out.writeByte(pf.getRedShift());
+	out.writeByte(pf.getGreenShift());
+	out.writeByte(pf.getBlueShift());
+	out.writeZero(3); // padding
+	
+	ctx.pipeline().remove(this);
     }
-
 }

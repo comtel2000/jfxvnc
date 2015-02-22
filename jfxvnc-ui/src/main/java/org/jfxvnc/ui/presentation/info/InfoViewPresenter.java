@@ -69,6 +69,7 @@ public class InfoViewPresenter implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
 	con.detailsProperty().addListener((l) -> Platform.runLater(() -> updateDetails(con.detailsProperty().get())));
+	con.connectProperty().addListener((l) -> Platform.runLater(() -> infoName.getParent().setDisable(!con.connectProperty().get())));
     }
 
     private void updateDetails(ConnectInfoEvent cd) {

@@ -10,14 +10,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<ScrollPane fx:id="vncScrollPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jfxvnc.ui.presentation.vnc.VncViewPresenter">
-  <content>
-      <StackPane fx:id="vncPane">
-         <children>
-            <ImageView fx:id="vncView" pickOnBounds="true" />
-            <Canvas fx:id="cursorView" mouseTransparent="true"/>
-         </children>
-      </StackPane>
-  </content>
+<ScrollPane centerShape="false" fitToHeight="true" fitToWidth="true" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jfxvnc.ui.presentation.vnc.VncViewPresenter">
+	<content>
+		<ImageView fx:id="vncView" pickOnBounds="true" preserveRatio="true" smooth="false" />
+	</content>
 </ScrollPane>
