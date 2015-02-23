@@ -41,16 +41,12 @@ import javafx.util.converter.NumberStringConverter;
 import javax.inject.Inject;
 
 import org.jfxvnc.net.rfb.ProtocolConfiguration;
-import org.jfxvnc.net.rfb.codec.security.ISecurityType;
 import org.jfxvnc.ui.persist.HistoryEntry;
 import org.jfxvnc.ui.persist.SessionContext;
 import org.jfxvnc.ui.service.SecurityType;
 import org.jfxvnc.ui.service.VncRenderService;
-import org.slf4j.LoggerFactory;
 
 public class ConnectViewPresenter implements Initializable {
-
-    private final static org.slf4j.Logger logger = LoggerFactory.getLogger(ConnectViewPresenter.class);
 
     @Inject
     SessionContext ctx;
@@ -102,9 +98,9 @@ public class ConnectViewPresenter implements Initializable {
 	securityCombo.getSelectionModel().selectedItemProperty().addListener((l, a, b) -> {
 	    prop.securityProperty().set(b != null ? b.getType() : 0);
 	});
-	
+
 	pwdField.disableProperty().bind(Bindings.equal(SecurityType.NONE, securityCombo.getSelectionModel().selectedItemProperty()));
-	
+
 	prop.hostProperty().bind(ipField.textProperty());
 	StringConverter<Number> converter = new NumberStringConverter();
 	Bindings.bindBidirectional(portField.textProperty(), prop.portProperty(), converter);

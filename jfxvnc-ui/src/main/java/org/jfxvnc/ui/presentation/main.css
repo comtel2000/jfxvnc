@@ -41,6 +41,28 @@
 	-fx-max-height: 12.0;
 }
 
+#menu-fullscreen-pane  {
+	-fx-shape: "m 0,-27.625 0,10 5,0 0,-5 5,0 0,-5 c -3.3333333,0 -6.6666667,0 -10,0 z m 25,0 0,5 5,0 0,5 5,0 c 0,-3.333333 0,-6.666667 0,-10 z m -25,15 c 0,3.3333333 0,6.6666667 0,10 l 10,0 0,-5 -5,0 0,-5 z m 30,0 0,5 -5,0 0,5 c 3.333333,0 6.666667,0 10,0 l 0,-10 z";
+	-fx-background-color: white,#666;
+	-fx-padding: 3.0;
+	-fx-pref-width: 16.0;
+	-fx-max-width: 16.0;
+	-fx-pref-height: 12.0;
+	-fx-max-height: 12.0;
+}
+
+#menu-window-pane  {
+	-fx-shape: "m 5,-27.625 0,5 -5,0 0,5 c 3.3333333,0 6.6666667,0 10,0 l 0,-10 z m 20,0 c 0,3.333333 0,6.666667 0,10 l 10,0 0,-5 -5,0 0,-5 z m -25,15 0,5 5,0 0,5 5,0 c 0,-3.3333333 0,-6.6666667 0,-10 z m 25,0 0,10 5,0 0,-5 5,0 0,-5 c -3.333333,0 -6.666667,0 -10,0 z";
+	-fx-background-color: white,#666;
+	-fx-padding: 3.0;
+	-fx-pref-width: 16.0;
+	-fx-max-width: 16.0;
+	-fx-pref-height: 12.0;
+	-fx-max-height: 12.0;
+}
+
+
+
 .check-box > .box > .mark {
     -fx-background-color: -fx-mark-highlight-color, -fx-mark-color !important;
     -fx-background-insets: 1 0 -1 0, 0;

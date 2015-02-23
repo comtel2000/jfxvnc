@@ -57,7 +57,7 @@ public class VncClientApp extends Application {
     public void start(Stage stage) throws Exception {
 
 	stage.titleProperty().bind(headerExpr);
-
+	;
 	stage.setResizable(true);
 	offlineImg = new Image(VncClientApp.class.getResourceAsStream("icon.png"));
 	onlineImg = new Image(VncClientApp.class.getResourceAsStream("icon_green.png"));
@@ -69,6 +69,10 @@ public class VncClientApp extends Application {
 	Injector.instantiateModelOrService(ProtocolConfiguration.class);
 	VncRenderService vncService = (VncRenderService) Injector.instantiateModelOrService(VncRenderService.class);
 
+	vncService.fullSceenProperty().addListener((l, a, b) -> Platform.runLater(() -> stage.setFullScreen(b)));
+	//update property on exit full screen by key combination
+	stage.fullScreenProperty().addListener((l, a, b) -> vncService.fullSceenProperty().set(b));
+	
 	vncService.detailsProperty().addListener((l, a, b) -> Platform.runLater(() -> headerProperty.set(b.getServerName())));
 
 	vncService.onlineProperty().addListener((l, a, b) -> Platform.runLater(() -> {

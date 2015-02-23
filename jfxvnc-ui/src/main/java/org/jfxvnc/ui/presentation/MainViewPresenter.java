@@ -52,8 +52,6 @@ import org.slf4j.LoggerFactory;
 
 public class MainViewPresenter implements Initializable {
 
-    private final static org.slf4j.Logger logger = LoggerFactory.getLogger(MainViewPresenter.class);
-
     @Inject
     SessionContext ctx;
 
@@ -87,7 +85,7 @@ public class MainViewPresenter implements Initializable {
 
 	StatusBar statusBar = new StatusBar();
 	statusBar.setId("status-bar");
-	
+
 	mainPane.setCenter(mdPane);
 	mainPane.setBottom(statusBar);
 
@@ -107,26 +105,34 @@ public class MainViewPresenter implements Initializable {
 	disconnectBtn.disableProperty().bind(connectBtn.disabledProperty().not());
 	disconnectBtn.setOnAction((a) -> con.disconnect());
 
+	Pane toFullScreen = new Pane();
+	toFullScreen.setId("menu-fullscreen-pane");
+
+	Pane toWindow = new Pane();
+	toWindow.setId("menu-window-pane");
+
+	ToggleButton switchFullScreen = new ToggleButton("", toFullScreen);
+	switchFullScreen.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+	switchFullScreen.selectedProperty().bindBidirectional(con.fullSceenProperty());
+
+	con.fullSceenProperty().addListener((l) -> Platform.runLater(() -> switchFullScreen.setGraphic(con.fullSceenProperty().get() ? toWindow : toFullScreen)));
+
 	ProgressIndicator progressIndicator = new ProgressIndicator(-1);
 	progressIndicator.visibleProperty().bind(con.runningProperty());
 	progressIndicator.setPrefSize(16, 16);
 
-
-	
-	
 	PlusMinusSlider zoomSlider = new PlusMinusSlider();
 	zoomSlider.setStyle("-fx-translate-y: 5;");
-	zoomSlider.setOnValueChanged((e)->{
+	zoomSlider.setOnValueChanged((e) -> {
 	    double zoom = e.getValue() + 1;
 	    if (zoom >= con.getMinZoomLevel()) {
 		statusProperty.set("zoom: " + (int) Math.floor(zoom * 100) + "%");
 		con.zoomLevelProperty().set(zoom);
 	    }
 	});
-	
-	
-	statusBar.getRightItems().addAll(progressIndicator, createSpace(10, 20), zoomSlider, createSpace(10, 20), connectBtn, disconnectBtn, createSpace(10, 20), gearButton);
 
+	statusBar.getRightItems().addAll(progressIndicator, createSpace(10, 20), zoomSlider, createSpace(10, 20), switchFullScreen, createSpace(10, 20), connectBtn, disconnectBtn,
+		createSpace(10, 20), gearButton);
 
 	con.protocolStateProperty().addListener((l, o, event) -> Platform.runLater(() -> {
 	    switch (event) {

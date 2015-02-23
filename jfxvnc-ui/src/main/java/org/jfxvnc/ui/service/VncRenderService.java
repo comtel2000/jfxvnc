@@ -30,6 +30,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import java.util.concurrent.TimeUnit;
 
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
@@ -37,6 +38,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -78,6 +80,7 @@ public class VncRenderService extends Service<Boolean> implements IRender {
 
     private final double minZoomLevel = 0.2;
     private final DoubleProperty zoomLevelProperty = new SimpleDoubleProperty(1);
+    private final BooleanProperty fullSceenProperty = new SimpleBooleanProperty(false);
     
     private EventLoopGroup workerGroup;
 
@@ -238,6 +241,10 @@ public class VncRenderService extends Service<Boolean> implements IRender {
 
     public double getMinZoomLevel() {
 	return minZoomLevel;
+    }
+
+    public BooleanProperty fullSceenProperty() {
+	return fullSceenProperty;
     }
 
     
