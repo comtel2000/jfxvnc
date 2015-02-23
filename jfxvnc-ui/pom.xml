@@ -46,7 +46,7 @@
 		<dependency>
 			<groupId>org.jfxvnc</groupId>
 			<artifactId>jfxvnc-net</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<name>jfxvnc-ui</name>
