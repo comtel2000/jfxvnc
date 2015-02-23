@@ -31,7 +31,7 @@ What is required:
 
 ```shell
 mvn clean install
-java -jar jfxvnc-ui/target/jfxvnc-ui-0.0.1-SNAPSHOT.jar
+java -jar jfxvnc-ui/target/jfxvnc-ui-0.0.2-SNAPSHOT.jar
 ```
 
 ## Links
