@@ -3,8 +3,7 @@ JFxVNC is a Java VNC viewer based on [Netty framework](https://github.com/netty/
 
 [![Build Status](https://travis-ci.org/comtel2000/jfxvnc.png)](https://travis-ci.org/comtel2000/jfxvnc)
 
-![Splash] (https://raw.githubusercontent.com/comtel2000/jfxvnc/gh-pages/images/screen_info.png)
-![Splash] (https://raw.githubusercontent.com/comtel2000/jfxvnc/gh-pages/images/screen_rasp.png)
+[![video](http://img.youtube.com/vi/hbsgvLNvPCc/0.jpg)](http://youtu.be/hbsgvLNvPCc)
 
 ## Bundles
 - jfxvnc-net (netty based VNC / RFB protocol)
@@ -16,6 +15,7 @@ JFxVNC is a Java VNC viewer based on [Netty framework](https://github.com/netty/
 - VNC Auth security and SSL
 - true/full color pixel format only (24 depth)
 - Server/Client clipboard transfer
+- Zoom, Full screen
 
 ## Roadmap
 - Hextile, RRE, ZLIB, Tight, Turbo, etc. encodings
