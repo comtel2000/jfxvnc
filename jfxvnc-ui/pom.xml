@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jfxvnc</groupId>
 		<artifactId>jfxvnc-parent</artifactId>
-		<version>0.0.2</version>
+		<version>0.0.3-SNAPSHOT</version>
 	</parent>
 	<artifactId>jfxvnc-ui</artifactId>
 	<properties>
