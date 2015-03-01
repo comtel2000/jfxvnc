@@ -4,17 +4,17 @@
 	<parent>
 		<groupId>org.jfxvnc</groupId>
 		<artifactId>jfxvnc-parent</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>0.0.2</version>
 	</parent>
 	<artifactId>jfxvnc-net</artifactId>
 	<name>jfxvnc-net</name>
-	<description>VNC/RFB implementation based on netty</description>
+	<description>RFB/VNC protocol codec and handler based on netty</description>
+	<url>http://jfxvnc.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>io.netty</groupId>
@@ -22,5 +22,4 @@
 			<version>4.0.25.Final</version>
 		</dependency>
 	</dependencies>
-	<url>http://jfxvnc.org</url>
 </project>

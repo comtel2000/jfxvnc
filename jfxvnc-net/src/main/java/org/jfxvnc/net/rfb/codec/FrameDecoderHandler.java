@@ -73,7 +73,7 @@ public class FrameDecoderHandler extends ByteToMessageDecoder {
 	case NEXT:
 	    int msg = in.getUnsignedByte(0);
 	    if (msg != 0) {
-		logger.info("server type message type: {} ({})", msg, in.readableBytes());
+		logger.info("server type message: {} ({})", msg, in.readableBytes());
 	    }
 	    switch (msg) {
 	    case ServerEventType.FRAMEBUFFER_UPDATE:
@@ -101,7 +101,7 @@ public class FrameDecoderHandler extends ByteToMessageDecoder {
 		}
 		break;
 	    default:
-		logger.warn("not handled server type message type: {} ({})", msg, in.readableBytes());
+		logger.error("not handled server message type: {} ({})", msg, in.readableBytes());
 		in.skipBytes(in.readableBytes());
 		break;
 	    }

@@ -21,6 +21,7 @@ package org.jfxvnc.ui.presentation.connect;
  */
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -41,6 +42,7 @@ import javafx.util.converter.NumberStringConverter;
 import javax.inject.Inject;
 
 import org.jfxvnc.net.rfb.ProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
 import org.jfxvnc.ui.persist.HistoryEntry;
 import org.jfxvnc.ui.persist.SessionContext;
 import org.jfxvnc.ui.service.SecurityType;
@@ -89,10 +91,15 @@ public class ConnectViewPresenter implements Initializable {
     @FXML
     CheckBox desktopCB;
 
+    @FXML
+    CheckBox zlibCB;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-	clearBtn.setOnAction((a) -> historyList.getItems().clear());
+	historyList.setItems(ctx.getHistory());
+	
+	clearBtn.setOnAction(a -> historyList.getItems().clear());
 
 	securityCombo.getItems().addAll(FXCollections.observableArrayList(SecurityType.values()));
 	securityCombo.getSelectionModel().selectedItemProperty().addListener((l, a, b) -> {
@@ -114,6 +121,7 @@ public class ConnectViewPresenter implements Initializable {
 
 	prop.clientCursorProperty().bind(cursorCB.selectedProperty());
 	prop.desktopSizeProperty().bind(desktopCB.selectedProperty());
+	prop.zlibEncProperty().bind(zlibCB.selectedProperty());
 
 	portField.textProperty().addListener((observable, oldValue, newValue) -> {
 	    if (newValue != null && !newValue.isEmpty() && !newValue.matches("[0-9]+")) {
@@ -125,7 +133,7 @@ public class ConnectViewPresenter implements Initializable {
 	    }
 	});
 
-	con.connectProperty().addListener((l) -> Platform.runLater(() -> ipField.getParent().setDisable(con.connectProperty().get())));
+	con.connectProperty().addListener((l, a, b) -> Platform.runLater(() -> ipField.getParent().setDisable(b)));
 
 	ctx.bind(ipField.textProperty(), "hostField");
 	ctx.bind(portField.textProperty(), "portField");
@@ -139,6 +147,7 @@ public class ConnectViewPresenter implements Initializable {
 	ctx.bind(hextileCB.selectedProperty(), "useHextile");
 	ctx.bind(cursorCB.selectedProperty(), "useCursor");
 	ctx.bind(desktopCB.selectedProperty(), "useDesktopSize");
+	ctx.bind(zlibCB.selectedProperty(), "useZlib");
 
 	if (securityCombo.getSelectionModel().getSelectedIndex() < 0) {
 	    securityCombo.getSelectionModel().select(SecurityType.VNC_Auth);
@@ -146,11 +155,7 @@ public class ConnectViewPresenter implements Initializable {
 
 	historyList.getSelectionModel().selectedItemProperty().addListener((l, a, b) -> updateData(b));
 
-	con.detailsProperty().addListener((l) -> Platform.runLater(() -> {
-	    if (con.detailsProperty().get() != null) {
-		saveHistoryEntry(con.detailsProperty().get().getServerName());
-	    }
-	}));
+	con.connectInfoProperty().addListener((l, a, b) -> Platform.runLater(() -> addToHistory(b)));
 
     }
 
@@ -165,21 +170,19 @@ public class ConnectViewPresenter implements Initializable {
 
     }
 
-    private void saveHistoryEntry(String serverName) {
-	HistoryEntry e = new HistoryEntry(prop.hostProperty().get(), prop.portProperty().get());
-	if (!historyList.getItems().contains(e)) {
-	    historyList.getItems().add(e);
-	} else {
-	    for (HistoryEntry entry : historyList.getItems()) {
-		if (entry.equals(e)) {
-		    e = entry;
-		    break;
-		}
-	    }
+    private void addToHistory(ConnectInfoEvent info) {
+	if (info == null) {
+	    return;
 	}
-	e.setPassword(prop.passwordProperty().get());
-	e.setSecurityType(prop.securityProperty().get());
-	e.setServerName(serverName);
+	final HistoryEntry e = new HistoryEntry(prop.hostProperty().get(), prop.portProperty().get());
+
+	Optional<HistoryEntry> opt = historyList.getItems().stream().filter(h -> h.equals(e)).findAny();
+	if (!opt.isPresent()) {
+	    historyList.getItems().add(e);
+	}
+	opt.orElse(e).setPassword(prop.passwordProperty().get());
+	opt.orElse(e).setSecurityType(prop.securityProperty().get());
+	opt.orElse(e).setServerName(info.getServerName());
     }
 
 }

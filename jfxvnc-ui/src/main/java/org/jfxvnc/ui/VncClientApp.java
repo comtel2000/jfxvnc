@@ -53,11 +53,12 @@ public class VncClientApp extends Application {
     private Image offlineImg;
     private Image onlineImg;
 
+    private Stage stageRef;
+
     @Override
     public void start(Stage stage) throws Exception {
-
+	stageRef = stage;
 	stage.titleProperty().bind(headerExpr);
-	;
 	stage.setResizable(true);
 	offlineImg = new Image(VncClientApp.class.getResourceAsStream("icon.png"));
 	onlineImg = new Image(VncClientApp.class.getResourceAsStream("icon_green.png"));
@@ -70,10 +71,11 @@ public class VncClientApp extends Application {
 	VncRenderService vncService = (VncRenderService) Injector.instantiateModelOrService(VncRenderService.class);
 
 	vncService.fullSceenProperty().addListener((l, a, b) -> Platform.runLater(() -> stage.setFullScreen(b)));
-	//update property on exit full screen by key combination
+	// update property on exit full screen by key combination
 	stage.fullScreenProperty().addListener((l, a, b) -> vncService.fullSceenProperty().set(b));
+	vncService.restartProperty().addListener(l -> restart());
 	
-	vncService.detailsProperty().addListener((l, a, b) -> Platform.runLater(() -> headerProperty.set(b.getServerName())));
+	vncService.connectInfoProperty().addListener((l, a, b) -> Platform.runLater(() -> headerProperty.set(b.getServerName())));
 
 	vncService.onlineProperty().addListener((l, a, b) -> Platform.runLater(() -> {
 	    stage.getIcons().add(b ? onlineImg : offlineImg);
@@ -100,6 +102,18 @@ public class VncClientApp extends Application {
 	stage.getIcons().add(offlineImg);
 	stage.show();
 
+    }
+
+    public void restart() {
+	stageRef.close();
+	try {
+	    sceneWidthProperty.set(stageRef.getScene().getWidth());
+	    sceneHeightProperty.set(stageRef.getScene().getHeight());
+	    Injector.forgetAll();
+	    start(new Stage());
+	} catch (Exception e) {
+	    throw new RuntimeException("Failed to restart " + getClass().getName(), e);
+	}
     }
 
     public static void main(String[] args) {

@@ -20,7 +20,9 @@ package org.jfxvnc.ui.presentation;
  * #L%
  */
 
+import java.awt.Toolkit;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -48,7 +50,6 @@ import org.jfxvnc.ui.persist.SessionContext;
 import org.jfxvnc.ui.presentation.detail.DetailView;
 import org.jfxvnc.ui.presentation.vnc.VncView;
 import org.jfxvnc.ui.service.VncRenderService;
-import org.slf4j.LoggerFactory;
 
 public class MainViewPresenter implements Initializable {
 
@@ -103,7 +104,11 @@ public class MainViewPresenter implements Initializable {
 	Button disconnectBtn = new Button(rb.getString("disconnect.button"));
 	disconnectBtn.setPrefWidth(100);
 	disconnectBtn.disableProperty().bind(connectBtn.disabledProperty().not());
-	disconnectBtn.setOnAction((a) -> con.disconnect());
+	disconnectBtn.setOnAction(a -> con.disconnect());
+
+	// Button restartBtn = new Button(rb.getString("restart.button"));
+	// restartBtn.setPrefWidth(100);
+	// restartBtn.setOnAction(a -> con.restartProperty().set(!con.restartProperty().get()));
 
 	Pane toFullScreen = new Pane();
 	toFullScreen.setId("menu-fullscreen-pane");
@@ -123,12 +128,12 @@ public class MainViewPresenter implements Initializable {
 
 	PlusMinusSlider zoomSlider = new PlusMinusSlider();
 	zoomSlider.setStyle("-fx-translate-y: 5;");
-	zoomSlider.setOnValueChanged((e) -> {
-	    double zoom = e.getValue() + 1;
-	    if (zoom >= con.getMinZoomLevel()) {
-		statusProperty.set("zoom: " + (int) Math.floor(zoom * 100) + "%");
-		con.zoomLevelProperty().set(zoom);
-	    }
+	zoomSlider.setOnValueChanged((e) -> con.zoomLevelProperty().set(e.getValue() + 1));
+
+	mdPane.setOnScroll((e) -> con.zoomLevelProperty().set(con.zoomLevelProperty().get() + (e.getDeltaY() > 0.0 ? 0.01 : -0.01)));
+
+	con.zoomLevelProperty().addListener((l, o, z) -> {
+	    statusProperty.set("zoom: " + (int) Math.floor(z.doubleValue() * 100) + "%");
 	});
 
 	statusBar.getRightItems().addAll(progressIndicator, createSpace(10, 20), zoomSlider, createSpace(10, 20), switchFullScreen, createSpace(10, 20), connectBtn, disconnectBtn,
@@ -137,20 +142,20 @@ public class MainViewPresenter implements Initializable {
 	con.protocolStateProperty().addListener((l, o, event) -> Platform.runLater(() -> {
 	    switch (event) {
 	    case CLOSED:
-		statusProperty.set("connection closed");
+		statusProperty.set(rb.getString("status.closed"));
 		break;
 	    case HANDSHAKE_STARTED:
-		statusProperty.set(String.format("try to connect to %s:%s", config.hostProperty().get(), config.portProperty().get()));
+		statusProperty.set(MessageFormat.format(rb.getString("status.try.connect"), config.hostProperty().get(), config.portProperty().get()));
 		break;
 	    case HANDSHAKE_COMPLETE:
-		statusProperty.set("online");
+		statusProperty.set(rb.getString("status.open"));
 		gearButton.setSelected(false);
 		break;
 	    case SECURITY_FAILED:
-		statusProperty.set("authentication failed");
+		statusProperty.set(rb.getString("status.auth.failed"));
 		break;
 	    case SECURITY_COMPLETE:
-		statusProperty.set("authentication completed");
+		statusProperty.set(rb.getString("status.auth.done"));
 		break;
 	    default:
 		break;
@@ -159,16 +164,15 @@ public class MainViewPresenter implements Initializable {
 	}));
 	con.connectProperty().addListener((l, o, n) -> Platform.runLater(() -> connectBtn.setDisable(n)));
 
-	con.exceptionCaughtProperty().addListener((l, o, n) -> {
-	    Platform.runLater(() -> {
-		Notifications.create().owner(mainPane).position(Pos.TOP_CENTER).text(n.getMessage()).showError();
-		statusProperty.set(n.getMessage());
-		// ExceptionDialog dlg = new ExceptionDialog(n);
-		// dlg.setHeaderText("Connection Error");
-		// dlg.show();
+	con.exceptionCaughtProperty().addListener((l, o, n) -> Platform.runLater(() -> {
+	    Notifications.create().owner(mainPane).position(Pos.TOP_CENTER).text(n.getMessage()).showError();
+	    statusProperty.set(n.getMessage());
+	}));
 
-	    });
-	});
+	con.bellProperty().addListener((l) -> Platform.runLater(() -> {
+	    statusProperty.set("Bell");
+	    Toolkit.getDefaultToolkit().beep();
+	}));
     }
 
     private Pane createSpace(double w, double h) {

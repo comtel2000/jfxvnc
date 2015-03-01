@@ -1,5 +1,7 @@
 package org.jfxvnc.ui.persist;
 
+import java.io.Serializable;
+
 /*
  * #%L
  * jfxvnc-ui
@@ -20,9 +22,10 @@ package org.jfxvnc.ui.persist;
  * #L%
  */
 
+public class HistoryEntry implements Comparable<HistoryEntry>, Serializable {
 
-public class HistoryEntry {
-
+    private static final long serialVersionUID = 2877392353047511185L;
+    
     private final String host;
     private final int port;
     private int securityType;
@@ -30,7 +33,6 @@ public class HistoryEntry {
     private String serverName;
 
     public HistoryEntry(String host, int port) {
-	super();
 	this.host = host;
 	this.port = port;
     }
@@ -98,6 +100,24 @@ public class HistoryEntry {
     @Override
     public String toString() {
 	return host + ":" + port + (serverName != null ? " (" + serverName + ")" : "");
+    }
+
+    @Override
+    public int compareTo(HistoryEntry o) {
+	if (o == null) {
+	    return 1;
+	}
+	if (o.equals(this)) {
+	    return 0;
+	}
+	if (host != null && o.getHost() != null) {
+	    int h = host.compareTo(o.getHost());
+	    if (h == 0 && port != o.getPort()) {
+		h = port > o.getPort() ? 1 : -1;
+	    }
+	    return h;
+	}
+	return host != null ? 1 : -1;
     }
 
 }

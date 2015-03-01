@@ -27,13 +27,16 @@ import io.netty.channel.ChannelHandlerContext;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 
 import javax.xml.ws.ProtocolException;
 
-import org.jfxvnc.net.rfb.codec.IEncodings;
-import org.jfxvnc.net.rfb.codec.ServerEventType;
+import org.jfxvnc.net.rfb.codec.EncodingType;
 import org.jfxvnc.net.rfb.codec.PixelFormat;
 import org.jfxvnc.net.rfb.codec.ProtocolState;
+import org.jfxvnc.net.rfb.codec.ServerEventType;
+import org.jfxvnc.net.rfb.render.StringUtils;
 import org.jfxvnc.net.rfb.render.rect.CopyImageRect;
 import org.jfxvnc.net.rfb.render.rect.CursorImageRect;
 import org.jfxvnc.net.rfb.render.rect.DesktopSizeRect;
@@ -51,6 +54,8 @@ public class FramebufferUpdateDecoder implements FrameDecoder {
     private int x, y, w, h, enc;
 
     private State state;
+
+    private Inflater inflater;
     
     enum State {
 	INIT, NEW_RECT, READ_RECT
@@ -61,7 +66,7 @@ public class FramebufferUpdateDecoder implements FrameDecoder {
     }
 
     public int[] getSupportedEncodings() {
-	return new int[] {IEncodings.COPY_RECT, IEncodings.RAW, IEncodings.CURSOR, IEncodings.DESKTOP_SIZE};
+	return new int[] {EncodingType.ZLIB, EncodingType.COPY_RECT, EncodingType.RAW, EncodingType.CURSOR, EncodingType.DESKTOP_SIZE};
     }
 
     public boolean isPixelFormatSupported() {
@@ -127,43 +132,73 @@ public class FramebufferUpdateDecoder implements FrameDecoder {
 	
 	return false;
     }
-
+    
     private void sendRect(List<Object> out) {
 	int[] pixels;
-	int redPos = pixelFormat.isBigEndian() ? 0 : 2;
-	int bluePos = pixelFormat.isBigEndian() ? 2 : 0;
+	final int redPos = pixelFormat.isBigEndian() ? 0 : 2;
+	final int bluePos = pixelFormat.isBigEndian() ? 2 : 0;
 
 	switch (enc) {
-	case IEncodings.RAW:
+	case EncodingType.RAW:
 	    // TODO: optimize me
 	    pixels = new int[framebuffer.capacity() / 4];
 	    if (pixels.length > 1000) {
 		Arrays.parallelSetAll(pixels, (i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift()
-			| framebuffer.getUnsignedByte((i * 4) + 1) << pixelFormat.getGreenShift() | framebuffer.getUnsignedByte((i * 4) + bluePos) << pixelFormat.getBlueShift()
+			| framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift() | framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift()
 			| 0xff000000);
 	    } else {
 		Arrays.setAll(pixels,
-			(i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift() | framebuffer.getUnsignedByte((i * 4) + 1) << pixelFormat.getGreenShift()
-				| framebuffer.getUnsignedByte((i * 4) + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
+			(i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift() | framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift()
+				| framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
 	    }
 	    out.add(new RawImageRect(x, y, w, h, pixels));
 	    break;
-	case IEncodings.COPY_RECT:
+	case EncodingType.COPY_RECT:
 	    out.add(new CopyImageRect(x, y, w, h, framebuffer.getShort(0), framebuffer.getShort(2)));
 	    break;
-	case IEncodings.CURSOR:
+	case EncodingType.CURSOR:
 	    pixels = new int[(w * h * pixelFormat.getBytePerPixel()) / 4];
 	    Arrays.setAll(pixels,
-		    (i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift() | framebuffer.getUnsignedByte((i * 4) + 1) << pixelFormat.getGreenShift()
-			    | framebuffer.getUnsignedByte((i * 4) + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
+		    (i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift() | framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift()
+			    | framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
 	    byte[] bitmask = new byte[framebuffer.capacity() - (pixels.length * 4)];
 	    framebuffer.getBytes(framebuffer.capacity() - bitmask.length, bitmask);
 
 	    out.add(new CursorImageRect(x, y, w, h, pixels, bitmask));
 
 	    break;
-	case IEncodings.DESKTOP_SIZE:
+	case EncodingType.DESKTOP_SIZE:
 	    out.add(new DesktopSizeRect(x, y, w, h));
+	    break;
+	case EncodingType.ZLIB:
+
+	    if (framebuffer.hasArray()) {
+		inflater.setInput(framebuffer.array(), framebuffer.arrayOffset() + framebuffer.readerIndex(), framebuffer.readableBytes());
+	    } else {
+		byte[] array = new byte[framebuffer.readableBytes()];
+		framebuffer.getBytes(framebuffer.readerIndex(), array);
+		inflater.setInput(array);
+	    }
+
+	    byte[] result = new byte[w * h * pixelFormat.getBytePerPixel()];
+	    try {
+		int resultLength = inflater.inflate(result);
+		if (resultLength != result.length) {
+		    logger.error("incorrect zlib ({}/{})", resultLength, result.length);
+		    break;
+		}
+	    } catch (DataFormatException e) {
+		logger.error(e.getMessage(), e);
+		break;
+	    }
+	    pixels = new int[result.length / 4];
+	    if (pixels.length > 5000) {
+		Arrays.parallelSetAll(pixels, (i) -> (result[i * 4 + 2] & 0xFF) << 16 | (result[i * 4 + 1] & 0xFF) << 8 | (result[i * 4] & 0xFF) | 0xff000000);
+	    } else {
+		Arrays.setAll(pixels, (i) -> (result[i * 4 + 2] & 0xFF) << 16 | (result[i * 4 + 1] & 0xFF) << 8 | (result[i * 4] & 0xFF) | 0xff000000);
+	    }
+	    out.add(new RawImageRect(x, y, w, h, pixels));
+
 	    break;
 	default:
 	    // TODO: implement alternative encodings
@@ -183,8 +218,9 @@ public class FramebufferUpdateDecoder implements FrameDecoder {
 	h = m.readUnsignedShort();
 	enc = m.readInt();
 	currentRect++;
-	
-	logger.debug("{}of{} - ({}) [{},{},{},{}]", currentRect, numberRects, enc, x, y, w, h);
+	if (logger.isDebugEnabled()){
+	    logger.debug("{}of{} - ({}) [{},{},{},{}]", currentRect, numberRects, StringUtils.getEncodingName(enc), x, y, w, h);
+	}
 
 	if (w == 0 || h == 0){
 	    if (currentRect == numberRects) {
@@ -196,23 +232,34 @@ public class FramebufferUpdateDecoder implements FrameDecoder {
 	}
 	
 	switch (enc) {
-	case IEncodings.RAW:
+	case EncodingType.RAW:
 	    framebuffer.capacity(w * h * pixelFormat.getBytePerPixel());
 	    break;
-	case IEncodings.COPY_RECT:
+	case EncodingType.COPY_RECT:
 	    framebuffer.capacity(4);
 	    break;
-	case IEncodings.CURSOR:
+	case EncodingType.CURSOR:
 	    int bitMaskLength = Math.floorDiv(w + 7, 8) * h;
 	    framebuffer.capacity((w * h * pixelFormat.getBytePerPixel()) + bitMaskLength);
 	    break;
-	case IEncodings.DESKTOP_SIZE:
+	case EncodingType.DESKTOP_SIZE:
 	    sendRect(out);
 	    if (currentRect == numberRects) {
 		state = State.INIT;
 		ctx.fireUserEventTriggered(ProtocolState.FBU_REQUEST);
 		return false;
 	    }
+	    break;
+	case EncodingType.ZLIB:
+	    if (!m.isReadable(4)){
+		m.readerIndex(m.readerIndex()-12);
+		return false;
+	    }
+	    if (inflater == null){
+		inflater = new Inflater();
+	    }
+
+	    framebuffer.capacity((int)m.readUnsignedInt());
 	    break;
 	default:
 	    logger.warn("not supported encoding type: {}", enc);

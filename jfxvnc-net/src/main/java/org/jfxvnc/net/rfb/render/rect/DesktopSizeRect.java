@@ -1,6 +1,6 @@
 package org.jfxvnc.net.rfb.render.rect;
 
-import org.jfxvnc.net.rfb.codec.IEncodings;
+import org.jfxvnc.net.rfb.codec.EncodingType;
 
 
 /*
@@ -32,7 +32,7 @@ public class DesktopSizeRect extends ImageRect {
 
     @Override
     public int getEncodingType() {
-	return IEncodings.DESKTOP_SIZE;
+	return EncodingType.DESKTOP_SIZE;
     }
     
     @Override

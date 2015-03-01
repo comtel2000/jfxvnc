@@ -40,11 +40,10 @@ import javafx.scene.image.WritableImage;
 import javax.inject.Inject;
 
 import org.jfxvnc.net.rfb.ProtocolConfiguration;
+import org.jfxvnc.net.rfb.codec.EncodingType;
 import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
-import org.jfxvnc.net.rfb.render.rect.CanvasImageRect;
 import org.jfxvnc.net.rfb.render.rect.CopyImageRect;
 import org.jfxvnc.net.rfb.render.rect.CursorImageRect;
-import org.jfxvnc.net.rfb.render.rect.DesktopSizeRect;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;
 import org.jfxvnc.net.rfb.render.rect.RawImageRect;
 import org.jfxvnc.ui.persist.SessionContext;
@@ -81,17 +80,33 @@ public class VncViewPresenter implements Initializable {
 
     private final Effect blurEffect = new BoxBlur();
 
+    private ImageCursor remoteCursor;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-	vncView.setOnMouseEntered((event) -> vncView.requestFocus());
+	vncView.setOnMouseEntered((event) -> {
+	    if (con.connectProperty().get()) {
+		vncView.requestFocus();
+		vncView.setCursor(remoteCursor != null ? remoteCursor : Cursor.DEFAULT);
+	    }
+	});
+
+	vncView.setOnMouseExited((event) -> {
+	    if (con.connectProperty().get()) {
+		vncView.setCursor(Cursor.DEFAULT);
+	    }
+	});
+
 	vncView.setPreserveRatio(true);
 
-	con.imageProperty().addListener((l, old, image) -> Platform.runLater(() -> {
-	    render(image);
-	}));
+	con.imageProperty().addListener((l, old, image) -> Platform.runLater(() -> render(image)));
+
 	con.connectProperty().addListener((l, dis, con) -> Platform.runLater(() -> {
-	    vncView.setEffect(con ? null : blurEffect);
+	    if (!con) {
+		remoteCursor = null;
+		vncView.setEffect(blurEffect);
+	    }
 	}));
 	con.serverCutTextProperty().addListener((l, o, text) -> {
 	    if (cutTextHandler != null) {
@@ -99,8 +114,8 @@ public class VncViewPresenter implements Initializable {
 	    }
 	});
 	con.inputProperty().addListener((l) -> registerInputEventListener(con.inputProperty().get()));
-	prop.clientCursorProperty().addListener((l) -> {
-	    if (!prop.clientCursorProperty().get()) {
+	prop.clientCursorProperty().addListener((l, a, b) -> {
+	    if (!b) {
 		vncView.setCursor(Cursor.DEFAULT);
 	    }
 	});
@@ -109,55 +124,50 @@ public class VncViewPresenter implements Initializable {
 	    if (vncView.getImage() != null) {
 		vncView.setFitHeight(vncView.getImage().getHeight() * con.zoomLevelProperty().get());
 	    }
-
 	    // vncView.getTransforms().clear();
 	    // vncView.getTransforms().add(new Scale(con.scaleProperty().get(),
 	    // con.scaleProperty().get()));
 	    });
 
+	con.connectInfoProperty().addListener((l, a, rect) -> Platform.runLater(() -> {
+	    vncImage = new WritableImage(rect.getFrameWidth(), rect.getFrameHeight());
+	    vncView.setEffect(null);
+	    vncView.setImage(vncImage);
+	    vncView.setFitHeight(vncView.getImage().getHeight() * con.zoomLevelProperty().get());
+	}));
+
     }
 
     /** in FX render thread */
     private void render(ImageRect rect) {
+
+	if (vncImage == null) {
+	    logger.error("canvas image has not been initialized");
+	    return;
+	}
+
 	try {
-	    if (rect instanceof CanvasImageRect) {
-		vncImage = new WritableImage(rect.getWidth(), rect.getHeight());
-		vncView.setEffect(null);
-		vncView.setImage(vncImage);
-		return;
-	    }
-	    if (rect instanceof DesktopSizeRect) {
-		WritableImage copyRect = new WritableImage(rect.getWidth(), rect.getHeight());
-		copyRect.getPixelWriter().setPixels(0, 0, Math.min(rect.getWidth(), (int) vncImage.getWidth()), Math.min(rect.getHeight(), (int) vncImage.getHeight()),
-			vncImage.getPixelReader(), 0, 0);
-
-		vncImage = copyRect;
-		vncView.setImage(vncImage);
-		return;
-	    }
-	    if (vncImage == null) {
-		logger.error("canvas not initialized");
-		return;
-	    }
-
-	    if (rect instanceof RawImageRect) {
+	    switch (rect.getEncodingType()) {
+	    case EncodingType.RAW:
 		RawImageRect rawRect = (RawImageRect) rect;
 		vncImage.getPixelWriter().setPixels(rawRect.getX(), rawRect.getY(), rawRect.getWidth(), rawRect.getHeight(), PixelFormat.getIntArgbInstance(), rawRect.getPixels(),
 			0, rawRect.getWidth());
-		return;
-	    }
-	    if (rect instanceof CopyImageRect) {
-		CopyImageRect rawRect = (CopyImageRect) rect;
+		break;
+	    case EncodingType.COPY_RECT:
+		CopyImageRect copyImageRect = (CopyImageRect) rect;
 
 		PixelReader reader = vncImage.getPixelReader();
-		WritableImage copyRect = new WritableImage(rawRect.getWidth(), rawRect.getHeight());
-		copyRect.getPixelWriter().setPixels(0, 0, rawRect.getWidth(), rawRect.getHeight(), reader, rawRect.getSrcX(), rawRect.getSrcY());
-		vncImage.getPixelWriter().setPixels(rawRect.getX(), rawRect.getY(), rawRect.getWidth(), rawRect.getHeight(), copyRect.getPixelReader(), 0, 0);
-		return;
-	    }
-
-	    if (prop.clientCursorProperty().get() && rect instanceof CursorImageRect) {
-		CursorImageRect cRect = (CursorImageRect) rect;
+		WritableImage copyRect = new WritableImage(copyImageRect.getWidth(), copyImageRect.getHeight());
+		copyRect.getPixelWriter().setPixels(0, 0, copyImageRect.getWidth(), copyImageRect.getHeight(), reader, copyImageRect.getSrcX(), copyImageRect.getSrcY());
+		vncImage.getPixelWriter().setPixels(copyImageRect.getX(), copyImageRect.getY(), copyImageRect.getWidth(), copyImageRect.getHeight(), copyRect.getPixelReader(), 0,
+			0);
+		break;
+	    case EncodingType.CURSOR:
+		if (!prop.clientCursorProperty().get()) {
+		    logger.warn("ignore cursor encoding");
+		    return;
+		}
+		final CursorImageRect cRect = (CursorImageRect) rect;
 
 		if (cRect.getHeight() < 2 && cRect.getWidth() < 2) {
 		    vncView.setCursor(Cursor.NONE);
@@ -175,12 +185,17 @@ public class VncViewPresenter implements Initializable {
 
 		Dimension2D dim = ImageCursor.getBestSize(cRect.getWidth(), cRect.getHeight());
 		WritableImage cImage = new WritableImage((int) dim.getWidth(), (int) dim.getHeight());
-		cImage.getPixelWriter().setPixels(0, 0, cRect.getWidth(), cRect.getHeight(), PixelFormat.getIntArgbInstance(), cRect.getPixels(), 0, cRect.getWidth());
-		ImageCursor cursor = new ImageCursor(cImage, cRect.getHotspotX(), cRect.getHotspotY());
-		vncView.setCursor(cursor);
+		cImage.getPixelWriter().setPixels(0, 0, (int) Math.min(dim.getWidth(), cRect.getWidth()), (int) Math.min(dim.getHeight(), cRect.getHeight()),
+			PixelFormat.getIntArgbInstance(), cRect.getPixels(), 0, cRect.getWidth());
+		remoteCursor = new ImageCursor(cImage, cRect.getHotspotX(), cRect.getHotspotY());
+		vncView.setCursor(remoteCursor);
+		break;
+	    default:
+		logger.error("not supported encoding rect: {}", rect);
+		break;
 	    }
 	} catch (Exception e) {
-	    logger.error(e.getMessage(), e);
+	    logger.error("rect: " + String.valueOf(rect), e);
 	}
     }
 

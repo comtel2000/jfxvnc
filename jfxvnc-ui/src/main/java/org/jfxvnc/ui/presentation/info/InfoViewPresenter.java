@@ -37,6 +37,12 @@ import org.jfxvnc.ui.persist.SessionContext;
 import org.jfxvnc.ui.service.VncRenderService;
 import org.slf4j.LoggerFactory;
 
+/**
+ * VNC information screen
+ * 
+ * @author comtel
+ *
+ */
 public class InfoViewPresenter implements Initializable {
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(InfoViewPresenter.class);
@@ -68,8 +74,8 @@ public class InfoViewPresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-	con.detailsProperty().addListener((l) -> Platform.runLater(() -> updateDetails(con.detailsProperty().get())));
-	con.connectProperty().addListener((l) -> Platform.runLater(() -> infoName.getParent().setDisable(!con.connectProperty().get())));
+	con.connectInfoProperty().addListener((l, a, b) -> Platform.runLater(() -> updateDetails(b)));
+	con.connectProperty().addListener((l, a, b) -> Platform.runLater(() -> infoName.getParent().setDisable(!b)));
     }
 
     private void updateDetails(ConnectInfoEvent cd) {
@@ -79,7 +85,7 @@ public class InfoViewPresenter implements Initializable {
 	}
 	infoName.setText(cd.getServerName());
 	infoSize.setText(String.format("%s x %s", cd.getFrameWidth(), cd.getFrameHeight()));
-	infoProtocol.setText(cd.getRfbProtocol());
+	infoProtocol.setText(cd.getRfbProtocol().getMajorVersion() + "." + cd.getRfbProtocol().getMinorVersion());
 	infoHost.setText(cd.getRemoteAddress());
 	infoPixelformat.setText(StringUtils.getPixelFormatReadable(cd.getServerPF()));
 	infoPixelformatDef.setText(StringUtils.getPixelFormatReadable(cd.getClientPF()));

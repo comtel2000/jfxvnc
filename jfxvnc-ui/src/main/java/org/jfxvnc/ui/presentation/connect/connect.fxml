@@ -40,8 +40,9 @@
 						</Label>
 						<Label text="Cursor:" GridPane.rowIndex="13" />
                   <Label text="Desktop Size:" GridPane.rowIndex="14" />
-						<Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="15" />
-						<Label text="History" GridPane.rowIndex="16">
+                  <Label text="Zlib:" GridPane.rowIndex="15" />
+						<Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="16" />
+						<Label text="History" GridPane.rowIndex="17">
 							<font>
 								<Font name="System Bold" size="12.0" />
 							</font>
@@ -58,9 +59,11 @@
 						<CheckBox fx:id="hextileCB" disable="true" mnemonicParsing="false" text="" GridPane.columnIndex="1" GridPane.rowIndex="12" />
 						<CheckBox fx:id="cursorCB" mnemonicParsing="false" selected="true" text="" GridPane.columnIndex="1" GridPane.rowIndex="13" />
                   <CheckBox fx:id="desktopCB" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="14" />
+                  <CheckBox fx:id="zlibCB" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="15" />
+						<ListView fx:id="historyList" GridPane.columnSpan="2" GridPane.rowIndex="18" />
+						<Button fx:id="clearBtn" mnemonicParsing="false" text="Clear" GridPane.rowIndex="19" />
+                  
 
-						<ListView fx:id="historyList" GridPane.columnSpan="2" GridPane.rowIndex="17" />
-						<Button fx:id="clearBtn" mnemonicParsing="false" text="Clear" GridPane.rowIndex="18" />
 					</children>
 					<columnConstraints>
 						<ColumnConstraints hgrow="SOMETIMES" maxWidth="-1.0" minWidth="110.0" />
@@ -84,6 +87,7 @@
 		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
 		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
 		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
 		                  <RowConstraints prefHeight="20.0" vgrow="SOMETIMES" />
 		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />

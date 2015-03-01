@@ -44,7 +44,7 @@ import org.jfxvnc.net.rfb.exception.ProtocolException;
 import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
 import org.jfxvnc.net.rfb.render.IRender;
 import org.jfxvnc.net.rfb.render.RenderCallback;
-import org.jfxvnc.net.rfb.render.rect.CanvasImageRect;
+import org.jfxvnc.net.rfb.render.StringUtils;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,7 +134,7 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 	cp.addBefore(ctx.name(), "rfb-encoding-encoder", new PreferedEncodingEncoder());
 	PreferedEncoding prefEncodings = getPreferedEncodings(frameHandler.getSupportedEncodings());
 	ctx.write(prefEncodings);
-	
+
 	cp.addBefore(ctx.name(), "rfb-pixelformat-encoder", new PixelFormatEncoder());
 	ctx.write(config.clientPixelFormatProperty().get());
 	ctx.flush();
@@ -144,32 +144,26 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 	cp.addBefore(ctx.name(), "rfb-pointerevent-encoder", new PointerEventEncoder());
 	cp.addBefore(ctx.name(), "rfb-cuttext-encoder", new ClientCutTextEncoder());
 
-	CanvasImageRect rect = new CanvasImageRect(serverInit.getFrameBufferWidth(), serverInit.getFrameBufferHeight(), serverInit.getServerName(), serverInit.getPixelFormat());
-
-	render.eventReceived(getConnectionDetails(ctx, prefEncodings));
+	render.eventReceived(getConnectInfoEvent(ctx, prefEncodings));
 
 	render.registerInputEventListener((event) -> {
 	    logger.debug("client event: {}", event);
-	    if (event != null) {
-		ctx.writeAndFlush(event);
-	    }
+	    ctx.writeAndFlush(event);
 	});
 
-	render.render(rect, () -> {
-	    logger.info("request full framebuffer update");
-	    sendFramebufferUpdateRequest(ctx, false, 0, 0, serverInit.getFrameBufferWidth(), serverInit.getFrameBufferHeight());
-	});
+	logger.info("request full framebuffer update");
+	sendFramebufferUpdateRequest(ctx, false, 0, 0, serverInit.getFrameBufferWidth(), serverInit.getFrameBufferHeight());
 
-	logger.info("channel pipeline: {}", cp.toMap().keySet());
+	logger.debug("channel pipeline: {}", cp.toMap().keySet());
     }
 
-    private ConnectInfoEvent getConnectionDetails(ChannelHandlerContext ctx, PreferedEncoding enc) {
+    private ConnectInfoEvent getConnectInfoEvent(ChannelHandlerContext ctx, PreferedEncoding enc) {
 	ConnectInfoEvent details = new ConnectInfoEvent();
 	details.setRemoteAddress(ctx.channel().remoteAddress().toString().substring(1));
 	details.setServerName(serverInit.getServerName());
 	details.setFrameWidth(serverInit.getFrameBufferWidth());
 	details.setFrameHeight(serverInit.getFrameBufferHeight());
-	details.setRfbProtocol(config.versionProperty().get().toString());
+	details.setRfbProtocol(config.versionProperty().get());
 	details.setSecurity(config.securityProperty().get());
 	details.setServerPF(serverInit.getPixelFormat());
 	details.setClientPF(config.clientPixelFormatProperty().get());
@@ -179,24 +173,25 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
     }
 
     public PreferedEncoding getPreferedEncodings(int[] supported) {
-	int[] enc =  Arrays.stream(supported).filter((value) -> {
+	int[] enc = Arrays.stream(supported).filter((value) -> {
 	    switch (value) {
-	    case IEncodings.COPY_RECT:
+	    case EncodingType.COPY_RECT:
 		return config.copyRectEncProperty().get();
-	    case IEncodings.RAW:
+	    case EncodingType.RAW:
 		return config.rawEncProperty().get();
-	    case IEncodings.HEXTILE:
+	    case EncodingType.HEXTILE:
 		return config.hextileEncProperty().get();
-	    case IEncodings.CURSOR:
+	    case EncodingType.CURSOR:
 		return config.clientCursorProperty().get();
-	    case IEncodings.DESKTOP_SIZE:
+	    case EncodingType.DESKTOP_SIZE:
 		return config.desktopSizeProperty().get();
-	    case IEncodings.ZLIB:
+	    case EncodingType.ZLIB:
 		return config.zlibEncProperty().get();
 	    default:
 		return true;
 	    }
 	}).toArray();
+	logger.info("encodings: {}", StringUtils.getEncodingNames(enc));
 	return new PreferedEncoding(enc);
     }
 

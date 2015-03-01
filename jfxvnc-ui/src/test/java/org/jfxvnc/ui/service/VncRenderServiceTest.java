@@ -1,8 +1,8 @@
-package org.jfxvnc.net.rfb.render.rect;
+package org.jfxvnc.ui.service;
 
 /*
  * #%L
- * RFB protocol
+ * jfxvnc-ui
  * %%
  * Copyright (C) 2015 comtel2000
  * %%
@@ -21,29 +21,24 @@ package org.jfxvnc.net.rfb.render.rect;
  */
 
 
-import org.jfxvnc.net.rfb.codec.PixelFormat;
+import static org.junit.Assert.*;
 
-public class CanvasImageRect extends ImageRect {
+import org.junit.Test;
 
-    private final PixelFormat pixelFormat;
-    private final String serverName;
+public class VncRenderServiceTest {
 
-    public CanvasImageRect(int width, int height, String serverName, PixelFormat pixelFormat) {
-	super(0, 0, width, height);
-	this.serverName = serverName;
-	this.pixelFormat = pixelFormat;
+
+    @Test
+    public void zoomLevelMinMax(){
+	VncRenderService service = new VncRenderService();
+	
+	assertEquals(1.0, service.zoomLevelProperty().get(), 0.01);
+	service.zoomLevelProperty().set(0.0);
+	assertNotEquals(0.0, service.zoomLevelProperty().get(), 0.01);
+	service.zoomLevelProperty().set(Double.MAX_VALUE);
+	assertNotEquals(Double.MAX_VALUE, service.zoomLevelProperty().get(), 0.01);
+	service.zoomLevelProperty().set(1.1);
+	assertEquals(1.1, service.zoomLevelProperty().get(), 0.01);
     }
 
-    public String getServerName() {
-	return serverName;
-    }
-
-    public PixelFormat getPixelFormat() {
-	return pixelFormat;
-    }
-
-    @Override
-    public int getEncodingType() {
-	return Integer.MAX_VALUE;
-    }
 }

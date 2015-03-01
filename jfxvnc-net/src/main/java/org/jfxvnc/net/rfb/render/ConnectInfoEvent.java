@@ -24,6 +24,7 @@ package org.jfxvnc.net.rfb.render;
 import java.util.Arrays;
 
 import org.jfxvnc.net.rfb.codec.PixelFormat;
+import org.jfxvnc.net.rfb.codec.ProtocolVersion;
 import org.jfxvnc.net.rfb.codec.decoder.ServerEvent;
 
 public class ConnectInfoEvent implements ServerEvent {
@@ -32,7 +33,7 @@ public class ConnectInfoEvent implements ServerEvent {
 
     String serverName;
     
-    String rfbProtocol;
+    ProtocolVersion rfbProtocol;
     
     int frameHeight;
     int frameWidth;
@@ -55,11 +56,11 @@ public class ConnectInfoEvent implements ServerEvent {
         this.serverName = serverName;
     }
 
-    public String getRfbProtocol() {
+    public ProtocolVersion getRfbProtocol() {
         return rfbProtocol;
     }
 
-    public void setRfbProtocol(String rfbProtocol) {
+    public void setRfbProtocol(ProtocolVersion rfbProtocol) {
         this.rfbProtocol = rfbProtocol;
     }
 

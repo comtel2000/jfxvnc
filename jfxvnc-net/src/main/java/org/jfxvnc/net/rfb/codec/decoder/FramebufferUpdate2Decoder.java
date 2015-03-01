@@ -31,7 +31,7 @@ import java.util.List;
 
 import javax.xml.ws.ProtocolException;
 
-import org.jfxvnc.net.rfb.codec.IEncodings;
+import org.jfxvnc.net.rfb.codec.EncodingType;
 import org.jfxvnc.net.rfb.codec.PixelFormat;
 import org.jfxvnc.net.rfb.codec.ProtocolState;
 import org.jfxvnc.net.rfb.codec.ServerEventType;
@@ -63,7 +63,7 @@ public class FramebufferUpdate2Decoder extends ByteToMessageDecoder  {
     }
 
     public int[] getSupportedEncodings() {
-	return new int[] {IEncodings.COPY_RECT, IEncodings.RAW, IEncodings.CURSOR, IEncodings.DESKTOP_SIZE};
+	return new int[] {EncodingType.COPY_RECT, EncodingType.RAW, EncodingType.CURSOR, EncodingType.DESKTOP_SIZE};
     }
 
     public boolean isPixelFormatSupported() {
@@ -132,7 +132,7 @@ public class FramebufferUpdate2Decoder extends ByteToMessageDecoder  {
     private void sendRect(List<Object> out) {
 	int[] pixels;
 	switch (enc) {
-	case IEncodings.RAW:
+	case EncodingType.RAW:
 	    // TODO: optimize me
 	    pixels = new int[framebuffer.capacity() / 4];
 	    if (pixelFormat.isBigEndian()) {
@@ -146,10 +146,10 @@ public class FramebufferUpdate2Decoder extends ByteToMessageDecoder  {
 	    }
 	    out.add(new RawImageRect(x, y, w, h, pixels));
 	    break;
-	case IEncodings.COPY_RECT:
+	case EncodingType.COPY_RECT:
 	    out.add(new CopyImageRect(x, y, w, h, framebuffer.getShort(0), framebuffer.getShort(2)));
 	    break;
-	case IEncodings.CURSOR:
+	case EncodingType.CURSOR:
 	    pixels = new int[(w * h * pixelFormat.getBytePerPixel()) / 4];
 	    if (pixelFormat.isBigEndian()) {
 		Arrays.setAll(pixels,
@@ -164,7 +164,7 @@ public class FramebufferUpdate2Decoder extends ByteToMessageDecoder  {
 	    framebuffer.getBytes(framebuffer.capacity() - bitmask.length, bitmask);
 	    out.add(new CursorImageRect(x, y, w, h, pixels, bitmask));
 	    break;
-	case IEncodings.DESKTOP_SIZE:
+	case EncodingType.DESKTOP_SIZE:
 	    out.add(new DesktopSizeRect(x, y, w, h));
 	    break;
 	default:
@@ -198,17 +198,17 @@ public class FramebufferUpdate2Decoder extends ByteToMessageDecoder  {
 	}
 	
 	switch (enc) {
-	case IEncodings.RAW:
+	case EncodingType.RAW:
 	    framebuffer.capacity(w * h * pixelFormat.getBytePerPixel());
 	    break;
-	case IEncodings.COPY_RECT:
+	case EncodingType.COPY_RECT:
 	    framebuffer.capacity(4);
 	    break;
-	case IEncodings.CURSOR:
+	case EncodingType.CURSOR:
 	    int bitMaskLength = Math.floorDiv(w + 7, 8) * h;
 	    framebuffer.capacity((w * h * pixelFormat.getBytePerPixel()) + bitMaskLength);
 	    break;
-	case IEncodings.DESKTOP_SIZE:
+	case EncodingType.DESKTOP_SIZE:
 	    sendRect(out);
 	    if (currentRect == numberRects) {
 		state = State.INIT;

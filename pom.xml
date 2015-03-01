@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jfxvnc</groupId>
 	<artifactId>jfxvnc-parent</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2</version>
 	<packaging>pom</packaging>
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
@@ -11,6 +11,7 @@
 		<version>9</version>
 	</parent>
 	<name>jfxvnc</name>
+	<description>JFX VNC is a Java VNC remote desktop client based on JavaFX and divided into two parts. One module (jfxvnc-net) contains RFB/VNC protocol codec and handler. The other module (jfxvnc-ui) wraps JavaFX UI components with the VNC viewer app.</description>
 	<url>http://jfxvnc.org</url>
 	<licenses>
 		<license>
@@ -21,9 +22,17 @@
 	<inceptionYear>2015</inceptionYear>
 	<organization>
 		<name>comtel2000</name>
-		<url>http://jfxvnc.org</url>
+		<url>http://comtel2000.org</url>
 	</organization>
-
+	<developers>
+		<developer>
+			<name>J.Zimmermann</name>
+			<email>comtel2000@gmail.com</email>
+			<organization>comtel2000</organization>
+			<organizationUrl>http://comtel2000.org</organizationUrl>
+		</developer>
+	</developers>
+	
 	<modules>
 		<module>jfxvnc-net</module>
 		<module>jfxvnc-ui</module>
@@ -47,128 +56,182 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 
-	<build>
-		<pluginManagement>
-			<plugins>
-
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>2.5</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-shade-plugin</artifactId>
-					<version>2.3</version>
-					<executions>
-						<execution>
-							<phase>package</phase>
-							<goals>
-								<goal>shade</goal>
-							</goals>
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-jar-plugin</artifactId>
+							<version>2.5</version>
+						</plugin>
+						<plugin>
+							<groupId>org.jacoco</groupId>
+							<artifactId>jacoco-maven-plugin</artifactId>
+							<version>0.7.2.201409121644</version>
+							<executions>
+								<execution>
+									<goals>
+										<goal>prepare-agent</goal>
+									</goals>
+								</execution>
+								<execution>
+									<id>report</id>
+									<phase>prepare-package</phase>
+									<goals>
+										<goal>report</goal>
+									</goals>
+								</execution>
+							</executions>
+						</plugin>
+						<!--This plugin's configuration is used to store Eclipse m2e settings 
+							only. It has no influence on the Maven build itself. -->
+						<plugin>
+							<groupId>org.eclipse.m2e</groupId>
+							<artifactId>lifecycle-mapping</artifactId>
+							<version>1.0.0</version>
 							<configuration>
-								<artifactSet>
-									<excludes>
-										<exclude>junit:junit</exclude>
-									</excludes>
-								</artifactSet>
+								<lifecycleMappingMetadata>
+									<pluginExecutions>
+										<pluginExecution>
+											<pluginExecutionFilter>
+												<groupId>
+													org.codehaus.mojo
+												</groupId>
+												<artifactId>
+													license-maven-plugin
+												</artifactId>
+												<versionRange>
+													[1.8,)
+												</versionRange>
+												<goals>
+													<goal>
+														update-file-header
+													</goal>
+												</goals>
+											</pluginExecutionFilter>
+											<action>
+												<ignore></ignore>
+											</action>
+										</pluginExecution>
+										<pluginExecution>
+											<pluginExecutionFilter>
+												<groupId>org.jacoco</groupId>
+												<artifactId>
+													jacoco-maven-plugin
+												</artifactId>
+												<versionRange>
+													[0.7.0.201403182114,)
+												</versionRange>
+												<goals>
+													<goal>prepare-agent</goal>
+												</goals>
+											</pluginExecutionFilter>
+											<action>
+												<ignore></ignore>
+											</action>
+										</pluginExecution>
+									</pluginExecutions>
+								</lifecycleMappingMetadata>
 							</configuration>
-						</execution>
-					</executions>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-release-plugin</artifactId>
-					<version>2.5</version>
-					<configuration>
-						<tagNameFormat>v@{project.version}</tagNameFormat>
-					</configuration>
-				</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.codehaus.mojo
-										</groupId>
-										<artifactId>
-											license-maven-plugin
-										</artifactId>
-										<versionRange>
-											[1.8,)
-										</versionRange>
-										<goals>
-											<goal>
-												update-file-header
-											</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-
-			</plugins>
-		</pluginManagement>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<version>1.8</version>
-				<configuration>
-					<verbose>true</verbose>
-				</configuration>
-				<executions>
-					<execution>
-						<id>add-apache-headers</id>
-						<goals>
-							<goal>update-file-header</goal>
-						</goals>
-						<phase>process-sources</phase>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>license-maven-plugin</artifactId>
+						<version>1.8</version>
 						<configuration>
-							<licenseName>apache_v2</licenseName>
+							<verbose>true</verbose>
 						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-		</plugins>
-		<resources>
-			<resource>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**/*.fxml</include>
-					<include>**/*.css</include>
-					<include>**/*.properties</include>
-					<include>**/*.ttf</include>
-					<include>**/*.png</include>
-				</includes>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-					<include>**/*</include>
-				</includes>
-			</resource>
-		</resources>
-	</build>
+						<executions>
+							<execution>
+								<id>add-apache-headers</id>
+								<goals>
+									<goal>update-file-header</goal>
+								</goals>
+								<phase>process-sources</phase>
+								<configuration>
+									<licenseName>apache_v2</licenseName>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>ossrh</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.2.1</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.9.1</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.5</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>ossrh</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<autoReleaseAfterClose>false</autoReleaseAfterClose>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<scm>
 		<connection>scm:git:git@github.com:comtel2000/jfxvnc.git</connection>
-		<url>https://github.com/comtel2000/jfxvnc.git</url>
 		<developerConnection>scm:git:git@github.com:comtel2000/jfxvnc.git</developerConnection>
+		<url>git:git@github.com:comtel2000/jfxvnc.git</url>
 		<tag>HEAD</tag>
 	</scm>
 	<ciManagement>

@@ -72,15 +72,18 @@ public class VncRenderService extends Service<Boolean> implements IRender {
     private final ReadOnlyBooleanWrapper bellProperty = new ReadOnlyBooleanWrapper(false);
     private final ReadOnlyStringWrapper serverCutTextProperty = new ReadOnlyStringWrapper();
 
-    private final ReadOnlyObjectWrapper<ConnectInfoEvent> detailsProperty = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<ConnectInfoEvent> connectInfoProperty = new ReadOnlyObjectWrapper<>();
     private final ReadOnlyObjectWrapper<ProtocolState> protocolStateProperty = new ReadOnlyObjectWrapper<>(ProtocolState.CLOSED);
     private final ReadOnlyObjectWrapper<InputEventListener> inputProperty = new ReadOnlyObjectWrapper<>();
     private final ReadOnlyObjectWrapper<ImageRect> imageProperty = new ReadOnlyObjectWrapper<>();
     private final ReadOnlyObjectWrapper<Throwable> exceptionCaughtProperty = new ReadOnlyObjectWrapper<>();
 
     private final double minZoomLevel = 0.2;
+    private final double maxZoomLevel = 5.0;
+    
     private final DoubleProperty zoomLevelProperty = new SimpleDoubleProperty(1);
     private final BooleanProperty fullSceenProperty = new SimpleBooleanProperty(false);
+    private final BooleanProperty restartProperty = new SimpleBooleanProperty(false);
     
     private EventLoopGroup workerGroup;
 
@@ -95,6 +98,14 @@ public class VncRenderService extends Service<Boolean> implements IRender {
 	    if (!b) {
 		onlineProperty.set(false);
 	    }
+	});
+	
+	zoomLevelProperty.addListener((l, a, b)->{
+	   if (b.doubleValue() > maxZoomLevel){
+	       zoomLevelProperty.set(maxZoomLevel);
+	   }else if (b.doubleValue() < minZoomLevel){
+	       zoomLevelProperty.set(minZoomLevel);
+	   }
 	});
     }
 
@@ -166,7 +177,7 @@ public class VncRenderService extends Service<Boolean> implements IRender {
     public void eventReceived(ServerEvent event) {
 	logger.info("event received: {}", event);
 	if (event instanceof ConnectInfoEvent) {
-	    detailsProperty.set((ConnectInfoEvent) event);
+	    connectInfoProperty.set((ConnectInfoEvent) event);
 	    onlineProperty.set(true);
 	    return;
 	}
@@ -199,8 +210,8 @@ public class VncRenderService extends Service<Boolean> implements IRender {
 	inputProperty.set(listener);
     }
 
-    public ReadOnlyObjectProperty<ConnectInfoEvent> detailsProperty() {
-	return detailsProperty.getReadOnlyProperty();
+    public ReadOnlyObjectProperty<ConnectInfoEvent> connectInfoProperty() {
+	return connectInfoProperty.getReadOnlyProperty();
     }
 
     public ReadOnlyObjectProperty<ProtocolState> protocolStateProperty() {
@@ -238,14 +249,15 @@ public class VncRenderService extends Service<Boolean> implements IRender {
     public DoubleProperty zoomLevelProperty() {
 	return zoomLevelProperty;
     }
-
-    public double getMinZoomLevel() {
-	return minZoomLevel;
-    }
-
+    
     public BooleanProperty fullSceenProperty() {
 	return fullSceenProperty;
     }
+
+    public BooleanProperty restartProperty() {
+	return restartProperty;
+    }
+
 
     
 }

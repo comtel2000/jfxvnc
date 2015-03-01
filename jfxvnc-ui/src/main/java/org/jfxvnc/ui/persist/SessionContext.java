@@ -20,9 +20,10 @@ package org.jfxvnc.ui.persist;
  * #L%
  */
 
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -40,6 +41,7 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.ComboBox;
@@ -58,8 +60,12 @@ public class SessionContext {
     private String name;
     private Path propPath;
 
-    private final ObservableMap<String, Property<?>> bindings = FXCollections.observableHashMap();
+    private ObservableList<HistoryEntry> history;
+    private ObservableMap<String, Property<?>> bindings;
+    
     private final Properties props = new Properties();
+
+    private Path streamPath;
 
     public SessionContext() {
 	setSession(SessionContext.class.getName());
@@ -68,6 +74,7 @@ public class SessionContext {
     public void setSession(String name) {
 	this.name = name;
 	propPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "." + name + ".properties");
+	streamPath = FileSystems.getDefault().getPath(System.getProperty("user.home"), "." + name + ".history");
     }
 
     public Properties getProperties() {
@@ -93,8 +100,15 @@ public class SessionContext {
 	} catch (IOException ex) {
 	    logger.error(ex.getMessage(), ex);
 	}
+	
+	try {
+	    saveHistory();
+	} catch (IOException e) {
+	    logger.error(e.getMessage(), e);
+	}
 
     }
+
 
     public void bind(final BooleanProperty property, final String propertyName) {
 	String value = props.getProperty(propertyName);
@@ -179,7 +193,7 @@ public class SessionContext {
 	    props.setProperty(propertyName, Integer.toString(combo.getSelectionModel().getSelectedIndex()));
 	});
     }
-    
+
     public void bind(final StringProperty property, final String propertyName) {
 	String value = props.getProperty(propertyName);
 	if (value != null) {
@@ -197,6 +211,9 @@ public class SessionContext {
      * @return
      */
     public ObservableMap<String, Property<?>> getBindings() {
+	if (bindings == null){
+	    bindings = FXCollections.observableHashMap();
+	}
 	return bindings;
     }
 
@@ -206,14 +223,14 @@ public class SessionContext {
      * @param value
      */
     public void addBinding(Property<?> value) {
-	if (value.getName() == null || value.getName().isEmpty()){
+	if (value.getName() == null || value.getName().isEmpty()) {
 	    throw new IllegalArgumentException("property name must not be empty");
 	}
-	bindings.put(value.getName(), value);
+	getBindings().put(value.getName(), value);
     }
-    
+
     public Optional<Property<?>> getBinding(String key) {
-	return Optional.ofNullable(bindings.get(key));
+	return Optional.ofNullable(getBindings().get(key));
     }
 
     public Optional<ObjectProperty<?>> getObjectBinding(String key) {
@@ -264,4 +281,58 @@ public class SessionContext {
 	return Optional.of((FloatProperty) b.get());
     }
 
+    public ObservableList<HistoryEntry> getHistory() {
+	if (history == null){
+	    history = FXCollections.observableArrayList();
+	    loadHistory();
+	}
+	return history;
+    }
+
+    private void loadHistory() {
+	history.clear();
+
+	if (!Files.exists(streamPath, LinkOption.NOFOLLOW_LINKS)) {
+	    logger.debug("no stream exist ({})", streamPath);
+	    return;
+	}
+	logger.info("load history ({})", streamPath);
+
+	try (InputStream inStream = Files.newInputStream(streamPath, StandardOpenOption.READ)) {
+	    try (ObjectInputStream oStream = new ObjectInputStream(inStream)) {
+		Object o = null;
+		while (inStream.available() > 0 && (o = oStream.readObject()) != null) {
+		    HistoryEntry dev = (HistoryEntry) o;
+		    logger.debug("read dev: {}", dev);
+		    if (!history.contains(dev)) {
+			history.add(dev);
+		    } else {
+			logger.error("device already exist ({})", dev);
+		    }
+		}
+	    }
+	} catch (Exception e) {
+	    logger.error(e.getMessage(), e);
+	    try {
+		Files.deleteIfExists(streamPath);
+	    } catch (IOException e1) {
+	    }
+	}
+    }
+
+    private void saveHistory() throws IOException {
+	if (history.isEmpty()) {
+	    Files.deleteIfExists(streamPath);
+	    return;
+	}
+
+	try (OutputStream outStream = Files.newOutputStream(streamPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
+	    try (ObjectOutputStream historyStream = new ObjectOutputStream(outStream)) {
+		for (HistoryEntry h : history) {
+		    historyStream.writeObject(h);
+		}
+	    }
+	}
+
+    }
 }

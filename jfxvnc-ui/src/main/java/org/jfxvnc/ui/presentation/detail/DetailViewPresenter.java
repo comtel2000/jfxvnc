@@ -23,6 +23,7 @@ package org.jfxvnc.ui.presentation.detail;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Accordion;
@@ -54,6 +55,13 @@ public class DetailViewPresenter implements Initializable {
 
 	detailPane.getPanes().addAll((TitledPane) connectView.getView(), (TitledPane) infoView.getView());
 	detailPane.setExpandedPane((TitledPane) connectView.getView());
+
+	detailPane.expandedPaneProperty().addListener((observable, oldValue, newValue) -> Platform.runLater(() -> {
+	    if (detailPane.getExpandedPane() == null) {
+		// keep first view open
+		detailPane.setExpandedPane(detailPane.getPanes().get(0));
+	    }
+	}));
     }
 
 }

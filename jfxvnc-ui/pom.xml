@@ -4,39 +4,236 @@
 	<parent>
 		<groupId>org.jfxvnc</groupId>
 		<artifactId>jfxvnc-parent</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>0.0.2</version>
 	</parent>
 	<artifactId>jfxvnc-ui</artifactId>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<app.main.class>org.jfxvnc.ui.VncClientApp</app.main.class>
 	</properties>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<mainClass>org.jfxvnc.ui.VncClientApp</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+	<name>jfxvnc-ui</name>
+	<description>JavaFX UI components with the VNC viewer app</description>
+	<url>http://jfxvnc.org</url>
+
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-resources-plugin</artifactId>
+						<version>2.7</version>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>src/main/java</directory>
+						<filtering>false</filtering>
+						<includes>
+							<include>**/*.fxml</include>
+							<include>**/*.css</include>
+							<include>**/*.properties</include>
+							<include>**/*.ttf</include>
+							<include>**/*.png</include>
+						</includes>
+					</resource>
+					<resource>
+						<directory>src/main/resources</directory>
+						<includes>
+							<include>**/*</include>
+						</includes>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+
+		<profile>
+			<id>package-jar</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.10</version>
+						<executions>
+							<execution>
+								<id>unpack-dependencies</id>
+								<phase>package</phase>
+								<goals>
+									<goal>unpack-dependencies</goal>
+								</goals>
+								<configuration>
+									<excludeScope>system</excludeScope>
+									<excludeGroupIds>junit,org.hamcrest</excludeGroupIds>
+									<outputDirectory>${project.build.directory}/classes</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.3.2</version>
+						<executions>
+							<execution>
+								<id>package-jar</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>${env.JAVA_HOME}/bin/javapackager</executable>
+									<arguments>
+										<argument>-createjar</argument>
+										<argument>-nocss2bin</argument>
+										<argument>-appclass</argument>
+										<argument>${app.main.class}</argument>
+										<argument>-srcdir</argument>
+										<argument>${project.build.directory}/classes</argument>
+										<argument>-outdir</argument>
+										<argument>target</argument>
+										<argument>-outfile</argument>
+										<argument>jfxvnc-app</argument>
+										<argument>-v</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>src/main/java</directory>
+						<filtering>false</filtering>
+						<includes>
+							<include>**/*.fxml</include>
+							<include>**/*.css</include>
+							<include>**/*.properties</include>
+							<include>**/*.ttf</include>
+							<include>**/*.png</include>
+						</includes>
+					</resource>
+					<resource>
+						<directory>src/main/resources</directory>
+						<includes>
+							<include>**/*</include>
+						</includes>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
+			<id>package-native</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<version>2.10</version>
+						<executions>
+							<execution>
+								<id>unpack-dependencies</id>
+								<phase>package</phase>
+								<goals>
+									<goal>unpack-dependencies</goal>
+								</goals>
+								<configuration>
+									<excludeScope>system</excludeScope>
+									<excludeGroupIds>junit,org.hamcrest</excludeGroupIds>
+									<outputDirectory>${project.build.directory}/classes</outputDirectory>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.3.2</version>
+						<executions>
+							<execution>
+								<id>package-jar</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>${env.JAVA_HOME}/bin/javapackager</executable>
+									<arguments>
+										<argument>-createjar</argument>
+										<argument>-nocss2bin</argument>
+										<argument>-appclass</argument>
+										<argument>${app.main.class}</argument>
+										<argument>-srcdir</argument>
+										<argument>${project.build.directory}/classes</argument>
+										<argument>-outdir</argument>
+										<argument>target</argument>
+										<argument>-outfile</argument>
+										<argument>jfxvnc-app</argument>
+										<argument>-v</argument>
+									</arguments>
+								</configuration>
+							</execution>
+							<execution>
+								<id>package-native</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>${env.JAVA_HOME}/bin/javapackager</executable>
+									<arguments>
+										<argument>-deploy</argument>
+										<argument>-native</argument>
+										<argument>installer</argument>
+										<argument>-name</argument>
+										<argument>jfxvnc</argument>
+										<argument>-appclass</argument>
+										<argument>${app.main.class}</argument>
+										<argument>-srcfiles</argument>
+										<argument>target/jfxvnc-app.jar</argument>
+										<argument>-outdir</argument>
+										<argument>target/installer</argument>
+										<argument>-outfile</argument>
+										<argument>jfxvnc-app</argument>
+										<argument>-v</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>src/main/java</directory>
+						<filtering>false</filtering>
+						<includes>
+							<include>**/*.fxml</include>
+							<include>**/*.css</include>
+							<include>**/*.properties</include>
+							<include>**/*.ttf</include>
+							<include>**/*.png</include>
+						</includes>
+					</resource>
+					<resource>
+						<directory>src/main/resources</directory>
+						<includes>
+							<include>**/*</include>
+						</includes>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+	</profiles>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.airhacks</groupId>
 			<artifactId>afterburner.fx</artifactId>
-			<version>1.6.1</version>
+			<version>1.6.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.controlsfx</groupId>
@@ -46,10 +243,9 @@
 		<dependency>
 			<groupId>org.jfxvnc</groupId>
 			<artifactId>jfxvnc-net</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
-	<name>jfxvnc-ui</name>
-	<url>http://jfxvnc.org</url>
-	<description>JavaFX UI components and client</description>
+
+
 </project>

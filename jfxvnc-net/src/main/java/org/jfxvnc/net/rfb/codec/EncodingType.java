@@ -58,7 +58,7 @@ package org.jfxvnc.net.rfb.codec;
  * </code>
  *
  */
-public interface IEncodings {
+public interface EncodingType {
 
     int RAW = 0;
     int COPY_RECT = 1;

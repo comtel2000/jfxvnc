@@ -1,6 +1,6 @@
 package org.jfxvnc.net.rfb.render.rect;
 
-import org.jfxvnc.net.rfb.codec.IEncodings;
+import org.jfxvnc.net.rfb.codec.EncodingType;
 
 /*
  * #%L
@@ -44,7 +44,7 @@ public class CopyImageRect extends ImageRect {
 
     @Override
     public int getEncodingType() {
-	return IEncodings.COPY_RECT;
+	return EncodingType.COPY_RECT;
     }
     
     @Override
