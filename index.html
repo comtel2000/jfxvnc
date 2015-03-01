@@ -1,85 +1,144 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="JavaFX VNC : JavaFX based VNC client">
+<head>
+<meta charset='utf-8'>
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<meta name="description" content="JavaFX VNC : JavaFX based VNC client">
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+<link rel="stylesheet" type="text/css" media="screen"
+	href="stylesheets/stylesheet.css">
 
-    <title>JavaFX VNC</title>
-  </head>
+<!-- Include required JS files -->
+<script type="text/javascript" src="javascripts/shCore.js"></script>
 
-  <body>
+<!--
+    At least one brush, here we choose JS. You need to include a brush for every 
+    language you want to highlight
+	-->
+<script type="text/javascript" src="javascripts/shBrushXml.js"></script>
+<script type="text/javascript" src="javascripts/shBrushBash.js"></script>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/comtel2000/jfxvnc">View on GitHub</a>
-          <h1 id="project_title">JavaFX VNC Viewer</h1>
-          <h2 id="project_tagline">JavaFX netty based VNC viewer</h2>
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/comtel2000/jfxvnc/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/comtel2000/jfxvnc/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
+<!-- Include *at least* the core style and default theme -->
+<link href="stylesheets/shCore.css" rel="stylesheet" type="text/css" />
+<link href="stylesheets/shThemeDefault.css" rel="stylesheet"
+	type="text/css" />
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>
-<a id="jfxvnc" class="anchor" href="#jfxvnc" aria-hidden="true"><span class="octicon octicon-link"></span></a>jfxvnc</h1>
 
-JFxVNC is a Java VNC viewer based on <a href="https://github.com/netty/netty">Netty framework</a> with JavaFX 8 UI.
-The VNC viewer app (jfxvnc-ui) use a lot of great <a href="https://bitbucket.org/controlsfx/controlsfx/">ControlsFX goodies.</a> 
+<title>JavaFX VNC</title>
+</head>
 
-<a href="./images/screen_info.png"><img src="./images/screen_info.jpg"></a> 
-<a href="./images/screen_rasp.png"><img src="./images/screen_rasp.jpg"></a> 
+<body>
 
-<h3>Bundles</h3>
-<li>jfxvnc-net (netty based VNC / RFB protocol)</li>
-<li>jfxvnc-ui (JavaFX VNC client)</li>
+	<!-- HEADER -->
+	<div id="header_wrap" class="outer">
+		<header class="inner">
+			<a id="forkme_banner" href="https://github.com/comtel2000/jfxvnc">View
+				on GitHub</a>
+			<h1 id="project_title">JavaFX VNC Viewer</h1>
+			<h2 id="project_tagline">JavaFX netty based VNC viewer</h2>
+			<section id="downloads">
+				<a class="zip_download_link"
+					href="https://github.com/comtel2000/jfxvnc/zipball/master">Download
+					this project as a .zip file</a> <a class="tar_download_link"
+					href="https://github.com/comtel2000/jfxvnc/tarball/master">Download
+					this project as a tar.gz file</a>
+			</section>
+		</header>
+	</div>
 
-<h3>Supports</h3>
-<li>RFB 3.3 to 3.8 protocol</li>
-<li>RAW, Copy Rect, Cursor, Desktop Resize Encoding</li>
-<li>VNC Auth security and SSL</li>
-<li>true/full color pixel format only (24 depth)</li>
-<li>Server/Client clipboard transfer</li>
+	<!-- MAIN CONTENT -->
+	<script type="text/javascript">
+     SyntaxHighlighter.all()
+</script>
+	<div id="main_content_wrap" class="outer">
+		<section id="main_content" class="inner">
 
-<h3>Roadmap</h3>
-<li>Hextile, RRE, ZLIB, Tight, Turbo, etc. encodings</li>
-<li>more than 'VNC Auth' security</li>
-<li>Touch gesture support</li>
-<li>...</li>
+			<h1>
+				<a id="jfxvnc" class="anchor" href="#jfxvnc" aria-hidden="true"><span
+					class="octicon octicon-link"></span></a>JavaFX VNC
+			</h1>
 
-<h3>How to build and run</h3>
-What is required:
+			JFX VNC is a Java VNC remote desktop client based on JavaFX and
+			divided into two parts. One module (jfxvnc-net) is a RFB/VNC remote
+			desktop protocol based on Netty. The other module (jfxvnc-ui)
+			contains the JavaFX based VNC viewer UI armed with many great
+			ControlsFX controls and the just-enough MVP framework afterburner.fx
 
-<li>Latest stable <a href="http://www.oracle.com/technetwork/java/">Oracle JDK 8</a></li>
-<li>Latest stable <a href="http://maven.apache.org/">Apache Maven</a></li>
+			<iframe width="640" height="480"
+				src="https://www.youtube.com/embed/hbsgvLNvPCc" frameborder="0"
+				allowfullscreen></iframe>
 
-<code>mvn clean install<br>
-java -jar jfxvnc-ui/target/jfxvnc-ui-0.0.1-SNAPSHOT.jar
-</code>
+			<a href="./images/screen_info.png"><img
+				src="./images/screen_info.jpg"></a> <a
+				href="./images/screen_rasp.png"><img
+				src="./images/screen_rasp.jpg"></a>
 
-<h3>License</h3>
-<li><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a></li>
+			<h3>Bundles</h3>
+			<li>jfxvnc-net (netty based VNC / RFB protocol)</li>
+			<li>jfxvnc-ui (JavaFX VNC client)</li>
 
-      </section>
-    </div>
+			<h3>Supports</h3>
+			<li>RFB 3.3 to 3.8 protocol</li>
+			<li>RAW, Copy Rect, Zlib (0.0.2), Cursor, Desktop Resize
+				Encoding</li>
+			<li>VNC Auth security and SSL</li>
+			<li>true/full color pixel format only (24 depth)</li>
+			<li>Server/Client clipboard transfer</li>
+			<li>Zoom, Full screen (0.0.2)</li>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">JavaFX VNC maintained by <a href="https://github.com/comtel2000">comtel2000</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
+			<h3>Roadmap</h3>
+			<li>TRLE, ZRLE, Tight, Turbo, etc. encodings</li>
+			<li>more than 'VNC Auth' security</li>
+			<li>Touch gesture support</li>
+			<li>...</li>
 
-    
+			<h3>How to build and run</h3>
+			What is required:
 
-  </body>
+			<li>Latest stable <a
+				href="http://www.oracle.com/technetwork/java/">Oracle JDK 8</a></li>
+			<li>Latest stable <a href="http://maven.apache.org/">Apache
+					Maven</a></li>
+
+			<pre class="brush: bash">
+cd jfxvnc-ui
+mvn clean install -Ppackage-jar
+java -jar target/jfxvnc-app.jar
+</pre>
+
+			<h3>Maven central repository</h3>
+			<pre class="brush: xml">
+<dependency>
+  <groupId>org.jfxvnc</groupId>
+  <artifactId>jfxvnc-net</artifactId>
+  <version>[LATEST_RELEASE]</version>
+</dependency>
+
+<dependency>
+  <groupId>org.jfxvnc</groupId>
+  <artifactId>jfxvnc-ui</artifactId>
+  <version>[LATEST_RELEASE]</version>
+</dependency>
+</pre>
+
+
+			<h3>License</h3>
+			<li><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache
+					License, Version 2.0</a></li>
+
+		</section>
+	</div>
+	<!-- FOOTER  -->
+	<div id="footer_wrap" class="outer">
+		<footer class="inner">
+			<p class="copyright">
+				JavaFX VNC maintained by <a href="https://github.com/comtel2000">comtel2000</a>
+			</p>
+			<p>
+				Published with <a href="http://pages.github.com">GitHub Pages</a>
+			</p>
+		</footer>
+	</div>
+</body>
 </html>
