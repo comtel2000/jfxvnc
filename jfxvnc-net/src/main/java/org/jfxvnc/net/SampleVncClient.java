@@ -32,7 +32,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.jfxvnc.net.rfb.ProtocolConfiguration;
 import org.jfxvnc.net.rfb.codec.ProtocolHandler;
 import org.jfxvnc.net.rfb.codec.ProtocolState;
-import org.jfxvnc.net.rfb.codec.decoder.ServerEvent;
+import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
 import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
 import org.jfxvnc.net.rfb.codec.security.ISecurityType;
 import org.jfxvnc.net.rfb.render.IRender;
@@ -103,7 +103,7 @@ public class SampleVncClient {
 			}
 
 			@Override
-			public void eventReceived(ServerEvent evnt) {
+			public void eventReceived(ServerDecoderEvent evnt) {
 			    System.out.println(evnt);
 			}
 

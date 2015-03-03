@@ -118,7 +118,7 @@ public class PointerEventHandler implements KeyButtonMap {
     }
 
     private void sendScrollEvents(ScrollEvent event) {
-	fire(new PointerEvent(event.getDeltaY() < 0 ? (byte) 8 : (byte) 16, (int) Math.floor(event.getX() / con.zoomLevelProperty().get()), (int) Math.floor(event.getY()
+	fire(new PointerEvent(event.getDeltaY() > 0 ? (byte) 8 : (byte) 16, (int) Math.floor(event.getX() / con.zoomLevelProperty().get()), (int) Math.floor(event.getY()
 		/ con.zoomLevelProperty().get())));
     }
 

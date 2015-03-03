@@ -1,6 +1,6 @@
 package org.jfxvnc.net.rfb.render.rect;
 
-import org.jfxvnc.net.rfb.codec.EncodingType;
+import org.jfxvnc.net.rfb.codec.Encoding;
 
 /*
  * #%L
@@ -50,8 +50,8 @@ public class CursorImageRect extends ImageRect {
     }
 
     @Override
-    public int getEncodingType() {
-	return EncodingType.CURSOR;
+    public Encoding getEncoding() {
+	return Encoding.CURSOR;
     }
     
     @Override
@@ -59,5 +59,6 @@ public class CursorImageRect extends ImageRect {
 	return "CursorImageRect [hotspotX=" + x + ", hotspotY=" + y + ", width=" + width + ", height=" + height + ", bitmask.length=" + (bitmask != null ? bitmask.length : "null")
 		+ ", pixels.length=" + (pixels != null ? pixels.length : "null") + "]";
     }
+
 
 }

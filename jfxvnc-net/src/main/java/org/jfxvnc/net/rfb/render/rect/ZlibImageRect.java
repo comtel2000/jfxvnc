@@ -2,6 +2,7 @@ package org.jfxvnc.net.rfb.render.rect;
 
 import org.jfxvnc.net.rfb.codec.Encoding;
 
+
 /*
  * #%L
  * RFB protocol
@@ -22,32 +23,19 @@ import org.jfxvnc.net.rfb.codec.Encoding;
  * #L%
  */
 
-public class CopyImageRect extends ImageRect {
+public class ZlibImageRect extends RawImageRect {
 
-    protected final int srcX;
-    protected final int srcY;
-
-    public CopyImageRect(int x, int y, int width, int height, int srcx, int srcy) {
-	super(x, y, width, height);
-	this.srcX = srcx;
-	this.srcY = srcy;
-    }
-
-    public int getSrcX() {
-	return srcX;
-    }
-
-    public int getSrcY() {
-	return srcY;
+    public ZlibImageRect(int x, int y, int width, int height, int[] pixels) {
+	super(x, y, width, height, pixels);
     }
 
     @Override
     public Encoding getEncoding() {
-	return Encoding.COPY_RECT;
+	return Encoding.ZLIB;
     }
-
+    
     @Override
     public String toString() {
-	return "CopyImageRect [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + ", srcX=" + srcX + ", srcY=" + srcY + "]";
+	return "ZlibRawImageRect [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + ", pixels.length=" + (getPixels() != null ? getPixels().length : "null") + "]";
     }
 }

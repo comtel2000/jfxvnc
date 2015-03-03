@@ -22,7 +22,6 @@ package org.jfxvnc.net.rfb.render;
 
 import java.text.MessageFormat;
 
-import org.jfxvnc.net.rfb.codec.EncodingType;
 import org.jfxvnc.net.rfb.codec.PixelFormat;
 import org.jfxvnc.net.rfb.codec.security.ISecurityType;
 
@@ -30,43 +29,6 @@ public class StringUtils {
 
     private StringUtils() {
 
-    }
-
-    public static String getEncodingName(int enc) {
-
-	switch (enc) {
-	case EncodingType.RAW:
-	    return "Raw";
-	case EncodingType.COPY_RECT:
-	    return "CopyRect";
-	case EncodingType.RRE:
-	    return "RRE";
-	case EncodingType.HEXTILE:
-	    return "Hextile";
-	case EncodingType.CO_RRE:
-	    return "CoRRE";
-	case EncodingType.ZLIB:
-	    return "zLib";
-	case EncodingType.TIGHT:
-	    return "Tight";
-	case EncodingType.CURSOR:
-	    return "Cursor";
-	case EncodingType.DESKTOP_SIZE:
-	    return "DesktopSize";
-	default:
-	    return "(" + enc + ")";
-	}
-    }
-
-    public static String getEncodingNames(int[] enc) {
-	StringBuilder sb = new StringBuilder();
-	for (int i = 0; i < enc.length; i++) {
-	    if (sb.length() > 1) {
-		sb.append(", ");
-	    }
-	    sb.append(getEncodingName(enc[i]));
-	}
-	return sb.toString();
     }
 
     public static boolean isPseudoEncoding(int enc) {

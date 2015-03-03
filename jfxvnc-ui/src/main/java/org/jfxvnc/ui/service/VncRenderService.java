@@ -51,7 +51,7 @@ import org.jfxvnc.net.rfb.codec.ProtocolInitializer;
 import org.jfxvnc.net.rfb.codec.ProtocolState;
 import org.jfxvnc.net.rfb.codec.decoder.BellEvent;
 import org.jfxvnc.net.rfb.codec.decoder.ServerCutTextEvent;
-import org.jfxvnc.net.rfb.codec.decoder.ServerEvent;
+import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
 import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
 import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
 import org.jfxvnc.net.rfb.render.IRender;
@@ -80,11 +80,11 @@ public class VncRenderService extends Service<Boolean> implements IRender {
 
     private final double minZoomLevel = 0.2;
     private final double maxZoomLevel = 5.0;
-    
+
     private final DoubleProperty zoomLevelProperty = new SimpleDoubleProperty(1);
     private final BooleanProperty fullSceenProperty = new SimpleBooleanProperty(false);
     private final BooleanProperty restartProperty = new SimpleBooleanProperty(false);
-    
+
     private EventLoopGroup workerGroup;
 
     public VncRenderService() {
@@ -99,13 +99,13 @@ public class VncRenderService extends Service<Boolean> implements IRender {
 		onlineProperty.set(false);
 	    }
 	});
-	
-	zoomLevelProperty.addListener((l, a, b)->{
-	   if (b.doubleValue() > maxZoomLevel){
-	       zoomLevelProperty.set(maxZoomLevel);
-	   }else if (b.doubleValue() < minZoomLevel){
-	       zoomLevelProperty.set(minZoomLevel);
-	   }
+
+	zoomLevelProperty.addListener((l, a, b) -> {
+	    if (b.doubleValue() > maxZoomLevel) {
+		zoomLevelProperty.set(maxZoomLevel);
+	    } else if (b.doubleValue() < minZoomLevel) {
+		zoomLevelProperty.set(minZoomLevel);
+	    }
 	});
     }
 
@@ -121,7 +121,7 @@ public class VncRenderService extends Service<Boolean> implements IRender {
 	    workerGroup.shutdownGracefully(2, 5, TimeUnit.SECONDS);
 	}
 	workerGroup = new NioEventLoopGroup();
-	
+
 	String host = config.hostProperty().get();
 	int port = config.portProperty().get();
 
@@ -151,7 +151,7 @@ public class VncRenderService extends Service<Boolean> implements IRender {
     @PreDestroy
     public void disconnect() {
 	cancel();
-	if (workerGroup != null){
+	if (workerGroup != null) {
 	    workerGroup.shutdownGracefully(2, 5, TimeUnit.SECONDS);
 	}
 	connectProperty.set(false);
@@ -174,8 +174,8 @@ public class VncRenderService extends Service<Boolean> implements IRender {
     }
 
     @Override
-    public void eventReceived(ServerEvent event) {
-	logger.info("event received: {}", event);
+    public void eventReceived(ServerDecoderEvent event) {
+	logger.debug("event received: {}", event);
 	if (event instanceof ConnectInfoEvent) {
 	    connectInfoProperty.set((ConnectInfoEvent) event);
 	    onlineProperty.set(true);
@@ -249,7 +249,7 @@ public class VncRenderService extends Service<Boolean> implements IRender {
     public DoubleProperty zoomLevelProperty() {
 	return zoomLevelProperty;
     }
-    
+
     public BooleanProperty fullSceenProperty() {
 	return fullSceenProperty;
     }
@@ -258,6 +258,4 @@ public class VncRenderService extends Service<Boolean> implements IRender {
 	return restartProperty;
     }
 
-
-    
 }

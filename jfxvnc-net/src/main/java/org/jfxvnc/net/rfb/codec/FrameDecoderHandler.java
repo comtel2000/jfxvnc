@@ -24,12 +24,13 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
+import java.util.EnumMap;
 import java.util.List;
 
 import org.jfxvnc.net.rfb.codec.decoder.BellDecoder;
 import org.jfxvnc.net.rfb.codec.decoder.ColourMapEntriesDecoder;
 import org.jfxvnc.net.rfb.codec.decoder.FrameDecoder;
-import org.jfxvnc.net.rfb.codec.decoder.FramebufferUpdateDecoder;
+import org.jfxvnc.net.rfb.codec.decoder.FramebufferUpdateRectDecoder;
 import org.jfxvnc.net.rfb.codec.decoder.ServerCutTextDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,93 +38,61 @@ import org.slf4j.LoggerFactory;
 public class FrameDecoderHandler extends ByteToMessageDecoder {
     private static Logger logger = LoggerFactory.getLogger(FrameDecoderHandler.class);
 
+    private final EnumMap<ServerEvent, FrameDecoder> frameDecoder = new EnumMap<>(ServerEvent.class);
+
     enum State {
-	NEXT, BELL, CUT_TEXT, COLORMAP, FBU
+	NEXT, FRAME
     }
 
     private State state = State.NEXT;
 
-    private FrameDecoder serverCutTextDecoder;
-    private FrameDecoder colorMapDecoder;
-    private FrameDecoder bellDecoder;
-    private FrameDecoder framebufferDecoder;
+    private ServerEvent serverEvent;
 
     public FrameDecoderHandler(PixelFormat pixelFormat) {
-	colorMapDecoder = new ColourMapEntriesDecoder();
-	bellDecoder = new BellDecoder();
-	serverCutTextDecoder = new ServerCutTextDecoder();
-	framebufferDecoder = new FramebufferUpdateDecoder(pixelFormat);
+
+	frameDecoder.put(ServerEvent.SET_COLOR_MAP_ENTRIES, new ColourMapEntriesDecoder());
+	frameDecoder.put(ServerEvent.BELL, new BellDecoder());
+	frameDecoder.put(ServerEvent.SERVER_CUT_TEXT, new ServerCutTextDecoder());
+	frameDecoder.put(ServerEvent.FRAMEBUFFER_UPDATE, new FramebufferUpdateRectDecoder(pixelFormat));
     }
 
-    public int[] getSupportedEncodings() {
-	return ((FramebufferUpdateDecoder) framebufferDecoder).getSupportedEncodings();
+    public Encoding[] getSupportedEncodings() {
+	return ((FramebufferUpdateRectDecoder) frameDecoder.get(ServerEvent.FRAMEBUFFER_UPDATE)).getSupportedEncodings();
     }
 
     public boolean isPixelFormatSupported() {
-	return ((FramebufferUpdateDecoder) framebufferDecoder).isPixelFormatSupported();
+	return ((FramebufferUpdateRectDecoder) frameDecoder.get(ServerEvent.FRAMEBUFFER_UPDATE)).isPixelFormatSupported();
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-	if (!in.isReadable()) {
+	if (!in.isReadable()){
 	    return;
 	}
-
+	
+	FrameDecoder decoder;
 	switch (state) {
 	case NEXT:
-	    int msg = in.getUnsignedByte(0);
-	    if (msg != 0) {
-		logger.info("server type message: {} ({})", msg, in.readableBytes());
-	    }
-	    switch (msg) {
-	    case ServerEventType.FRAMEBUFFER_UPDATE:
-		state = State.FBU;
-		if (framebufferDecoder.decode(ctx, in, out)) {
-		    state = State.NEXT;
-		}
-		break;
-	    case ServerEventType.SET_COLOR_MAP_ENTRIES:
-		state = State.COLORMAP;
-		if (colorMapDecoder.decode(ctx, in, out)) {
-		    state = State.NEXT;
-		}
-		break;
-	    case ServerEventType.BELL:
-		state = State.BELL;
-		if (bellDecoder.decode(ctx, in, out)) {
-		    state = State.NEXT;
-		}
-		break;
-	    case ServerEventType.SERVER_CUT_TEXT:
-		state = State.CUT_TEXT;
-		if (serverCutTextDecoder.decode(ctx, in, out)) {
-		    state = State.NEXT;
-		}
-		break;
-	    default:
-		logger.error("not handled server message type: {} ({})", msg, in.readableBytes());
-		in.skipBytes(in.readableBytes());
-		break;
-	    }
-	    break;
+	    serverEvent = ServerEvent.valueOf(in.getUnsignedByte(0));
+	    decoder = frameDecoder.get(serverEvent);
 
-	case FBU:
-	    if (framebufferDecoder.decode(ctx, in, out)) {
-		state = State.NEXT;
+	    if (decoder == null) {
+		logger.error("not handled server message type: {} ({})", serverEvent, in.getUnsignedByte(0));
+		in.skipBytes(in.readableBytes());
+		return;
 	    }
-	    break;
-	case CUT_TEXT:
-	    if (serverCutTextDecoder.decode(ctx, in, out)) {
-		state = State.NEXT;
+	    if (!decoder.decode(ctx, in, out)) {
+		state = State.FRAME;
 	    }
-	    break;
-	case BELL:
-	    if (bellDecoder.decode(ctx, in, out)) {
-		state = State.NEXT;
+	case FRAME:
+	    decoder = frameDecoder.get(serverEvent);
+
+	    if (decoder == null) {
+		logger.error("not handled server message type: {} ({})", serverEvent, in.getUnsignedByte(0));
+		in.skipBytes(in.readableBytes());
+		return;
 	    }
-	    break;
-	case COLORMAP:
-	    if (colorMapDecoder.decode(ctx, in, out)) {
+	    if (decoder.decode(ctx, in, out)) {
 		state = State.NEXT;
 	    }
 	    break;

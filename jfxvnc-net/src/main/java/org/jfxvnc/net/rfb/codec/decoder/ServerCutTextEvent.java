@@ -21,7 +21,7 @@ package org.jfxvnc.net.rfb.codec.decoder;
  */
 
 
-public class ServerCutTextEvent implements ServerEvent {
+public class ServerCutTextEvent implements ServerDecoderEvent {
 
     private final String text;
 

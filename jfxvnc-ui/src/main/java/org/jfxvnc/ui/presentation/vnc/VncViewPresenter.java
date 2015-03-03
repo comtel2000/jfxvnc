@@ -40,7 +40,6 @@ import javafx.scene.image.WritableImage;
 import javax.inject.Inject;
 
 import org.jfxvnc.net.rfb.ProtocolConfiguration;
-import org.jfxvnc.net.rfb.codec.EncodingType;
 import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
 import org.jfxvnc.net.rfb.render.rect.CopyImageRect;
 import org.jfxvnc.net.rfb.render.rect.CursorImageRect;
@@ -147,13 +146,14 @@ public class VncViewPresenter implements Initializable {
 	}
 
 	try {
-	    switch (rect.getEncodingType()) {
-	    case EncodingType.RAW:
+	    switch (rect.getEncoding()) {
+	    case RAW:
+	    case ZLIB:
 		RawImageRect rawRect = (RawImageRect) rect;
 		vncImage.getPixelWriter().setPixels(rawRect.getX(), rawRect.getY(), rawRect.getWidth(), rawRect.getHeight(), PixelFormat.getIntArgbInstance(), rawRect.getPixels(),
 			0, rawRect.getWidth());
 		break;
-	    case EncodingType.COPY_RECT:
+	    case COPY_RECT:
 		CopyImageRect copyImageRect = (CopyImageRect) rect;
 
 		PixelReader reader = vncImage.getPixelReader();
@@ -162,7 +162,7 @@ public class VncViewPresenter implements Initializable {
 		vncImage.getPixelWriter().setPixels(copyImageRect.getX(), copyImageRect.getY(), copyImageRect.getWidth(), copyImageRect.getHeight(), copyRect.getPixelReader(), 0,
 			0);
 		break;
-	    case EncodingType.CURSOR:
+	    case CURSOR:
 		if (!prop.clientCursorProperty().get()) {
 		    logger.warn("ignore cursor encoding");
 		    return;
@@ -189,6 +189,11 @@ public class VncViewPresenter implements Initializable {
 			PixelFormat.getIntArgbInstance(), cRect.getPixels(), 0, cRect.getWidth());
 		remoteCursor = new ImageCursor(cImage, cRect.getHotspotX(), cRect.getHotspotY());
 		vncView.setCursor(remoteCursor);
+		break;
+	    case DESKTOP_SIZE:
+		logger.debug("resize image: {}", rect);
+		vncImage = new WritableImage(rect.getWidth(), rect.getHeight());
+		vncView.setImage(vncImage);
 		break;
 	    default:
 		logger.error("not supported encoding rect: {}", rect);

@@ -1,6 +1,6 @@
 package org.jfxvnc.net.rfb.render.rect;
 
-import org.jfxvnc.net.rfb.codec.EncodingType;
+import org.jfxvnc.net.rfb.codec.Encoding;
 
 
 /*
@@ -37,8 +37,8 @@ public class RawImageRect extends ImageRect {
     }
 
     @Override
-    public int getEncodingType() {
-	return EncodingType.RAW;
+    public Encoding getEncoding() {
+	return Encoding.RAW;
     }
     
     @Override

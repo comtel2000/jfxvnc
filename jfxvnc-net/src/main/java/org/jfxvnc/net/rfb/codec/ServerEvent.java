@@ -20,21 +20,50 @@ package org.jfxvnc.net.rfb.codec;
  * #L%
  */
 
+public enum ServerEvent {
 
-public interface ServerEventType {
+    UNKNOWN(Integer.MIN_VALUE),
 
-    int FRAMEBUFFER_UPDATE = 0;
-    int SET_COLOR_MAP_ENTRIES = 1;
-    int BELL = 2;
-    int SERVER_CUT_TEXT = 3;
+    FRAMEBUFFER_UPDATE(0),
 
-    int AL = 255;
-    int VMWare_A = 254;
-    int VMWare_B = 127;
-    int GII = 253;
-    int TIGHT = 252;
-    int PO_SET_DESKTOP_SIZE = 251;
-    int CD_XVP = 250;
-    int OLIVE_CALL_CONTROL = 249;
+    SET_COLOR_MAP_ENTRIES(1),
 
+    BELL(2),
+
+    SERVER_CUT_TEXT(3),
+
+    AL(255),
+
+    VMWare_A(254),
+
+    VMWare_B(127),
+
+    GII(253),
+
+    TIGHT(252),
+
+    PO_SET_DESKTOP_SIZE(251),
+
+    CD_XVP(250),
+
+    OLIVE_CALL_CONTROL(249);
+
+    private final int type;
+
+    private ServerEvent(int type) {
+	this.type = type;
+    }
+
+    public static ServerEvent valueOf(int type) {
+	for (ServerEvent e : values()) {
+	    if (e.type == type) {
+		return e;
+	    }
+	}
+	return UNKNOWN;
+    }
+
+    public int getType() {
+	return type;
+    }
 }

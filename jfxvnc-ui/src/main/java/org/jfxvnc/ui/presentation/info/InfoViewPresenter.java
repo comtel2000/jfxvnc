@@ -22,6 +22,7 @@ package org.jfxvnc.ui.presentation.info;
 
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -89,7 +90,7 @@ public class InfoViewPresenter implements Initializable {
 	infoHost.setText(cd.getRemoteAddress());
 	infoPixelformat.setText(StringUtils.getPixelFormatReadable(cd.getServerPF()));
 	infoPixelformatDef.setText(StringUtils.getPixelFormatReadable(cd.getClientPF()));
-	infoEncoding.setText(StringUtils.getEncodingNames(cd.getSupportedEncodings()));
+	infoEncoding.setText(Arrays.toString(cd.getSupportedEncodings()));
 	infoSecurity.setText(StringUtils.getSecurityName(cd.getSecurity()));
 	infoConnectType.setText(cd.getConnectionType());
     }

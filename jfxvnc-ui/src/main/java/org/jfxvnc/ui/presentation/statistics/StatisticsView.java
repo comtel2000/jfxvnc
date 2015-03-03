@@ -1,10 +1,8 @@
-package org.jfxvnc.net.rfb.codec.encoder;
-
-import org.jfxvnc.net.rfb.codec.Encoding;
+package org.jfxvnc.ui.presentation.statistics;
 
 /*
  * #%L
- * jfxvnc-net
+ * jfxvnc-ui
  * %%
  * Copyright (C) 2015 comtel2000
  * %%
@@ -23,16 +21,8 @@ import org.jfxvnc.net.rfb.codec.Encoding;
  */
 
 
-public class PreferedEncoding {
+import com.airhacks.afterburner.views.FXMLView;
 
-    private final Encoding[] encodings;
+public class StatisticsView extends FXMLView {
 
-    public PreferedEncoding(Encoding[] encodings) {
-	this.encodings = encodings;
-    }
-
-    public Encoding[] getEncodings() {
-	return encodings;
-    } 
-    
 }

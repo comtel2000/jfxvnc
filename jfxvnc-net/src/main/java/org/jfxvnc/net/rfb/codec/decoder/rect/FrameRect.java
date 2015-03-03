@@ -1,10 +1,8 @@
-package org.jfxvnc.net.rfb.render.rect;
-
-import org.jfxvnc.net.rfb.codec.Encoding;
+package org.jfxvnc.net.rfb.codec.decoder.rect;
 
 /*
  * #%L
- * RFB protocol
+ * jfxvnc-net
  * %%
  * Copyright (C) 2015 comtel2000
  * %%
@@ -22,32 +20,46 @@ import org.jfxvnc.net.rfb.codec.Encoding;
  * #L%
  */
 
-public class CopyImageRect extends ImageRect {
 
-    protected final int srcX;
-    protected final int srcY;
+import org.jfxvnc.net.rfb.codec.Encoding;
 
-    public CopyImageRect(int x, int y, int width, int height, int srcx, int srcy) {
-	super(x, y, width, height);
-	this.srcX = srcx;
-	this.srcY = srcy;
+public class FrameRect {
+
+    private final int x, y, width, height;
+    private final Encoding encoding;
+
+    public FrameRect(int x, int y, int width, int height, Encoding encoding) {
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
+	this.encoding = encoding;
+
     }
 
-    public int getSrcX() {
-	return srcX;
+    public int getX() {
+	return x;
     }
 
-    public int getSrcY() {
-	return srcY;
+    public int getY() {
+	return y;
     }
 
-    @Override
+    public int getWidth() {
+	return width;
+    }
+
+    public int getHeight() {
+	return height;
+    }
+
     public Encoding getEncoding() {
-	return Encoding.COPY_RECT;
+	return encoding;
     }
 
     @Override
     public String toString() {
-	return "CopyImageRect [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + ", srcX=" + srcX + ", srcY=" + srcY + "]";
+	return "FrameRect [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + ", " + (encoding != null ? "encoding=" + encoding : "") + "]";
     }
+
 }

@@ -1,8 +1,8 @@
-package org.jfxvnc.net.rfb.codec.encoder;
+package org.jfxvnc.net.rfb.codec.decoder.rect;
 
 /*
  * #%L
- * RFB protocol
+ * jfxvnc-net
  * %%
  * Copyright (C) 2015 comtel2000
  * %%
@@ -20,24 +20,31 @@ package org.jfxvnc.net.rfb.codec.encoder;
  * #L%
  */
 
-import java.util.Arrays;
-
-import org.jfxvnc.net.rfb.codec.ClientEventType;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToByteEncoder;
 
-public class PreferedEncodingEncoder extends MessageToByteEncoder<PreferedEncoding> {
+import java.util.List;
+
+import org.jfxvnc.net.rfb.codec.PixelFormat;
+import org.jfxvnc.net.rfb.render.rect.DesktopSizeRect;
+
+public class DesktopSizeRectDecoder implements FrameRectDecoder {
+
+    private FrameRect rect;
+
+    public DesktopSizeRectDecoder(PixelFormat pixelFormat) {
+    }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, PreferedEncoding enc, ByteBuf out) throws Exception {
-	out.writeByte(ClientEventType.SET_ENCODINGS);
-	out.writeZero(1); // padding
-	out.writeShort(enc.getEncodings().length);
-	Arrays.stream(enc.getEncodings()).forEach(e -> out.writeInt(e.getType()));
-	
-	ctx.pipeline().remove(this);
+    public boolean decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+	out.add(new DesktopSizeRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight()));
+	return true;
+    }
+
+    @Override
+    public void setRect(FrameRect rect) {
+	this.rect = rect;
     }
 
 }

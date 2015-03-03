@@ -1,5 +1,7 @@
 package org.jfxvnc.net.rfb.render.rect;
 
+import org.jfxvnc.net.rfb.codec.Encoding;
+
 /*
  * #%L
  * RFB protocol
@@ -23,7 +25,7 @@ package org.jfxvnc.net.rfb.render.rect;
 
 public abstract class ImageRect {
 
-    public abstract int getEncodingType();
+    public abstract Encoding getEncoding();
     
     protected final int x;
     protected final int y;
@@ -31,7 +33,6 @@ public abstract class ImageRect {
     protected final int height;
 
     public ImageRect(int x, int y, int width, int height) {
-	super();
 	this.x = x;
 	this.y = y;
 	this.width = width;

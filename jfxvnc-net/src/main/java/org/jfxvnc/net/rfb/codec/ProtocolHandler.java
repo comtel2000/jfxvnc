@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jfxvnc.net.rfb.ProtocolConfiguration;
-import org.jfxvnc.net.rfb.codec.decoder.ServerEvent;
+import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
 import org.jfxvnc.net.rfb.codec.encoder.ClientCutTextEncoder;
 import org.jfxvnc.net.rfb.codec.encoder.KeyButtonEventEncoder;
 import org.jfxvnc.net.rfb.codec.encoder.PixelFormatEncoder;
@@ -43,8 +43,6 @@ import org.jfxvnc.net.rfb.codec.handshaker.event.ServerInitEvent;
 import org.jfxvnc.net.rfb.exception.ProtocolException;
 import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
 import org.jfxvnc.net.rfb.render.IRender;
-import org.jfxvnc.net.rfb.render.RenderCallback;
-import org.jfxvnc.net.rfb.render.StringUtils;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,20 +94,17 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
     protected void decode(final ChannelHandlerContext ctx, Object msg, List<Object> out) throws Exception {
 
 	if (msg instanceof ImageRect) {
-	    render.render((ImageRect) msg, new RenderCallback() {
-		@Override
-		public void renderComplete() {
-		    // logger.debug("render completed");
-		    // sendFramebufferUpdateRequest(ctx, true, 0, 0,
-		    // serverInit.getFrameBufferWidth(),
-		    // serverInit.getFrameBufferHeight());
-		}
-	    });
+	    render.render((ImageRect) msg, () -> {
+		// logger.debug("render completed");
+		// sendFramebufferUpdateRequest(ctx, true, 0, 0,
+		// serverInit.getFrameBufferWidth(),
+		// serverInit.getFrameBufferHeight());
 
+		});
 	    return;
 	}
-	if (msg instanceof ServerEvent) {
-	    render.eventReceived((ServerEvent) msg);
+	if (msg instanceof ServerDecoderEvent) {
+	    render.eventReceived((ServerDecoderEvent) msg);
 	    return;
 	}
 
@@ -146,10 +141,7 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 
 	render.eventReceived(getConnectInfoEvent(ctx, prefEncodings));
 
-	render.registerInputEventListener((event) -> {
-	    logger.debug("client event: {}", event);
-	    ctx.writeAndFlush(event);
-	});
+	render.registerInputEventListener(event -> ctx.writeAndFlush(event, ctx.voidPromise()));
 
 	logger.info("request full framebuffer update");
 	sendFramebufferUpdateRequest(ctx, false, 0, 0, serverInit.getFrameBufferWidth(), serverInit.getFrameBufferHeight());
@@ -172,26 +164,27 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 	return details;
     }
 
-    public PreferedEncoding getPreferedEncodings(int[] supported) {
-	int[] enc = Arrays.stream(supported).filter((value) -> {
+    public PreferedEncoding getPreferedEncodings(Encoding[] supported) {
+	Encoding[] enc = Arrays.stream(supported).filter(value -> {
 	    switch (value) {
-	    case EncodingType.COPY_RECT:
+	    case COPY_RECT:
 		return config.copyRectEncProperty().get();
-	    case EncodingType.RAW:
+	    case RAW:
 		return config.rawEncProperty().get();
-	    case EncodingType.HEXTILE:
+	    case HEXTILE:
 		return config.hextileEncProperty().get();
-	    case EncodingType.CURSOR:
+	    case CURSOR:
 		return config.clientCursorProperty().get();
-	    case EncodingType.DESKTOP_SIZE:
+	    case DESKTOP_SIZE:
 		return config.desktopSizeProperty().get();
-	    case EncodingType.ZLIB:
+	    case ZLIB:
 		return config.zlibEncProperty().get();
 	    default:
 		return true;
 	    }
-	}).toArray();
-	logger.info("encodings: {}", StringUtils.getEncodingNames(enc));
+	}).toArray(Encoding[]::new);
+
+	logger.info("encodings: {}", Arrays.toString(enc));
 	return new PreferedEncoding(enc);
     }
 

@@ -21,6 +21,6 @@ package org.jfxvnc.net.rfb.codec.decoder;
  */
 
 
-public interface ServerEvent {
+public interface ServerDecoderEvent {
 
 }

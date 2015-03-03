@@ -22,6 +22,7 @@ package org.jfxvnc.net.rfb.codec;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelPipeline;
 
 import java.util.Arrays;
 
@@ -85,9 +86,10 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 
 	if (msg instanceof ServerInitEvent) {
 	    handshaker.finishHandshake(ctx.channel(), config.versionProperty().get());
-	    ctx.fireUserEventTriggered(ProtocolState.HANDSHAKE_COMPLETE);
-	    ctx.pipeline().remove(this);
-	    ctx.fireChannelRead(msg);
+	    ChannelPipeline cp = ctx.pipeline();
+	    cp.fireUserEventTriggered(ProtocolState.HANDSHAKE_COMPLETE);
+	    cp.remove(this);
+	    cp.fireChannelRead(msg);
 	    return;
 	}
 
@@ -109,7 +111,7 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 	    if (!future.isSuccess()) {
 		ctx.fireExceptionCaught(future.cause());
 	    } else {
-		ctx.fireUserEventTriggered(ProtocolState.HANDSHAKE_STARTED);
+		ctx.pipeline().fireUserEventTriggered(ProtocolState.HANDSHAKE_STARTED);
 	    }
 
 	});
@@ -133,7 +135,7 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 
 	if (userSecType == ISecurityType.NONE) {
 	    logger.info("no security available");
-	    ctx.fireUserEventTriggered(ProtocolState.SECURITY_COMPLETE);
+	    ctx.pipeline().fireUserEventTriggered(ProtocolState.SECURITY_COMPLETE);
 	    return;
 	}
 
@@ -148,7 +150,7 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 	    if (!future.isSuccess()) {
 		ctx.fireExceptionCaught(future.cause());
 	    } else {
-		ctx.fireUserEventTriggered(ProtocolState.SECURITY_STARTED);
+		ctx.pipeline().fireUserEventTriggered(ProtocolState.SECURITY_STARTED);
 	    }
 
 	});
@@ -176,12 +178,12 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 		if (!future.isSuccess()) {
 		    ctx.fireExceptionCaught(future.cause());
 		} else {
-		    ctx.fireUserEventTriggered(ProtocolState.SECURITY_COMPLETE);
+		    ctx.pipeline().fireUserEventTriggered(ProtocolState.SECURITY_COMPLETE);
 		}
 	    });
 	    return;
 	}
-	ctx.fireUserEventTriggered(ProtocolState.SECURITY_FAILED);
+	ctx.pipeline().fireUserEventTriggered(ProtocolState.SECURITY_FAILED);
 	if (msg.getThrowable() != null) {
 	    ctx.fireExceptionCaught(msg.getThrowable());
 	}

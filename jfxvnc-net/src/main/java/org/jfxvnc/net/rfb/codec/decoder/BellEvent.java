@@ -21,5 +21,5 @@ package org.jfxvnc.net.rfb.codec.decoder;
  */
 
 
-public class BellEvent implements ServerEvent{
+public class BellEvent implements ServerDecoderEvent{
 }

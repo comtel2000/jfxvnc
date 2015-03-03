@@ -2,7 +2,7 @@ package org.jfxvnc.net.rfb.codec;
 
 /*
  * #%L
- * RFB protocol
+ * jfxvnc-net
  * %%
  * Copyright (C) 2015 comtel2000
  * %%
@@ -58,27 +58,44 @@ package org.jfxvnc.net.rfb.codec;
  * </code>
  *
  */
-public interface EncodingType {
+public enum Encoding {
+    
+    UNKNOWN(Integer.MIN_VALUE), 
+    RAW(0), 
+    COPY_RECT(1), 
+    RRE(2),
+    HEXTILE(3),
 
-    int RAW = 0;
-    int COPY_RECT = 1;
-    int RRE = 2;
-    int HEXTILE = 3;
+    CO_RRE(4),
+    ZLIB(6),
+    TIGHT(7),
+    ZLIB_HEX(8),
+    TRLE(15),
+    ZRLE(16),
+    
+    H_ZYWRLE(17),
+    AW_XZ(18),
+    AW_XZYW(19),
+    
+    DESKTOP_SIZE(-223), 
+    CURSOR(-239);
+    
+    private final int type;
 
-    int CO_RRE = 4;
-    int ZLIB = 6;
-    int TIGHT = 7;
-    int ZLIB_HEX = 8;
-    int TRLE = 15;
-    int ZRLE = 16;
+    private Encoding(int type) {
+	this.type = type;
+    }
 
-    int H_ZYWRLE = 17;
-    int AW_XZ = 18;
-    int AW_XZYW = 19;
-
-    int DESKTOP_SIZE = -223;
-    int CURSOR = -239;
-
-
-
+    public static Encoding valueOf(int type) {
+	for (Encoding e : values()) {
+	    if (e.type == type) {
+		return e;
+	    }
+	}
+	return UNKNOWN;
+    }
+    
+    public int getType(){
+	return type;
+    }
 }

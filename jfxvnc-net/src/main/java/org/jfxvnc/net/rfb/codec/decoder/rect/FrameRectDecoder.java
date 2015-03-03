@@ -1,10 +1,10 @@
-package org.jfxvnc.net.rfb.codec.encoder;
+package org.jfxvnc.net.rfb.codec.decoder.rect;
 
-import org.jfxvnc.net.rfb.codec.Encoding;
+import org.jfxvnc.net.rfb.codec.decoder.FrameDecoder;
 
 /*
  * #%L
- * jfxvnc-net
+ * RFB protocol
  * %%
  * Copyright (C) 2015 comtel2000
  * %%
@@ -22,17 +22,8 @@ import org.jfxvnc.net.rfb.codec.Encoding;
  * #L%
  */
 
+public interface FrameRectDecoder extends FrameDecoder {
 
-public class PreferedEncoding {
+    void setRect(FrameRect rect);
 
-    private final Encoding[] encodings;
-
-    public PreferedEncoding(Encoding[] encodings) {
-	this.encodings = encodings;
-    }
-
-    public Encoding[] getEncodings() {
-	return encodings;
-    } 
-    
 }

@@ -21,7 +21,7 @@ package org.jfxvnc.net.rfb.codec.decoder;
  */
 
 
-public class ColourMapEntriesEvent implements ServerEvent {
+public class ColourMapEntriesEvent implements ServerDecoderEvent {
 
 	private final int firstColor;
 	private final int numberOfColor;

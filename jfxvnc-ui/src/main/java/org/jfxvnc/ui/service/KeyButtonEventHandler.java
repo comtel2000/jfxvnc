@@ -91,12 +91,16 @@ public class KeyButtonEventHandler implements KeyButtonMap {
 	if (event.isConsumed()) {
 	    return;
 	}
+
 	if (event.getEventType() == KeyEvent.KEY_TYPED) {
 	    if (!isModifierPressed(event) && event.getCode() == KeyCode.UNDEFINED) {
 		int codePoint = event.getCharacter().codePointAt(0);
-		lastCodePoint = codePoint;
-		lastCodePointRelease = true;
-		fire(new KeyButtonEvent(true, codePoint));
+		// space was triggered twice
+		if (!Character.isWhitespace(codePoint) && !Character.isISOControl(codePoint)) {
+		    lastCodePoint = codePoint;
+		    lastCodePointRelease = true;
+		    fire(new KeyButtonEvent(true, codePoint));
+		}
 	    }
 	    return;
 	}

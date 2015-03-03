@@ -23,11 +23,12 @@ package org.jfxvnc.net.rfb.render;
 
 import java.util.Arrays;
 
+import org.jfxvnc.net.rfb.codec.Encoding;
 import org.jfxvnc.net.rfb.codec.PixelFormat;
 import org.jfxvnc.net.rfb.codec.ProtocolVersion;
-import org.jfxvnc.net.rfb.codec.decoder.ServerEvent;
+import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
 
-public class ConnectInfoEvent implements ServerEvent {
+public class ConnectInfoEvent implements ServerDecoderEvent {
 
     String remoteAddress;
 
@@ -38,7 +39,7 @@ public class ConnectInfoEvent implements ServerEvent {
     int frameHeight;
     int frameWidth;
     
-    int[] supportedEncodings;
+    Encoding[] supportedEncodings;
     
     PixelFormat serverPF;
     
@@ -80,11 +81,11 @@ public class ConnectInfoEvent implements ServerEvent {
         this.frameWidth = frameWidth;
     }
 
-    public int[] getSupportedEncodings() {
+    public Encoding[] getSupportedEncodings() {
         return supportedEncodings;
     }
 
-    public void setSupportedEncodings(int[] supportedEncodings) {
+    public void setSupportedEncodings(Encoding[] supportedEncodings) {
         this.supportedEncodings = supportedEncodings;
     }
 

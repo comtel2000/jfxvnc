@@ -21,7 +21,7 @@ package org.jfxvnc.net.rfb.render;
  */
 
 import org.jfxvnc.net.rfb.codec.ProtocolState;
-import org.jfxvnc.net.rfb.codec.decoder.ServerEvent;
+import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
 import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;
 
@@ -29,7 +29,7 @@ public interface IRender {
  
     void render(ImageRect rect, RenderCallback callback);
 
-    void eventReceived(ServerEvent event);
+    void eventReceived(ServerDecoderEvent event);
 
     void exceptionCaught(Throwable t);
 

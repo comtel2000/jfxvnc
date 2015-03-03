@@ -27,6 +27,6 @@ import io.netty.channel.ChannelHandlerContext;
 import java.util.List;
 
 public interface FrameDecoder {
-
+    
     boolean decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception;
 }
