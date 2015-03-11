@@ -120,7 +120,7 @@ public class MainViewPresenter implements Initializable {
 	switchFullScreen.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 	switchFullScreen.selectedProperty().bindBidirectional(con.fullSceenProperty());
 
-	con.fullSceenProperty().addListener((l) -> Platform.runLater(() -> switchFullScreen.setGraphic(con.fullSceenProperty().get() ? toWindow : toFullScreen)));
+	con.fullSceenProperty().addListener(l -> Platform.runLater(() -> switchFullScreen.setGraphic(con.fullSceenProperty().get() ? toWindow : toFullScreen)));
 
 	ProgressIndicator progressIndicator = new ProgressIndicator(-1);
 	progressIndicator.visibleProperty().bind(con.runningProperty());
@@ -128,9 +128,9 @@ public class MainViewPresenter implements Initializable {
 
 	PlusMinusSlider zoomSlider = new PlusMinusSlider();
 	zoomSlider.setStyle("-fx-translate-y: 5;");
-	zoomSlider.setOnValueChanged((e) -> con.zoomLevelProperty().set(e.getValue() + 1));
+	zoomSlider.setOnValueChanged(e -> con.zoomLevelProperty().set(e.getValue() + 1));
 
-	mdPane.setOnScroll((e) -> con.zoomLevelProperty().set(con.zoomLevelProperty().get() + (e.getDeltaY() > 0.0 ? 0.01 : -0.01)));
+	mdPane.setOnScroll(e -> con.zoomLevelProperty().set(con.zoomLevelProperty().get() + (e.getDeltaY() > 0.0 ? 0.01 : -0.01)));
 
 	con.zoomLevelProperty().addListener((l, o, z) -> {
 	    statusProperty.set("zoom: " + (int) Math.floor(z.doubleValue() * 100) + "%");
@@ -169,7 +169,7 @@ public class MainViewPresenter implements Initializable {
 	    statusProperty.set(n.getMessage());
 	}));
 
-	con.bellProperty().addListener((l) -> Platform.runLater(() -> {
+	con.bellProperty().addListener(l -> Platform.runLater(() -> {
 	    statusProperty.set("Bell");
 	    Toolkit.getDefaultToolkit().beep();
 	}));

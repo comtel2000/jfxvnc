@@ -28,19 +28,17 @@ import javafx.geometry.Dimension2D;
 import javafx.geometry.Side;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 
-import org.controlsfx.control.HiddenSidesPane;
 import org.controlsfx.control.MasterDetailPane;
 import org.controlsfx.control.PlusMinusSlider;
 
@@ -121,7 +119,9 @@ public class DemoApp extends Application {
 	PlusMinusSlider slider = new PlusMinusSlider();
 	
 	mdPane.setMasterNode(scrollPane);
-	mdPane.setDetailNode(new VBox());
+	
+	TitledPane tp = new TitledPane("combo paint issue MasterDetailPane (jre8u40)", new ComboBox<Object>());
+	mdPane.setDetailNode(tp);
 
 	mdPane.setShowDetailNode(true);
 	

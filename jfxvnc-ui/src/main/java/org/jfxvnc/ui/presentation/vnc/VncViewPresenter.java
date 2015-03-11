@@ -84,14 +84,14 @@ public class VncViewPresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-	vncView.setOnMouseEntered((event) -> {
+	vncView.setOnMouseEntered(event -> {
 	    if (con.connectProperty().get()) {
 		vncView.requestFocus();
 		vncView.setCursor(remoteCursor != null ? remoteCursor : Cursor.DEFAULT);
 	    }
 	});
 
-	vncView.setOnMouseExited((event) -> {
+	vncView.setOnMouseExited(event -> {
 	    if (con.connectProperty().get()) {
 		vncView.setCursor(Cursor.DEFAULT);
 	    }
@@ -112,14 +112,16 @@ public class VncViewPresenter implements Initializable {
 		cutTextHandler.addClipboardText(text);
 	    }
 	});
-	con.inputProperty().addListener((l) -> registerInputEventListener(con.inputProperty().get()));
+	con.inputProperty().addListener(l -> registerInputEventListener(con.inputProperty().get()));
 	prop.clientCursorProperty().addListener((l, a, b) -> {
 	    if (!b) {
 		vncView.setCursor(Cursor.DEFAULT);
 	    }
 	});
 
-	con.zoomLevelProperty().addListener((l) -> {
+	vncView.setOnZoom(e -> con.zoomLevelProperty().set(e.getTotalZoomFactor()));
+
+	con.zoomLevelProperty().addListener(l -> {
 	    if (vncView.getImage() != null) {
 		vncView.setFitHeight(vncView.getImage().getHeight() * con.zoomLevelProperty().get());
 	    }
