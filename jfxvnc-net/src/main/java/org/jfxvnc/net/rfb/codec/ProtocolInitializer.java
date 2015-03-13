@@ -25,14 +25,14 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 
-import org.jfxvnc.net.rfb.ProtocolConfiguration;
-import org.jfxvnc.net.rfb.render.IRender;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.RenderProtocol;
 
 public class ProtocolInitializer extends ChannelInitializer<SocketChannel> {
-    private IRender render;
+    private RenderProtocol render;
     private ProtocolConfiguration config;
 
-    public ProtocolInitializer(IRender render, ProtocolConfiguration config) {
+    public ProtocolInitializer(RenderProtocol render, ProtocolConfiguration config) {
 	super();
 	this.render = render;
 	this.config = config;

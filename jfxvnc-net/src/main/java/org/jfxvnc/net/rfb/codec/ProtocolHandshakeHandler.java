@@ -26,7 +26,6 @@ import io.netty.channel.ChannelPipeline;
 
 import java.util.Arrays;
 
-import org.jfxvnc.net.rfb.ProtocolConfiguration;
 import org.jfxvnc.net.rfb.codec.decoder.ProtocolVersionDecoder;
 import org.jfxvnc.net.rfb.codec.handshaker.RfbClientHandshaker;
 import org.jfxvnc.net.rfb.codec.handshaker.RfbClientHandshakerFactory;
@@ -34,12 +33,12 @@ import org.jfxvnc.net.rfb.codec.handshaker.event.SecurityResultEvent;
 import org.jfxvnc.net.rfb.codec.handshaker.event.SecurityTypesEvent;
 import org.jfxvnc.net.rfb.codec.handshaker.event.ServerInitEvent;
 import org.jfxvnc.net.rfb.codec.handshaker.event.SharedEvent;
-import org.jfxvnc.net.rfb.codec.security.ISecurityType;
 import org.jfxvnc.net.rfb.codec.security.RfbSecurityHandshaker;
 import org.jfxvnc.net.rfb.codec.security.RfbSecurityHandshakerFactory;
 import org.jfxvnc.net.rfb.codec.security.RfbSecurityMessage;
+import org.jfxvnc.net.rfb.codec.security.SecurityType;
 import org.jfxvnc.net.rfb.exception.ProtocolException;
-import org.jfxvnc.net.rfb.render.StringUtils;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,21 +118,21 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 
     private void handleSecurityTypes(final ChannelHandlerContext ctx, SecurityTypesEvent msg) {
 
-	int[] supportTypes = msg.getSecurityTypes();
+	SecurityType[] supportTypes = msg.getSecurityTypes();
 	if (supportTypes.length == 0) {
 	    ctx.fireExceptionCaught(new ProtocolException("no security types supported"));
 	    return;
 	}
 
-	int userSecType = config.securityProperty().get();
+	SecurityType userSecType = config.securityProperty().get();
 	boolean isSupported = Arrays.stream(supportTypes).anyMatch(i -> i == userSecType);
 	if (!isSupported) {
 	    ctx.fireExceptionCaught(new ProtocolException(String.format("Authentication: '%s' is not supported. The server supports only (%s)",
-		    StringUtils.getSecurityName(userSecType), StringUtils.getSecurityNames(supportTypes))));
+		    userSecType, Arrays.toString(supportTypes))));
 	    return;
 	}
 
-	if (userSecType == ISecurityType.NONE) {
+	if (userSecType == SecurityType.NONE) {
 	    logger.info("no security available");
 	    ctx.pipeline().fireUserEventTriggered(ProtocolState.SECURITY_COMPLETE);
 	    return;
@@ -143,7 +142,7 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 
 	secHandshaker = secFactory.newRfbSecurityHandshaker(userSecType);
 	if (secHandshaker == null) {
-	    ctx.fireExceptionCaught(new ProtocolException(String.format("Authentication: '%s' is not supported yet", StringUtils.getSecurityName(userSecType))));
+	    ctx.fireExceptionCaught(new ProtocolException(String.format("Authentication: '%s' is not supported yet", userSecType)));
 	    return;
 	}
 	secHandshaker.handshake(ctx.channel()).addListener((future) -> {

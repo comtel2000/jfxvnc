@@ -23,15 +23,17 @@ package org.jfxvnc.net.rfb.codec.handshaker.event;
 
 import java.util.Arrays;
 
+import org.jfxvnc.net.rfb.codec.security.SecurityType;
+
 public class SecurityTypesEvent implements HandshakeEvent {
 
-    private final int[] securityTypes;
+    private final SecurityType[] securityTypes;
 
-    public SecurityTypesEvent(int[] securityTypes) {
+    public SecurityTypesEvent(SecurityType[] securityTypes) {
 	this.securityTypes = securityTypes;
     }
 
-    public int[] getSecurityTypes() {
+    public SecurityType[] getSecurityTypes() {
 	return securityTypes;
     }
 

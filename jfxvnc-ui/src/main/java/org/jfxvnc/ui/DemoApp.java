@@ -120,7 +120,7 @@ public class DemoApp extends Application {
 	
 	mdPane.setMasterNode(scrollPane);
 	
-	TitledPane tp = new TitledPane("combo paint issue MasterDetailPane (jre8u40)", new ComboBox<Object>());
+	TitledPane tp = new TitledPane("controlsfx css bug #457", new ComboBox<Object>());
 	mdPane.setDetailNode(tp);
 
 	mdPane.setShowDetailNode(true);
@@ -141,7 +141,6 @@ public class DemoApp extends Application {
 	    //System.out.println(imgView.getBoundsInLocal());
 
 	    //scrollPane.setViewportBounds(imgView.getBoundsInLocal());
-	    System.err.println(imgView.getFitHeight());
 	    //imgView.setFitHeight(imgView.getFitHeight() * scaleFactor);
 	});
 	

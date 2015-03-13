@@ -41,11 +41,11 @@ import javafx.util.converter.NumberStringConverter;
 
 import javax.inject.Inject;
 
-import org.jfxvnc.net.rfb.ProtocolConfiguration;
+import org.jfxvnc.net.rfb.codec.security.SecurityType;
 import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
 import org.jfxvnc.ui.persist.HistoryEntry;
 import org.jfxvnc.ui.persist.SessionContext;
-import org.jfxvnc.ui.service.SecurityType;
 import org.jfxvnc.ui.service.VncRenderService;
 
 public class ConnectViewPresenter implements Initializable {
@@ -100,10 +100,9 @@ public class ConnectViewPresenter implements Initializable {
 	historyList.setItems(ctx.getHistory());
 	
 	clearBtn.setOnAction(a -> historyList.getItems().clear());
-
-	securityCombo.getItems().addAll(FXCollections.observableArrayList(SecurityType.values()));
+	securityCombo.getItems().addAll(FXCollections.observableArrayList(SecurityType.NONE, SecurityType.VNC_Auth));
 	securityCombo.getSelectionModel().selectedItemProperty().addListener((l, a, b) -> {
-	    prop.securityProperty().set(b != null ? b.getType() : 0);
+	    prop.securityProperty().set(b != null ? b : SecurityType.UNKNOWN);
 	});
 
 	pwdField.disableProperty().bind(Bindings.equal(SecurityType.NONE, securityCombo.getSelectionModel().selectedItemProperty()));
@@ -166,7 +165,7 @@ public class ConnectViewPresenter implements Initializable {
 	ipField.setText(e.getHost());
 	portField.setText(Integer.toString(e.getPort()));
 	pwdField.setText(e.getPassword());
-	securityCombo.getSelectionModel().select(SecurityType.getValueByType(e.getSecurityType()));
+	securityCombo.getSelectionModel().select(SecurityType.valueOf(e.getSecurityType()));
 
     }
 
@@ -181,7 +180,7 @@ public class ConnectViewPresenter implements Initializable {
 	    historyList.getItems().add(e);
 	}
 	opt.orElse(e).setPassword(prop.passwordProperty().get());
-	opt.orElse(e).setSecurityType(prop.securityProperty().get());
+	opt.orElse(e).setSecurityType(prop.securityProperty().get().getType());
 	opt.orElse(e).setServerName(info.getServerName());
     }
 

@@ -1,4 +1,4 @@
-package org.jfxvnc.net.rfb.codec.security;
+package org.jfxvnc.net.rfb.render;
 
 /*
  * #%L
@@ -20,20 +20,20 @@ package org.jfxvnc.net.rfb.codec.security;
  * #L%
  */
 
+import org.jfxvnc.net.rfb.codec.ProtocolState;
+import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
+import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
+import org.jfxvnc.net.rfb.render.rect.ImageRect;
 
-public interface ISecurityType {
+public interface RenderProtocol {
+ 
+    void render(ImageRect rect, RenderCallback callback);
 
-    int INVALID = 0;
-    int NONE = 1;
-    int VNC_Auth = 2;
-    int RA2 = 5;
-    int RA2ne = 6;
-    int Tight = 16;
-    int Ultra = 17;
-    int TLS = 18;
-    int VeNCrypt = 19;
-    int GTK_VNC_SAS = 20;
-    int MD5 = 21;
-    int Colin_Dean_xvp = 22;
+    void eventReceived(ServerDecoderEvent event);
 
+    void exceptionCaught(Throwable t);
+
+    void stateChanged(ProtocolState state);
+
+    void registerInputEventListener(InputEventListener listener);
 }

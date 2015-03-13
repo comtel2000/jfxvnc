@@ -22,6 +22,8 @@ package org.jfxvnc.ui.presentation.connect;
 
 import static org.junit.Assert.assertNotNull;
 
+import org.jfxvnc.net.rfb.render.DefaultProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,7 @@ public class ConnectViewTest {
     @BeforeClass
     public static void init() {
 	Injector.setLogger((t) -> logger.info(t));
+	Injector.setModelOrService(ProtocolConfiguration.class, Injector.instantiateModelOrService(DefaultProtocolConfiguration.class));
     }
 
     public static void end() {

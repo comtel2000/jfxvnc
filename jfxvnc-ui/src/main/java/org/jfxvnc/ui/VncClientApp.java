@@ -32,7 +32,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-import org.jfxvnc.net.rfb.ProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.DefaultProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
 import org.jfxvnc.ui.persist.SessionContext;
 import org.jfxvnc.ui.presentation.MainView;
 import org.jfxvnc.ui.service.VncRenderService;
@@ -67,14 +68,15 @@ public class VncClientApp extends Application {
 
 	// Injector.setModelOrService(Stage.class, stage);
 
-	Injector.instantiateModelOrService(ProtocolConfiguration.class);
+	Injector.setModelOrService(ProtocolConfiguration.class, Injector.instantiateModelOrService(DefaultProtocolConfiguration.class));
+
 	VncRenderService vncService = (VncRenderService) Injector.instantiateModelOrService(VncRenderService.class);
 
 	vncService.fullSceenProperty().addListener((l, a, b) -> Platform.runLater(() -> stage.setFullScreen(b)));
 	// update property on exit full screen by key combination
 	stage.fullScreenProperty().addListener((l, a, b) -> vncService.fullSceenProperty().set(b));
 	vncService.restartProperty().addListener(l -> restart());
-	
+
 	vncService.connectInfoProperty().addListener((l, a, b) -> Platform.runLater(() -> headerProperty.set(b.getServerName())));
 
 	vncService.onlineProperty().addListener((l, a, b) -> Platform.runLater(() -> {

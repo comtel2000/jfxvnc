@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.jfxvnc.net.rfb.ProtocolConfiguration;
 import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
 import org.jfxvnc.net.rfb.codec.encoder.ClientCutTextEncoder;
 import org.jfxvnc.net.rfb.codec.encoder.KeyButtonEventEncoder;
@@ -42,7 +41,8 @@ import org.jfxvnc.net.rfb.codec.encoder.PreferedEncodingEncoder;
 import org.jfxvnc.net.rfb.codec.handshaker.event.ServerInitEvent;
 import org.jfxvnc.net.rfb.exception.ProtocolException;
 import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
-import org.jfxvnc.net.rfb.render.IRender;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.RenderProtocol;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,12 +55,12 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 
     private ServerInitEvent serverInit;
 
-    private IRender render;
+    private RenderProtocol render;
     private final AtomicReference<ProtocolState> state = new AtomicReference<ProtocolState>(ProtocolState.HANDSHAKE_STARTED);
 
     private SslContext sslContext;
 
-    public ProtocolHandler(IRender render, ProtocolConfiguration config) {
+    public ProtocolHandler(RenderProtocol render, ProtocolConfiguration config) {
 	if (config == null) {
 	    throw new IllegalArgumentException("configuration must not be empty");
 	}

@@ -1,4 +1,4 @@
-package org.jfxvnc.net.rfb;
+package org.jfxvnc.net.rfb.render;
 
 /*
  * #%L
@@ -31,19 +31,19 @@ import javafx.beans.property.StringProperty;
 
 import org.jfxvnc.net.rfb.codec.PixelFormat;
 import org.jfxvnc.net.rfb.codec.ProtocolVersion;
-import org.jfxvnc.net.rfb.codec.security.ISecurityType;
+import org.jfxvnc.net.rfb.codec.security.SecurityType;
 
-public class ProtocolConfiguration {
+public class DefaultProtocolConfiguration implements ProtocolConfiguration {
 
     private final ObjectProperty<ProtocolVersion> versionProperty = new SimpleObjectProperty<>(ProtocolVersion.RFB_3_8);
     private final ObjectProperty<PixelFormat> clientPixelFormatProperty = new SimpleObjectProperty<>(PixelFormat.RGB_888);
+    private final ObjectProperty<SecurityType> securityProperty = new SimpleObjectProperty<>(SecurityType.VNC_Auth);
 
     private final StringProperty hostProperty = new SimpleStringProperty("127.0.0.1");
     private final IntegerProperty portProperty = new SimpleIntegerProperty(5900);
     private final StringProperty passwordProperty = new SimpleStringProperty();
     private final BooleanProperty sharedProperty = new SimpleBooleanProperty(true);
     private final BooleanProperty sslProperty = new SimpleBooleanProperty(false);
-    private final IntegerProperty securityProperty = new SimpleIntegerProperty(ISecurityType.VNC_Auth);
 
     private final BooleanProperty rawEncProperty = new SimpleBooleanProperty(true);
     private final BooleanProperty copyRectEncProperty = new SimpleBooleanProperty(true);
@@ -52,58 +52,72 @@ public class ProtocolConfiguration {
     private final BooleanProperty clientCursorProperty = new SimpleBooleanProperty(false);
     private final BooleanProperty desktopSizeProperty = new SimpleBooleanProperty(true);
 
+    @Override
     public StringProperty hostProperty() {
 	return hostProperty;
     }
 
+    @Override
     public IntegerProperty portProperty() {
 	return portProperty;
     }
 
+    @Override
     public StringProperty passwordProperty() {
 	return passwordProperty;
     }
 
+    @Override
     public BooleanProperty sslProperty() {
 	return sslProperty;
     }
 
-    public IntegerProperty securityProperty() {
+    @Override
+    public ObjectProperty<SecurityType> securityProperty() {
 	return securityProperty;
     }
 
+    @Override
     public BooleanProperty sharedProperty() {
 	return sharedProperty;
     }
 
+    @Override
     public ObjectProperty<ProtocolVersion> versionProperty() {
 	return versionProperty;
     }
 
+    @Override
     public ObjectProperty<PixelFormat> clientPixelFormatProperty() {
 	return clientPixelFormatProperty;
     }
 
+    @Override
     public BooleanProperty rawEncProperty() {
 	return rawEncProperty;
     }
 
+    @Override
     public BooleanProperty copyRectEncProperty() {
 	return copyRectEncProperty;
     }
 
+    @Override
     public BooleanProperty hextileEncProperty() {
 	return hextileEncProperty;
     }
 
+    @Override
     public BooleanProperty clientCursorProperty() {
 	return clientCursorProperty;
     }
 
+    @Override
     public BooleanProperty desktopSizeProperty() {
 	return desktopSizeProperty;
     }
 
+    @Override
     public BooleanProperty zlibEncProperty() {
 	return zlibEncProperty;
     }

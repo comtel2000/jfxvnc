@@ -27,6 +27,7 @@ import org.jfxvnc.net.rfb.codec.Encoding;
 import org.jfxvnc.net.rfb.codec.PixelFormat;
 import org.jfxvnc.net.rfb.codec.ProtocolVersion;
 import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
+import org.jfxvnc.net.rfb.codec.security.SecurityType;
 
 public class ConnectInfoEvent implements ServerDecoderEvent {
 
@@ -45,7 +46,7 @@ public class ConnectInfoEvent implements ServerDecoderEvent {
     
     PixelFormat clientPF;
     
-    int security;
+    SecurityType security;
 
     String connectionType;
     
@@ -105,12 +106,12 @@ public class ConnectInfoEvent implements ServerDecoderEvent {
         this.clientPF = clientPF;
     }
 
-    public int getSecurity() {
+    public SecurityType getSecurity() {
         return security;
     }
 
-    public void setSecurity(int security) {
-        this.security = security;
+    public void setSecurity(SecurityType securityType) {
+        this.security = securityType;
     }
 
     public String getRemoteAddress() {

@@ -39,8 +39,8 @@ import javafx.scene.image.WritableImage;
 
 import javax.inject.Inject;
 
-import org.jfxvnc.net.rfb.ProtocolConfiguration;
 import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
 import org.jfxvnc.net.rfb.render.rect.CopyImageRect;
 import org.jfxvnc.net.rfb.render.rect.CursorImageRect;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;

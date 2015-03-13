@@ -29,31 +29,32 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-import org.jfxvnc.net.rfb.ProtocolConfiguration;
 import org.jfxvnc.net.rfb.codec.ProtocolHandler;
 import org.jfxvnc.net.rfb.codec.ProtocolState;
 import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
 import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
-import org.jfxvnc.net.rfb.codec.security.ISecurityType;
-import org.jfxvnc.net.rfb.render.IRender;
+import org.jfxvnc.net.rfb.codec.security.SecurityType;
+import org.jfxvnc.net.rfb.render.DefaultProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
 import org.jfxvnc.net.rfb.render.RenderCallback;
+import org.jfxvnc.net.rfb.render.RenderProtocol;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;
 
 public class SampleVncClient {
 
     public static void main(String[] args) throws Exception {
 
-	ProtocolConfiguration config = new ProtocolConfiguration();
+	ProtocolConfiguration config = new DefaultProtocolConfiguration();
 
 	if (args != null && args.length >= 3) {
-	    config.securityProperty().set(ISecurityType.VNC_Auth);
+	    config.securityProperty().set(SecurityType.VNC_Auth);
 	    config.hostProperty().set(args[0]);
 	    config.portProperty().set(Integer.parseInt(args[1]));
 	    config.passwordProperty().set(args[2]);
 	    config.sharedProperty().set(Boolean.TRUE);
 	} else {
 	    System.err.println("arguments missing (host port password)");
-	    config.securityProperty().set(ISecurityType.VNC_Auth);
+	    config.securityProperty().set(SecurityType.VNC_Auth);
 	    config.hostProperty().set("127.0.0.1");
 	    config.portProperty().set(5902);
 	    config.passwordProperty().set("vnc");
@@ -80,7 +81,7 @@ public class SampleVncClient {
 
 		    // use ssl
 		    // ch.pipeline().addLast(sslContext.newHandler(ch.alloc()));
-		    ch.pipeline().addLast(new ProtocolHandler(new IRender() {
+		    ch.pipeline().addLast(new ProtocolHandler(new RenderProtocol() {
 
 			@Override
 			public void render(ImageRect rect, RenderCallback callback) {

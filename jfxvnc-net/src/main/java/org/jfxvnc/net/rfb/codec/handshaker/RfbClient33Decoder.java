@@ -20,20 +20,20 @@ package org.jfxvnc.net.rfb.codec.handshaker;
  * #L%
  */
 
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 import org.jfxvnc.net.rfb.codec.PixelFormat;
 import org.jfxvnc.net.rfb.codec.handshaker.event.SecurityTypesEvent;
 import org.jfxvnc.net.rfb.codec.handshaker.event.ServerInitEvent;
+import org.jfxvnc.net.rfb.codec.security.SecurityType;
 import org.jfxvnc.net.rfb.exception.ProtocolException;
-import org.jfxvnc.net.rfb.render.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,11 +61,15 @@ class RfbClient33Decoder extends ReplayingDecoder<RfbClient33Decoder.State> impl
 		decodeErrorMessage(ctx, in);
 		return;
 	    }
-	    int[] serverSecTypes = new int[numberOfSecurtiyTypes];
+	    SecurityType[] serverSecTypes = new SecurityType[numberOfSecurtiyTypes];
 	    for (int i = 0; i < numberOfSecurtiyTypes; i++) {
-		serverSecTypes[i] = in.readUnsignedByte();
+		int sec = in.readUnsignedByte();
+		serverSecTypes[i] = SecurityType.valueOf(sec);
+		if (serverSecTypes[i] == SecurityType.UNKNOWN) {
+		    logger.error("un supported security types: {}", sec);
+		}
 	    }
-	    logger.info("supported security types: {}", StringUtils.getSecurityNames(serverSecTypes));
+	    logger.info("supported security types: {}", Arrays.toString(serverSecTypes));
 	    checkpoint(State.SERVER_INIT);
 	    out.add(new SecurityTypesEvent(serverSecTypes));
 	    break;

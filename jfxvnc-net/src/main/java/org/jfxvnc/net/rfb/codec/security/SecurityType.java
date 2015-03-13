@@ -1,8 +1,8 @@
-package org.jfxvnc.ui.service;
+package org.jfxvnc.net.rfb.codec.security;
 
 /*
  * #%L
- * jfxvnc-ui
+ * jfxvnc-net
  * %%
  * Copyright (C) 2015 comtel2000
  * %%
@@ -21,26 +21,42 @@ package org.jfxvnc.ui.service;
  */
 
 
+/**
+ * VNC SecurityType types
+ * 
+ */
 public enum SecurityType {
+    
+    UNKNOWN(-1), 
+    INVALID(0),
+    NONE(1),
+    VNC_Auth(2),
+    RA2(5),
+    RA2ne(6),
+    Tight(16),
+    Ultra(17),
+    TLS(18),
+    VeNCrypt(19),
+    GTK_VNC_SAS(20),
+    MD5(21),
+    Colin_Dean_xvp(22);
+    
+    private final int type;
 
-    NONE(1), VNC_Auth(2);
-
-    final int type;
-
-    SecurityType(int type) {
+    private SecurityType(int type) {
 	this.type = type;
     }
 
-    public int getType() {
-	return type;
-    }
-
-    public static SecurityType getValueByType(int type) {
-	for (SecurityType t : values()) {
-	    if (type == t.getType()) {
-		return t;
+    public static SecurityType valueOf(int type) {
+	for (SecurityType e : values()) {
+	    if (e.type == type) {
+		return e;
 	    }
 	}
-	return null;
+	return UNKNOWN;
+    }
+    
+    public int getType(){
+	return type;
     }
 }

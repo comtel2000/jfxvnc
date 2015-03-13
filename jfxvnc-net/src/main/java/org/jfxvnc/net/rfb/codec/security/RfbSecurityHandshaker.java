@@ -42,10 +42,10 @@ public abstract class RfbSecurityHandshaker {
     
     private AtomicBoolean handshakeComplete = new AtomicBoolean(false);
 
-    private final int securityType;
+    private final SecurityType securityType;
 
-    public RfbSecurityHandshaker(int securityType) {
-	this.securityType = securityType;
+    public RfbSecurityHandshaker(SecurityType securityType2) {
+	this.securityType = securityType2;
     }
 
     public boolean isHandshakeComplete() {
@@ -62,7 +62,7 @@ public abstract class RfbSecurityHandshaker {
     }
 
     public final ChannelFuture handshake(Channel channel, final ChannelPromise promise) {
-	channel.writeAndFlush(Unpooled.buffer(1).writeByte(securityType)).addListener(new ChannelFutureListener() {
+	channel.writeAndFlush(Unpooled.buffer(1).writeByte(securityType.getType())).addListener(new ChannelFutureListener() {
 	    @Override
 	    public void operationComplete(ChannelFuture future) {
 		if (!future.isSuccess()) {

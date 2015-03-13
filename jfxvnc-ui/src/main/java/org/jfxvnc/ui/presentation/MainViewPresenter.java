@@ -33,7 +33,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
 import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
@@ -45,7 +44,8 @@ import org.controlsfx.control.MasterDetailPane;
 import org.controlsfx.control.Notifications;
 import org.controlsfx.control.PlusMinusSlider;
 import org.controlsfx.control.StatusBar;
-import org.jfxvnc.net.rfb.ProtocolConfiguration;
+import org.controlsfx.tools.Borders;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
 import org.jfxvnc.ui.persist.SessionContext;
 import org.jfxvnc.ui.presentation.detail.DetailView;
 import org.jfxvnc.ui.presentation.vnc.VncView;
@@ -93,7 +93,6 @@ public class MainViewPresenter implements Initializable {
 	statusBar.textProperty().bind(statusProperty);
 
 	ToggleButton gearButton = new ToggleButton("", new Pane());
-	gearButton.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 	gearButton.setId("menu-settings");
 	gearButton.selectedProperty().bindBidirectional(mdPane.showDetailNodeProperty());
 
@@ -110,33 +109,23 @@ public class MainViewPresenter implements Initializable {
 	// restartBtn.setPrefWidth(100);
 	// restartBtn.setOnAction(a -> con.restartProperty().set(!con.restartProperty().get()));
 
-	Pane toFullScreen = new Pane();
-	toFullScreen.setId("menu-fullscreen-pane");
-
-	Pane toWindow = new Pane();
-	toWindow.setId("menu-window-pane");
-
-	ToggleButton switchFullScreen = new ToggleButton("", toFullScreen);
-	switchFullScreen.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+	ToggleButton switchFullScreen = new ToggleButton("", new Pane());
+	switchFullScreen.setId(switchFullScreen.isSelected() ? "menu-fullscreen-off" : "menu-fullscreen-on");
 	switchFullScreen.selectedProperty().bindBidirectional(con.fullSceenProperty());
-
-	con.fullSceenProperty().addListener(l -> Platform.runLater(() -> switchFullScreen.setGraphic(con.fullSceenProperty().get() ? toWindow : toFullScreen)));
+	switchFullScreen.selectedProperty().addListener((l, o, n) -> switchFullScreen.setId(n ? "menu-fullscreen-off" : "menu-fullscreen-on"));
 
 	ProgressIndicator progressIndicator = new ProgressIndicator(-1);
 	progressIndicator.visibleProperty().bind(con.runningProperty());
 	progressIndicator.setPrefSize(16, 16);
 
 	PlusMinusSlider zoomSlider = new PlusMinusSlider();
-	zoomSlider.setStyle("-fx-translate-y: 5;");
 	zoomSlider.setOnValueChanged(e -> con.zoomLevelProperty().set(e.getValue() + 1));
 
 	mdPane.setOnScroll(e -> con.zoomLevelProperty().set(con.zoomLevelProperty().get() + (e.getDeltaY() > 0.0 ? 0.01 : -0.01)));
 
-	con.zoomLevelProperty().addListener((l, o, z) -> {
-	    statusProperty.set("zoom: " + (int) Math.floor(z.doubleValue() * 100) + "%");
-	});
-
-	statusBar.getRightItems().addAll(progressIndicator, createSpace(10, 20), zoomSlider, createSpace(10, 20), switchFullScreen, createSpace(10, 20), connectBtn, disconnectBtn,
+	con.zoomLevelProperty().addListener((l, o, z) -> statusProperty.set(MessageFormat.format(rb.getString("status.zoom.scale"), Math.floor(z.doubleValue() * 100))));
+	
+	statusBar.getRightItems().addAll(progressIndicator, createSpace(10, 20), Borders.wrap(zoomSlider).emptyBorder().buildAll(), createSpace(10, 20), switchFullScreen, createSpace(10, 20), connectBtn, disconnectBtn,
 		createSpace(10, 20), gearButton);
 
 	con.protocolStateProperty().addListener((l, o, event) -> Platform.runLater(() -> {
@@ -162,7 +151,12 @@ public class MainViewPresenter implements Initializable {
 	    }
 
 	}));
-	con.connectProperty().addListener((l, o, n) -> Platform.runLater(() -> connectBtn.setDisable(n)));
+
+	con.connectProperty().addListener((l, o, n) -> Platform.runLater(() -> {
+	    connectBtn.setDisable(n);
+	    gearButton.setId(n ? "menu-settings-online" : "menu-settings");
+	    
+	}));
 
 	con.exceptionCaughtProperty().addListener((l, o, n) -> Platform.runLater(() -> {
 	    Notifications.create().owner(mainPane).position(Pos.TOP_CENTER).text(n.getMessage()).showError();

@@ -22,9 +22,9 @@ package org.jfxvnc.net.rfb.codec.security.vncauth;
 
 import java.util.Arrays;
 
-import org.jfxvnc.net.rfb.ProtocolConfiguration;
-import org.jfxvnc.net.rfb.codec.security.ISecurityType;
 import org.jfxvnc.net.rfb.codec.security.RfbSecurityMessage;
+import org.jfxvnc.net.rfb.codec.security.SecurityType;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
 
 public class VncAuthSecurityMessage implements RfbSecurityMessage {
 
@@ -45,8 +45,8 @@ public class VncAuthSecurityMessage implements RfbSecurityMessage {
     }
 
     @Override
-    public int getSecurityType() {
-	return ISecurityType.VNC_Auth;
+    public SecurityType getSecurityType() {
+	return SecurityType.VNC_Auth;
     }
 
     @Override

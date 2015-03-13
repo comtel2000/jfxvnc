@@ -20,8 +20,8 @@ package org.jfxvnc.ui.presentation.info;
  * #L%
  */
 
-
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
@@ -32,8 +32,8 @@ import javafx.scene.control.Label;
 
 import javax.inject.Inject;
 
+import org.jfxvnc.net.rfb.codec.PixelFormat;
 import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
-import org.jfxvnc.net.rfb.render.StringUtils;
 import org.jfxvnc.ui.persist.SessionContext;
 import org.jfxvnc.ui.service.VncRenderService;
 import org.slf4j.LoggerFactory;
@@ -88,10 +88,10 @@ public class InfoViewPresenter implements Initializable {
 	infoSize.setText(String.format("%s x %s", cd.getFrameWidth(), cd.getFrameHeight()));
 	infoProtocol.setText(cd.getRfbProtocol().getMajorVersion() + "." + cd.getRfbProtocol().getMinorVersion());
 	infoHost.setText(cd.getRemoteAddress());
-	infoPixelformat.setText(StringUtils.getPixelFormatReadable(cd.getServerPF()));
-	infoPixelformatDef.setText(StringUtils.getPixelFormatReadable(cd.getClientPF()));
+	infoPixelformat.setText(getPixelFormatReadable(cd.getServerPF()));
+	infoPixelformatDef.setText(getPixelFormatReadable(cd.getClientPF()));
 	infoEncoding.setText(Arrays.toString(cd.getSupportedEncodings()));
-	infoSecurity.setText(StringUtils.getSecurityName(cd.getSecurity()));
+	infoSecurity.setText(String.valueOf(cd.getSecurity()));
 	infoConnectType.setText(cd.getConnectionType());
     }
 
@@ -108,4 +108,8 @@ public class InfoViewPresenter implements Initializable {
 	infoSize.setText("-");
     }
 
+    public static String getPixelFormatReadable(PixelFormat pf) {
+	return MessageFormat.format("depth {0} ({1}bpp) {2}-endian shift(r{3},g{4},b{5})", pf.getDepth(), pf.getBitPerPixel(), (pf.isBigEndian() ? "big" : "little"),
+		pf.getRedShift(), pf.getGreenShift(), pf.getBlueShift());
+    }
 }

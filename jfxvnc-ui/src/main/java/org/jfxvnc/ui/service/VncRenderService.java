@@ -46,7 +46,6 @@ import javafx.concurrent.Task;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import org.jfxvnc.net.rfb.ProtocolConfiguration;
 import org.jfxvnc.net.rfb.codec.ProtocolInitializer;
 import org.jfxvnc.net.rfb.codec.ProtocolState;
 import org.jfxvnc.net.rfb.codec.decoder.BellEvent;
@@ -54,12 +53,13 @@ import org.jfxvnc.net.rfb.codec.decoder.ServerCutTextEvent;
 import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
 import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
 import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
-import org.jfxvnc.net.rfb.render.IRender;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.RenderProtocol;
 import org.jfxvnc.net.rfb.render.RenderCallback;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;
 import org.slf4j.LoggerFactory;
 
-public class VncRenderService extends Service<Boolean> implements IRender {
+public class VncRenderService extends Service<Boolean> implements RenderProtocol {
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(VncRenderService.class);
 

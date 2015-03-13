@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
 
-<TitledPane maxWidth="1.7976931348623157E308" text="%statistics.header" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jfxvnc.ui.presentation.statistics.StatisticsViewPresenter">
+<TitledPane maxWidth="1.7976931348623157E308" text="%statistics.header" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jfxvnc.ui.presentation.statistics.StatisticsViewPresenter">
 	<content>
 		<ScrollPane fitToWidth="true" maxWidth="1.7976931348623157E308" prefHeight="500.0" prefViewportWidth="400.0">
 			<content>
