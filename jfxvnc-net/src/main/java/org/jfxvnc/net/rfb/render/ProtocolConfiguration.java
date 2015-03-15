@@ -20,13 +20,11 @@ package org.jfxvnc.net.rfb.render;
  * #L%
  */
 
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 
-import org.jfxvnc.net.rfb.codec.Encoding;
 import org.jfxvnc.net.rfb.codec.PixelFormat;
 import org.jfxvnc.net.rfb.codec.ProtocolVersion;
 import org.jfxvnc.net.rfb.codec.security.SecurityType;
@@ -64,7 +62,8 @@ public interface ProtocolConfiguration {
     /**
      * Security Type {@link SecurityType}
      * 
-     * @return {@link SecurityType}
+     * @return current {@link SecurityType}
+     * @see org.jfxvnc.net.rfb.codec.security.SecurityType
      */
     public ObjectProperty<SecurityType> securityProperty();
 
@@ -78,14 +77,15 @@ public interface ProtocolConfiguration {
     /**
      * Used Protocol Version {@link ProtocolVersion}
      * 
-     * @return {@link ProtocolVersion}
+     * @return current {@link ProtocolVersion}
      */
     public ObjectProperty<ProtocolVersion> versionProperty();
 
     /**
      * Used PixelFormat {@link PixelFormat}
      * 
-     * @return {@link PixelFormat}
+     * @return current {@link PixelFormat}
+     * @see org.jfxvnc.net.rfb.codec.PixelFormat
      */
     public ObjectProperty<PixelFormat> clientPixelFormatProperty();
 
@@ -93,7 +93,7 @@ public interface ProtocolConfiguration {
      * Activate RAW encoding
      * 
      * @return raw enabled
-     * @see {@link Encoding}
+     * @see org.jfxvnc.net.rfb.codec.Encoding
      */
     public BooleanProperty rawEncProperty();
 
@@ -101,7 +101,7 @@ public interface ProtocolConfiguration {
      * Activate COPY RECT encoding
      * 
      * @return raw enabled
-     * @see {@link Encoding}
+     * @see org.jfxvnc.net.rfb.codec.Encoding
      */
     public BooleanProperty copyRectEncProperty();
 
@@ -109,7 +109,7 @@ public interface ProtocolConfiguration {
      * Activate Hextile encoding
      * 
      * @return Hextile enabled
-     * @see {@link Encoding}
+     * @see org.jfxvnc.net.rfb.codec.Encoding
      */
     public BooleanProperty hextileEncProperty();
 
@@ -117,7 +117,7 @@ public interface ProtocolConfiguration {
      * Activate Cursor pseudo encoding
      * 
      * @return Cursor enabled
-     * @see {@link Encoding}
+     * @see org.jfxvnc.net.rfb.codec.Encoding
      */
     public BooleanProperty clientCursorProperty();
 
@@ -125,7 +125,7 @@ public interface ProtocolConfiguration {
      * Activate Desktop Resize pseudo encoding
      * 
      * @return Desktop Resize enabled
-     * @see {@link Encoding}
+     * @see org.jfxvnc.net.rfb.codec.Encoding
      */
     public BooleanProperty desktopSizeProperty();
 
@@ -133,7 +133,7 @@ public interface ProtocolConfiguration {
      * Activate Zlib pseudo encoding
      * 
      * @return Zlib enabled
-     * @see {@link Encoding}
+     * @see org.jfxvnc.net.rfb.codec.Encoding
      */
     public BooleanProperty zlibEncProperty();
 

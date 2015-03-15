@@ -67,14 +67,12 @@ public class VncClientApp extends Application {
 	Injector.setLogger((t) -> logger.trace(t));
 
 	// Injector.setModelOrService(Stage.class, stage);
-
 	Injector.setModelOrService(ProtocolConfiguration.class, Injector.instantiateModelOrService(DefaultProtocolConfiguration.class));
 
 	VncRenderService vncService = (VncRenderService) Injector.instantiateModelOrService(VncRenderService.class);
 
 	vncService.fullSceenProperty().addListener((l, a, b) -> Platform.runLater(() -> stage.setFullScreen(b)));
-	// update property on exit full screen by key combination
-	stage.fullScreenProperty().addListener((l, a, b) -> vncService.fullSceenProperty().set(b));
+
 	vncService.restartProperty().addListener(l -> restart());
 
 	vncService.connectInfoProperty().addListener((l, a, b) -> Platform.runLater(() -> headerProperty.set(b.getServerName())));
@@ -84,6 +82,9 @@ public class VncClientApp extends Application {
 	    stage.getIcons().remove(!b ? onlineImg : offlineImg);
 	}));
 
+	// update property on exit full screen by key combination
+	stage.fullScreenProperty().addListener((l, a, b) -> vncService.fullSceenProperty().set(b));
+	
 	SessionContext session = (SessionContext) Injector.instantiateModelOrService(SessionContext.class);
 	session.setSession("jfxvnc.app");
 	session.loadSession();
@@ -103,10 +104,9 @@ public class VncClientApp extends Application {
 	stage.setScene(scene);
 	stage.getIcons().add(offlineImg);
 	stage.show();
-
     }
 
-    public void restart() {
+    private void restart() {
 	stageRef.close();
 	try {
 	    sceneWidthProperty.set(stageRef.getScene().getWidth());

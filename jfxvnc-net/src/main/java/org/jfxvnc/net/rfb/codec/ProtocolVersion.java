@@ -36,16 +36,21 @@ public class ProtocolVersion implements Comparable<ProtocolVersion> {
 
     private int minorVersion;
 
-    public ProtocolVersion(String v) {
-	if (v == null) {
+    /**
+     * RFB protocol parser (RFB ([0-9]{3}).([0-9]{3}))
+     * 
+     * @param version String
+     */
+    public ProtocolVersion(String version) {
+	if (version == null) {
 	    throw new IllegalArgumentException("null can not parsed to version");
 	}
-	Matcher versionMatcher = VERSION_PAT.matcher(v);
+	Matcher versionMatcher = VERSION_PAT.matcher(version);
 	if (versionMatcher.find()) {
 	    majorVersion = Integer.parseInt(versionMatcher.group(1));
 	    minorVersion = Integer.parseInt(versionMatcher.group(2));
 	} else {
-	    throw new IllegalArgumentException("version: " + v + " not supported");
+	    throw new IllegalArgumentException("version: " + version + " not supported");
 	}
     }
 
@@ -92,7 +97,7 @@ public class ProtocolVersion implements Comparable<ProtocolVersion> {
     /**
      * encoded ASCII bytes include LF
      * 
-     * @return
+     * @return expected RFB version bytes
      */
     public byte[] getBytes() {
 	return String.format("RFB %03d.%03d\n", majorVersion, minorVersion).getBytes(StandardCharsets.US_ASCII);

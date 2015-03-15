@@ -10,7 +10,7 @@
 		<artifactId>oss-parent</artifactId>
 		<version>9</version>
 	</parent>
-	<name>jfxvnc</name>
+	<name>JFxVNC</name>
 	<description>JFX VNC is a Java VNC remote desktop client based on JavaFX and divided into two parts. One module (jfxvnc-net) contains RFB/VNC protocol codec and handler. The other module (jfxvnc-ui) wraps JavaFX UI components with the VNC viewer app.</description>
 	<url>http://jfxvnc.org</url>
 	<licenses>
@@ -32,11 +32,17 @@
 			<organizationUrl>http://comtel2000.org</organizationUrl>
 		</developer>
 	</developers>
-	
+
 	<modules>
 		<module>jfxvnc-net</module>
 		<module>jfxvnc-ui</module>
 	</modules>
+
+	<properties>
+		<github.global.server>github</github.global.server>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -162,10 +168,87 @@
 								<phase>process-sources</phase>
 								<configuration>
 									<licenseName>apache_v2</licenseName>
+									<roots>
+										<root>src/main/java</root>
+									</roots>
 								</configuration>
 							</execution>
 						</executions>
 					</plugin>
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-site-plugin</artifactId>
+						<version>3.4</version>
+						<executions>
+							<execution>
+								<id>attach-descriptor</id>
+								<goals>
+									<goal>attach-descriptor</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<generateProjectInfo>true</generateProjectInfo>
+							<generateReports>true</generateReports>
+							<generateSitemap>true</generateSitemap>
+							<!-- <reportPlugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
+								<artifactId>maven-checkstyle-plugin</artifactId> <version>${maven.checkstyle.plugin}</version> 
+								</plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-project-info-reports-plugin</artifactId> 
+								<version>${maven.project.info.reports.plugin}</version> </plugin> <plugin> 
+								<groupId>org.apache.maven.plugins</groupId> <artifactId>maven-jxr-plugin</artifactId> 
+								<version>${maven.jxr.plugin}</version> <configuration> <aggregate>true</aggregate> 
+								</configuration> </plugin> <plugin> <groupId>org.codehaus.mojo</groupId> 
+								<artifactId>cobertura-maven-plugin</artifactId> <version>${maven.cobertura.plugin}</version> 
+								<configuration> <aggregate>true</aggregate> <outputDirectory>%{project.reporting.outputDirectory}/cobertura</outputDirectory> 
+								</configuration> </plugin> <plugin> <groupId>org.codehaus.mojo</groupId> 
+								<artifactId>findbugs-maven-plugin</artifactId> <version>${maven.findbugs.plugin}</version> 
+								</plugin> <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>versions-maven-plugin</artifactId> 
+								<version>${maven.versions.plugin}</version> </plugin> <plugin> <groupId>org.codehaus.mojo</groupId> 
+								<artifactId>taglist-maven-plugin</artifactId> <version>${maven.taglist.plugin}</version> 
+								<configuration> <aggregate>true</aggregate> </configuration> </plugin> </reportPlugins> 
+								<locales>en</locales> -->
+						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>org.apache.maven.doxia</groupId>
+								<artifactId>doxia-module-markdown</artifactId>
+								<version>1.6</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+								<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+			</plugin>
+					<!-- <plugin> <artifactId>maven-resources-plugin</artifactId> <version>2.7</version> 
+						<executions> <execution> <id>copy-resources</id> <phase>validate</phase> 
+						<goals> <goal>copy-resources</goal> </goals> <configuration> <outputDirectory>src/site/markdown</outputDirectory> 
+						<overwrite>true</overwrite> <resources> <resource> <directory>${basedir}</directory> 
+						<includes> <include>*.md</include> </includes> <filtering>false</filtering> 
+						</resource> </resources> </configuration> </execution> </executions> </plugin> -->
+					<!-- DEPLOY GITHUB SITE DOCUMENTATION -->
+					
+					<plugin>
+						<groupId>com.github.github</groupId>
+						<artifactId>site-maven-plugin</artifactId>
+						<inherited>false</inherited>
+						<configuration>
+							<message>Generating site content for ${project.version}</message>
+							<repositoryOwner>comtel2000</repositoryOwner>
+							<repositoryName>jfxvnc</repositoryName>
+							<dryRun>true</dryRun>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>site</goal>
+								</goals>
+								<phase>site</phase>
+							</execution>
+						</executions>
+					</plugin>
+
 				</plugins>
 			</build>
 		</profile>
@@ -238,4 +321,50 @@
 		<system>Travis CI</system>
 		<url>https://travis-ci.org/comtel2000/jfxvnc/</url>
 	</ciManagement>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/comtel2000/jfxvnc/issues</url>
+	</issueManagement>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.8</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>index</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>javadoc</report>
+							<report>test-javadoc</report>
+						</reports>
+					</reportSet>
+					<reportSet>
+						<id>aggregate</id>
+						<inherited>false</inherited>
+						<reports>
+							<report>aggregate</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
+
 </project>

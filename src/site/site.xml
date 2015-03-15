@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/DECORATION/1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0
+  http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+	<skin>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-fluido-skin</artifactId>
+		<version>1.3.1</version>
+	</skin>
+	<body>
+		<head>
+			<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE" />
+			<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE" />
+			<META NAME="COPYRIGHT" CONTENT="Copyright &copy; 2014-2015 comtel2000." />
+			<META NAME="KEYWORDS" CONTENT="vnc, jfxvnc, rfb, remote desktop" />
+			<META NAME="ROBOTS" CONTENT="ALL" />
+			<META NAME="DESCRIPTION"
+				CONTENT="JFX VNC is a Java VNC remote desktop client based on JavaFX and divided into two parts. One module (jfxvnc-net) contains RFB/VNC protocol codec and handler. The other module (jfxvnc-ui) wraps JavaFX UI components with the VNC viewer app." />
+			<META NAME="AUTHOR" CONTENT="comtel2000" />
+		</head>
+		<links>
+			<item name="Home" href="readme.html" />
+			<item name="Downloads"
+				href="https://www.dropbox.com/sh/r4yu7n7gpuh95lj/AAA0t--qZD3TIHF0VIxxeGyXa?dl=0" />
+			<item name="Github" href="https://github.com/comtel2000/jfxvnc/"
+				target="jfxvnc-github" />
+			<item name="Issues" href="https://github.com/comtel2000/jfxvnc/issues/"
+				target="jfxvnc-github" />
+
+		</links>
+		<menu name="Overview">
+			<item name="Home" href="readme.html" />
+			<item name="Introduction" href="index.html" />
+		</menu>
+
+		<menu name="Downloads">
+			<item name="Installer"
+				href="https://www.dropbox.com/sh/r4yu7n7gpuh95lj/AAA0t--qZD3TIHF0VIxxeGyXa?dl=0" />
+		</menu>
+
+		<menu ref="reports" />
+	</body>
+</project>
