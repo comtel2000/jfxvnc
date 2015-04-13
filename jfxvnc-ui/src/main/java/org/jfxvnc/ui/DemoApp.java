@@ -41,6 +41,7 @@ import javafx.stage.Stage;
 
 import org.controlsfx.control.MasterDetailPane;
 import org.controlsfx.control.PlusMinusSlider;
+import org.jfxvnc.ui.presentation.about.AboutView;
 
 public class DemoApp extends Application {
 
@@ -121,7 +122,9 @@ public class DemoApp extends Application {
 	mdPane.setMasterNode(scrollPane);
 	
 	TitledPane tp = new TitledPane("controlsfx css bug #457", new ComboBox<Object>());
-	mdPane.setDetailNode(tp);
+	
+	AboutView about = new AboutView();
+	mdPane.setDetailNode(about.getView());
 
 	mdPane.setShowDetailNode(true);
 	

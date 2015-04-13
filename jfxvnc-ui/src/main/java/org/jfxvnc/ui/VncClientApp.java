@@ -36,6 +36,7 @@ import org.jfxvnc.net.rfb.render.DefaultProtocolConfiguration;
 import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
 import org.jfxvnc.ui.persist.SessionContext;
 import org.jfxvnc.ui.presentation.MainView;
+import org.jfxvnc.ui.service.VncListenerService;
 import org.jfxvnc.ui.service.VncRenderService;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,9 @@ public class VncClientApp extends Application {
 
 	VncRenderService vncService = (VncRenderService) Injector.instantiateModelOrService(VncRenderService.class);
 
+	VncListenerService vncListenerService = (VncListenerService) Injector.instantiateModelOrService(VncListenerService.class);
+	vncListenerService.start();
+	
 	vncService.fullSceenProperty().addListener((l, a, b) -> Platform.runLater(() -> stage.setFullScreen(b)));
 
 	vncService.restartProperty().addListener(l -> restart());

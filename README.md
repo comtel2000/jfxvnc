@@ -30,9 +30,8 @@ What is required:
 * Latest stable [Apache Maven](http://maven.apache.org)
 
 ```shell
-cd jfxvnc-ui
-mvn clean install -Ppackage-jar
-java -jar target/jfxvnc-app.jar
+mvn clean install
+java -jar jfxvnc-ui/target/jfxvnc-jar-with-dependencies.jar
 ```
 
 ## Maven central repository

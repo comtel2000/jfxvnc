@@ -85,7 +85,7 @@ public class MainViewPresenter implements Initializable {
 	mdPane.setShowDetailNode(true);
 
 	StatusBar statusBar = new StatusBar();
-	statusBar.setId("status-bar");
+	statusBar.setId("menu-status-bar");
 
 	mainPane.setCenter(mdPane);
 	mainPane.setBottom(statusBar);
@@ -107,7 +107,8 @@ public class MainViewPresenter implements Initializable {
 
 	// Button restartBtn = new Button(rb.getString("restart.button"));
 	// restartBtn.setPrefWidth(100);
-	// restartBtn.setOnAction(a -> con.restartProperty().set(!con.restartProperty().get()));
+	// restartBtn.setOnAction(a ->
+	// con.restartProperty().set(!con.restartProperty().get()));
 
 	ToggleButton switchFullScreen = new ToggleButton("", new Pane());
 	switchFullScreen.setId(switchFullScreen.isSelected() ? "menu-fullscreen-off" : "menu-fullscreen-on");
@@ -124,9 +125,9 @@ public class MainViewPresenter implements Initializable {
 	mdPane.setOnScroll(e -> con.zoomLevelProperty().set(con.zoomLevelProperty().get() + (e.getDeltaY() > 0.0 ? 0.01 : -0.01)));
 
 	con.zoomLevelProperty().addListener((l, o, z) -> statusProperty.set(MessageFormat.format(rb.getString("status.zoom.scale"), Math.floor(z.doubleValue() * 100))));
-	
-	statusBar.getRightItems().addAll(progressIndicator, createSpace(10, 20), Borders.wrap(zoomSlider).emptyBorder().buildAll(), createSpace(10, 20), switchFullScreen, createSpace(10, 20), connectBtn, disconnectBtn,
-		createSpace(10, 20), gearButton);
+
+	statusBar.getRightItems().addAll(progressIndicator, createSpace(10, 20), Borders.wrap(zoomSlider).emptyBorder().buildAll(), createSpace(10, 20), switchFullScreen,
+		createSpace(10, 20), connectBtn, disconnectBtn, createSpace(10, 20), gearButton);
 
 	con.protocolStateProperty().addListener((l, o, event) -> Platform.runLater(() -> {
 	    switch (event) {
@@ -153,9 +154,9 @@ public class MainViewPresenter implements Initializable {
 	}));
 
 	con.connectProperty().addListener((l, o, n) -> Platform.runLater(() -> {
-	    connectBtn.setDisable(n);
+	    connectBtn.setDisable(n.booleanValue());
 	    gearButton.setId(n ? "menu-settings-online" : "menu-settings");
-	    
+
 	}));
 
 	con.exceptionCaughtProperty().addListener((l, o, n) -> Platform.runLater(() -> {

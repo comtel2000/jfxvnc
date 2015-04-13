@@ -32,9 +32,9 @@ import javafx.scene.control.TitledPane;
 import javax.inject.Inject;
 
 import org.jfxvnc.ui.persist.SessionContext;
+import org.jfxvnc.ui.presentation.about.AboutView;
 import org.jfxvnc.ui.presentation.connect.ConnectView;
 import org.jfxvnc.ui.presentation.info.InfoView;
-import org.jfxvnc.ui.presentation.statistics.StatisticsView;
 import org.jfxvnc.ui.service.VncRenderService;
 
 public class DetailViewPresenter implements Initializable {
@@ -53,9 +53,9 @@ public class DetailViewPresenter implements Initializable {
 
 	ConnectView connectView = new ConnectView();
 	InfoView infoView = new InfoView();
-	StatisticsView statView = new StatisticsView();
+	AboutView aboutView = new AboutView();
 	
-	detailPane.getPanes().addAll((TitledPane) connectView.getView(), (TitledPane) infoView.getView(), (TitledPane) statView.getView());
+	detailPane.getPanes().addAll((TitledPane) connectView.getView(), (TitledPane) infoView.getView(), (TitledPane) aboutView.getView());
 	detailPane.setExpandedPane((TitledPane) connectView.getView());
 
 	detailPane.expandedPaneProperty().addListener((observable, oldValue, newValue) -> Platform.runLater(() -> {

@@ -13,7 +13,7 @@
 			<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE" />
 			<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE" />
 			<META NAME="COPYRIGHT" CONTENT="Copyright &copy; 2014-2015 comtel2000." />
-			<META NAME="KEYWORDS" CONTENT="vnc, jfxvnc, rfb, remote desktop" />
+			<META NAME="KEYWORDS" CONTENT="vnc, jfxvnc, rfb, remote desktop, javafx, java" />
 			<META NAME="ROBOTS" CONTENT="ALL" />
 			<META NAME="DESCRIPTION"
 				CONTENT="JFX VNC is a Java VNC remote desktop client based on JavaFX and divided into two parts. One module (jfxvnc-net) contains RFB/VNC protocol codec and handler. The other module (jfxvnc-ui) wraps JavaFX UI components with the VNC viewer app." />
@@ -27,7 +27,6 @@
 				target="jfxvnc-github" />
 			<item name="Issues" href="https://github.com/comtel2000/jfxvnc/issues/"
 				target="jfxvnc-github" />
-
 		</links>
 		<menu name="Overview">
 			<item name="Home" href="readme.html" />
@@ -35,6 +34,10 @@
 		</menu>
 
 		<menu name="Downloads">
+			<item name="Source (zip)"
+				href="https://github.com/comtel2000/jfxvnc/archive/master.zip" />
+				<item name="Source (tar.gz)"
+				href="https://github.com/comtel2000/jfxvnc/archive/master.tar.gz" />
 			<item name="Installer"
 				href="https://www.dropbox.com/sh/r4yu7n7gpuh95lj/AAA0t--qZD3TIHF0VIxxeGyXa?dl=0" />
 		</menu>

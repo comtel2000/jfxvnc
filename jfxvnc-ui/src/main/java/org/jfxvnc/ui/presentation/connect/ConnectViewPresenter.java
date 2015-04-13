@@ -108,7 +108,7 @@ public class ConnectViewPresenter implements Initializable {
 	pwdField.disableProperty().bind(Bindings.equal(SecurityType.NONE, securityCombo.getSelectionModel().selectedItemProperty()));
 
 	prop.hostProperty().bind(ipField.textProperty());
-	StringConverter<Number> converter = new NumberStringConverter();
+	StringConverter<Number> converter = new NumberStringConverter("#");
 	Bindings.bindBidirectional(portField.textProperty(), prop.portProperty(), converter);
 	prop.passwordProperty().bind(pwdField.textProperty());
 	prop.sslProperty().bind(sslCB.selectedProperty());

@@ -1,0 +1,1 @@
+javapackager -deploy -native exe -outdir installer -outfile jfxvnc-app -name jfxvnc -appclass org.jfxvnc.ui.VncClientApp -v -srcfiles jfxvnc-app.jar -BclassPath=.

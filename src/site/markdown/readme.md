@@ -16,11 +16,11 @@
 - true/full color pixel format only (24 depth)
 - Server/Client clipboard transfer
 - Zoom, Full screen (0.0.2)
+- Touch gesture support
 
 ## Roadmap
 - TRLE, ZRLE, Tight, Turbo, etc. encodings
 - more than 'VNC Auth' security
-- Touch gesture support
 - ...
 
 ## How to build and run
@@ -30,9 +30,8 @@ What is required:
 * Latest stable [Apache Maven](http://maven.apache.org)
 
 ```shell
-cd jfxvnc-ui
-mvn clean install -Ppackage-jar
-java -jar target/jfxvnc-app.jar
+mvn clean install
+java -jar jfxvnc-ui/target/jfxvnc-jar-with-dependencies.jar
 ```
 
 ## Maven central repository
