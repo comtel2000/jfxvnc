@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.codec.encoder;
  * #L%
  */
 
-
 public interface KeyButtonMap {
 
     int RFB_VoidSymbol = 0xFFFFFF /* void symbol */;

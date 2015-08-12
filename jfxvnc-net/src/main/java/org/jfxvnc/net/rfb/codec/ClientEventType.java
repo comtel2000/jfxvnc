@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.codec;
  * #L%
  */
 
-
 public interface ClientEventType {
 
     int SET_PIXEL_FORMAT = 0;

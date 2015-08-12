@@ -1,5 +1,20 @@
 package org.jfxvnc.net.rfb.codec.handshaker;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import org.jfxvnc.net.rfb.codec.PixelFormat;
+import org.jfxvnc.net.rfb.codec.handshaker.event.SecurityResultEvent;
+import org.jfxvnc.net.rfb.codec.handshaker.event.SecurityTypesEvent;
+import org.jfxvnc.net.rfb.codec.handshaker.event.ServerInitEvent;
+import org.jfxvnc.net.rfb.codec.security.SecurityType;
+import org.jfxvnc.net.rfb.codec.security.vncauth.VncAuthSecurityMessage;
+import org.jfxvnc.net.rfb.exception.ProtocolException;
+import org.jfxvnc.net.rfb.exception.SecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * #%L
  * RFB protocol
@@ -24,20 +39,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-
-import org.jfxvnc.net.rfb.codec.PixelFormat;
-import org.jfxvnc.net.rfb.codec.handshaker.event.SecurityTypesEvent;
-import org.jfxvnc.net.rfb.codec.handshaker.event.ServerInitEvent;
-import org.jfxvnc.net.rfb.codec.security.SecurityType;
-import org.jfxvnc.net.rfb.exception.ProtocolException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-class RfbClient33Decoder extends ReplayingDecoder<RfbClient33Decoder.State> implements RfbClientDecoder {
+class RfbClient33Decoder extends ReplayingDecoder<RfbClient33Decoder.State>implements RfbClientDecoder {
 
     private static Logger logger = LoggerFactory.getLogger(RfbClient33Decoder.class);
 
@@ -48,30 +50,41 @@ class RfbClient33Decoder extends ReplayingDecoder<RfbClient33Decoder.State> impl
     }
 
     enum State {
-	SEC_TYPES, SERVER_INIT
+	SEC_TYPES, VNC_AUTH, SEC_RESULT, SERVER_INIT
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 	switch (state()) {
 	case SEC_TYPES:
-	    int numberOfSecurtiyTypes = in.readUnsignedByte();
-	    if (numberOfSecurtiyTypes == 0) {
-		logger.error("no security types available");
-		decodeErrorMessage(ctx, in);
+	    int type = in.readInt();
+	    SecurityType securityType = SecurityType.valueOf(type);
+	    logger.info("supported security type: {}", securityType);
+	    checkpoint(securityType == SecurityType.VNC_Auth ? State.VNC_AUTH : State.SERVER_INIT);
+	    out.add(new SecurityTypesEvent(false, securityType));
+	    break;
+	case VNC_AUTH:
+	    byte[] challenge = new byte[16];
+	    in.readBytes(challenge);
+	    out.add(new VncAuthSecurityMessage(challenge));
+	    checkpoint(State.SEC_RESULT);
+	    break;
+	case SEC_RESULT:
+	    int secResult = in.readInt();
+	    logger.info("server login {}", secResult == 0 ? "succeed" : "failed");
+	    if (secResult == 1) {
+		int length = in.readInt();
+		if (length == 0) {
+		    out.add(new SecurityResultEvent(false, new ProtocolException("decode error message failed")));
+		    return;
+		}
+		byte[] text = new byte[length];
+		in.readBytes(text);
+		out.add(new SecurityResultEvent(false, new SecurityException(new String(text, ASCII))));
 		return;
 	    }
-	    SecurityType[] serverSecTypes = new SecurityType[numberOfSecurtiyTypes];
-	    for (int i = 0; i < numberOfSecurtiyTypes; i++) {
-		int sec = in.readUnsignedByte();
-		serverSecTypes[i] = SecurityType.valueOf(sec);
-		if (serverSecTypes[i] == SecurityType.UNKNOWN) {
-		    logger.error("un supported security types: {}", sec);
-		}
-	    }
-	    logger.info("supported security types: {}", Arrays.toString(serverSecTypes));
+	    out.add(new SecurityResultEvent(true));
 	    checkpoint(State.SERVER_INIT);
-	    out.add(new SecurityTypesEvent(serverSecTypes));
 	    break;
 	case SERVER_INIT:
 	    ServerInitEvent initMsg = new ServerInitEvent();

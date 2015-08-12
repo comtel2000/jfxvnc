@@ -20,15 +20,12 @@ package org.jfxvnc.net.rfb.codec.security;
  * #L%
  */
 
-
 import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
-
 
 public interface RfbSecurityMessage {
 
     SecurityType getSecurityType();
-    
+
     void setCredentials(ProtocolConfiguration config);
-    
-    
+
 }

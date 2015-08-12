@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.codec.decoder;
  * #L%
  */
 
-
 public class ServerCutTextEvent implements ServerDecoderEvent {
 
     private final String text;

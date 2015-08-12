@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.codec.handshaker;
  * #L%
  */
 
-
 import org.jfxvnc.net.rfb.codec.ProtocolVersion;
 
 public class RfbClientHandshakerFactory {
@@ -29,7 +28,7 @@ public class RfbClientHandshakerFactory {
     }
 
     public RfbClientHandshaker newRfbClientHandshaker(ProtocolVersion version) {
-	
+
 	if (version.equals(ProtocolVersion.RFB_3_8) || version.isGreaterThan(ProtocolVersion.RFB_3_8)) {
 	    return new RfbClient38Handshaker(version);
 	}

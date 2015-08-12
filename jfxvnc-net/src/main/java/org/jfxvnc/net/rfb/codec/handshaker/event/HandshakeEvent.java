@@ -20,8 +20,6 @@ package org.jfxvnc.net.rfb.codec.handshaker.event;
  * #L%
  */
 
-
-
 public interface HandshakeEvent {
 
 }

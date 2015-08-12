@@ -1,5 +1,14 @@
 package org.jfxvnc.ui;
 
+import org.jfxvnc.net.rfb.render.DefaultProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
+import org.jfxvnc.ui.persist.SessionContext;
+import org.jfxvnc.ui.presentation.MainView;
+import org.jfxvnc.ui.service.VncRenderService;
+import org.slf4j.LoggerFactory;
+
+import com.airhacks.afterburner.injection.Injector;
+
 /*
  * #%L
  * jfxvnc-ui
@@ -32,16 +41,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-import org.jfxvnc.net.rfb.render.DefaultProtocolConfiguration;
-import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
-import org.jfxvnc.ui.persist.SessionContext;
-import org.jfxvnc.ui.presentation.MainView;
-import org.jfxvnc.ui.service.VncListenerService;
-import org.jfxvnc.ui.service.VncRenderService;
-import org.slf4j.LoggerFactory;
-
-import com.airhacks.afterburner.injection.Injector;
-
 public class VncClientApp extends Application {
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(VncClientApp.class);
@@ -70,17 +69,11 @@ public class VncClientApp extends Application {
 	// Injector.setModelOrService(Stage.class, stage);
 	Injector.setModelOrService(ProtocolConfiguration.class, Injector.instantiateModelOrService(DefaultProtocolConfiguration.class));
 
-	VncRenderService vncService = (VncRenderService) Injector.instantiateModelOrService(VncRenderService.class);
+	VncRenderService vncService = Injector.instantiateModelOrService(VncRenderService.class);
 
-	VncListenerService vncListenerService = (VncListenerService) Injector.instantiateModelOrService(VncListenerService.class);
-	vncListenerService.start();
-	
 	vncService.fullSceenProperty().addListener((l, a, b) -> Platform.runLater(() -> stage.setFullScreen(b)));
-
 	vncService.restartProperty().addListener(l -> restart());
-
 	vncService.connectInfoProperty().addListener((l, a, b) -> Platform.runLater(() -> headerProperty.set(b.getServerName())));
-
 	vncService.onlineProperty().addListener((l, a, b) -> Platform.runLater(() -> {
 	    stage.getIcons().add(b ? onlineImg : offlineImg);
 	    stage.getIcons().remove(!b ? onlineImg : offlineImg);
@@ -88,8 +81,8 @@ public class VncClientApp extends Application {
 
 	// update property on exit full screen by key combination
 	stage.fullScreenProperty().addListener((l, a, b) -> vncService.fullSceenProperty().set(b));
-	
-	SessionContext session = (SessionContext) Injector.instantiateModelOrService(SessionContext.class);
+
+	SessionContext session = Injector.instantiateModelOrService(SessionContext.class);
 	session.setSession("jfxvnc.app");
 	session.loadSession();
 

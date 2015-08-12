@@ -22,21 +22,13 @@ package org.jfxvnc.ui.presentation.about;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
 import com.airhacks.afterburner.injection.Injector;
+
+import javafx.stage.Stage;
 
 public class AboutViewTest {
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(AboutViewTest.class);
@@ -45,20 +37,20 @@ public class AboutViewTest {
     @BeforeClass
     public static void init() {
 	Injector.setLogger((t) -> logger.info(t));
-//	AboutView view = new AboutView();
-//	stage = new Stage(StageStyle.UNDECORATED);
-//	stage.setScene(new Scene(view.getView()));
-//	stage.show();
+	// AboutView view = new AboutView();
+	// stage = new Stage(StageStyle.UNDECORATED);
+	// stage.setScene(new Scene(view.getView()));
+	// stage.show();
     }
 
     public static void end() {
 	Injector.forgetAll();
-//	stage.close();
+	// stage.close();
     }
 
     @Test
     public void aboutView() {
-	
+
 	AboutViewPresenter presenter = (AboutViewPresenter) Injector.instantiatePresenter(AboutViewPresenter.class);
 	assertNotNull(presenter);
 

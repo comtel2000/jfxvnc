@@ -1,5 +1,8 @@
 package org.jfxvnc.net.rfb.codec.encoder;
 
+import org.jfxvnc.net.rfb.codec.ClientEventType;
+import org.jfxvnc.net.rfb.codec.PixelFormat;
+
 /*
  * #%L
  * RFB protocol
@@ -24,11 +27,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-import org.jfxvnc.net.rfb.codec.ClientEventType;
-import org.jfxvnc.net.rfb.codec.PixelFormat;
-
 public class PixelFormatEncoder extends MessageToByteEncoder<PixelFormat> {
-
 
     @Override
     protected void encode(ChannelHandlerContext ctx, PixelFormat pf, ByteBuf out) throws Exception {
@@ -45,7 +44,7 @@ public class PixelFormatEncoder extends MessageToByteEncoder<PixelFormat> {
 	out.writeByte(pf.getGreenShift());
 	out.writeByte(pf.getBlueShift());
 	out.writeZero(3); // padding
-	
+
 	ctx.pipeline().remove(this);
     }
 }

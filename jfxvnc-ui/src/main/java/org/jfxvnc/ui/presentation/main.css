@@ -1,22 +1,4 @@
-/*
- * #%L
- * jfxvnc-ui
- * %%
- * Copyright (C) 2015 comtel2000
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
+
 .button, .menu-button, .toggle-button, .combo-box, .choice-box {
 	/* buttons do not have rounded corners */
 	-fx-background-radius: 0.0, 0.0, 0.0, 0.0;
@@ -37,14 +19,15 @@
 	-fx-border-color: #bfbfbf;
 }
 
-#menu-status-bar {
-	-fx-padding: 4.0 8.0 4.0 8.0;
+
+.menu-status-bar .button {
+	-fx-pref-width: 120;
 }
 
-#menu-settings>Pane {
+#menu-settings > Pane {
 	-fx-shape:
 		"m 0,-10 c -2,0 -2,5 0,5 1,0 35,0 36,0 2,0 2,-5 0,-5 -1,0 -35,0 -36,0 z m 0,-10 c -2,0 -2,5 0,5 1,0 35,0 36,0 2,0 2,-5 0,-5 -1,0 -35,0 -36,0 z m 0,-10 c -2,0 -2,5 0,5 1,0 35,0 36,0 2,0 2,-5 0,-5 -1,0 -35,0 -36,0 z";
-	-fx-background-color: white, #666;
+	-fx-background-color: #666;
 	-fx-padding: 3.0;
 	-fx-pref-width: 14.0;
 	-fx-max-width: 14.0;
@@ -52,21 +35,18 @@
 	-fx-max-height: 12.0;
 }
 
-#menu-settings-online>Pane {
-	-fx-shape:
-		"m 0,-10 c -2,0 -2,5 0,5 1,0 35,0 36,0 2,0 2,-5 0,-5 -1,0 -35,0 -36,0 z m 0,-10 c -2,0 -2,5 0,5 1,0 35,0 36,0 2,0 2,-5 0,-5 -1,0 -35,0 -36,0 z m 0,-10 c -2,0 -2,5 0,5 1,0 35,0 36,0 2,0 2,-5 0,-5 -1,0 -35,0 -36,0 z";
-	-fx-background-color: white, #00aa00;
-	-fx-padding: 3.0;
-	-fx-pref-width: 14.0;
-	-fx-max-width: 14.0;
-	-fx-pref-height: 12.0;
-	-fx-max-height: 12.0;
+#menu-settings:connect > Pane {
+	-fx-background-color: #db9539;
 }
 
-#menu-fullscreen-on>Pane { 
+#menu-settings:online > Pane {
+	-fx-background-color: #00aa00;
+}
+
+#menu-fullscreen > Pane { 
 	-fx-shape:
 		"m 0,-27.625 0,10 5,0 0,-5 5,0 0,-5 c -3.3333333,0 -6.6666667,0 -10,0 z m 25,0 0,5 5,0 0,5 5,0 c 0,-3.333333 0,-6.666667 0,-10 z m -25,15 c 0,3.3333333 0,6.6666667 0,10 l 10,0 0,-5 -5,0 0,-5 z m 30,0 0,5 -5,0 0,5 c 3.333333,0 6.666667,0 10,0 l 0,-10 z";
-	-fx-background-color: white, #666;
+	-fx-background-color: #666;
 	-fx-padding: 3.0;
 	-fx-pref-width: 16.0;
 	-fx-max-width: 16.0;
@@ -74,15 +54,9 @@
 	-fx-max-height: 12.0;
 }
 
-#menu-fullscreen-off>Pane { 
+#menu-fullscreen:window > Pane { 
 	-fx-shape:
 		"m 5,-27.625 0,5 -5,0 0,5 c 3.3333333,0 6.6666667,0 10,0 l 0,-10 z m 20,0 c 0,3.333333 0,6.666667 0,10 l 10,0 0,-5 -5,0 0,-5 z m -25,15 0,5 5,0 0,5 5,0 c 0,-3.3333333 0,-6.6666667 0,-10 z m 25,0 0,10 5,0 0,-5 5,0 0,-5 c -3.333333,0 -6.666667,0 -10,0 z";
-	-fx-background-color: white, #666;
-	-fx-padding: 3.0;
-	-fx-pref-width: 16.0;
-	-fx-max-width: 16.0;
-	-fx-pref-height: 12.0;
-	-fx-max-height: 12.0;
 }
 
 .check-box>.box>.mark {

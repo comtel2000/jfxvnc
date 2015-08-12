@@ -1,5 +1,16 @@
 package org.jfxvnc.net.rfb.codec;
 
+import java.util.EnumMap;
+import java.util.List;
+
+import org.jfxvnc.net.rfb.codec.decoder.BellDecoder;
+import org.jfxvnc.net.rfb.codec.decoder.ColourMapEntriesDecoder;
+import org.jfxvnc.net.rfb.codec.decoder.FrameDecoder;
+import org.jfxvnc.net.rfb.codec.decoder.FramebufferUpdateRectDecoder;
+import org.jfxvnc.net.rfb.codec.decoder.ServerCutTextDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * #%L
  * RFB protocol
@@ -23,17 +34,6 @@ package org.jfxvnc.net.rfb.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-
-import java.util.EnumMap;
-import java.util.List;
-
-import org.jfxvnc.net.rfb.codec.decoder.BellDecoder;
-import org.jfxvnc.net.rfb.codec.decoder.ColourMapEntriesDecoder;
-import org.jfxvnc.net.rfb.codec.decoder.FrameDecoder;
-import org.jfxvnc.net.rfb.codec.decoder.FramebufferUpdateRectDecoder;
-import org.jfxvnc.net.rfb.codec.decoder.ServerCutTextDecoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FrameDecoderHandler extends ByteToMessageDecoder {
     private static Logger logger = LoggerFactory.getLogger(FrameDecoderHandler.class);
@@ -66,10 +66,10 @@ public class FrameDecoderHandler extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-	if (!in.isReadable()){
+	if (!in.isReadable()) {
 	    return;
 	}
-	
+
 	FrameDecoder decoder;
 	switch (state) {
 	case NEXT:

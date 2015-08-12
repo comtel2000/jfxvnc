@@ -48,7 +48,7 @@ public class ConnectViewTest {
 
 	ConnectViewPresenter presenter = (ConnectViewPresenter) Injector.instantiatePresenter(ConnectViewPresenter.class);
 	assertNotNull(presenter);
-	
+
     }
 
 }

@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.codec.encoder;
  * #L%
  */
 
-
 /**
  * BackSpace 0xff08<br>
  * Tab 0xff09<br>

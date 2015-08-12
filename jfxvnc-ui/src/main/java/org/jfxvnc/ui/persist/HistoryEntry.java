@@ -25,7 +25,7 @@ import java.io.Serializable;
 public class HistoryEntry implements Comparable<HistoryEntry>, Serializable {
 
     private static final long serialVersionUID = 2877392353047511185L;
-    
+
     private final String host;
     private final int port;
     private int securityType;

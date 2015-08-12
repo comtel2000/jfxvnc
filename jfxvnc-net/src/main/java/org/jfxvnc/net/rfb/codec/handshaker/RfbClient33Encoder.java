@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.codec.handshaker;
  * #L%
  */
 
-
 import org.jfxvnc.net.rfb.codec.handshaker.event.HandshakeEvent;
 import org.jfxvnc.net.rfb.codec.handshaker.event.SharedEvent;
 
@@ -28,7 +27,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-public class RfbClient33Encoder extends MessageToByteEncoder<HandshakeEvent> implements RfbClientEncoder {
+public class RfbClient33Encoder extends MessageToByteEncoder<HandshakeEvent>implements RfbClientEncoder {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, HandshakeEvent msg, ByteBuf out) throws Exception {

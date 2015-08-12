@@ -20,7 +20,6 @@ package org.jfxvnc.ui.presentation.info;
  * #L%
  */
 
-
 import com.airhacks.afterburner.views.FXMLView;
 
 public class InfoView extends FXMLView {

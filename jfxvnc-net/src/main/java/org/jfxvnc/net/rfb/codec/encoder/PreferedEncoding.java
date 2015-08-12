@@ -22,7 +22,6 @@ import org.jfxvnc.net.rfb.codec.Encoding;
  * #L%
  */
 
-
 public class PreferedEncoding {
 
     private final Encoding[] encodings;
@@ -33,6 +32,6 @@ public class PreferedEncoding {
 
     public Encoding[] getEncodings() {
 	return encodings;
-    } 
-    
+    }
+
 }

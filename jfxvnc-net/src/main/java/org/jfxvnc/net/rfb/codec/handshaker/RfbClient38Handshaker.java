@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.codec.handshaker;
  * #L%
  */
 
-
 import org.jfxvnc.net.rfb.codec.ProtocolVersion;
 
 class RfbClient38Handshaker extends RfbClientHandshaker {

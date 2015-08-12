@@ -24,6 +24,16 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import javax.inject.Inject;
+
+import org.jfxvnc.net.rfb.codec.ProtocolVersion;
+import org.jfxvnc.net.rfb.codec.security.SecurityType;
+import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
+import org.jfxvnc.ui.persist.HistoryEntry;
+import org.jfxvnc.ui.persist.SessionContext;
+import org.jfxvnc.ui.service.VncRenderService;
+
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.StringProperty;
@@ -38,15 +48,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
 import javafx.util.converter.NumberStringConverter;
-
-import javax.inject.Inject;
-
-import org.jfxvnc.net.rfb.codec.security.SecurityType;
-import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
-import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
-import org.jfxvnc.ui.persist.HistoryEntry;
-import org.jfxvnc.ui.persist.SessionContext;
-import org.jfxvnc.ui.service.VncRenderService;
 
 public class ConnectViewPresenter implements Initializable {
 
@@ -67,6 +68,13 @@ public class ConnectViewPresenter implements Initializable {
     private CheckBox sslCB;
     @FXML
     private CheckBox sharedCB;
+    @FXML
+    private CheckBox forceRfb33CB;
+
+    @FXML
+    private TextField listeningPortField;
+    @FXML
+    private CheckBox listeningCB;
 
     @FXML
     private TextField userField;
@@ -98,7 +106,7 @@ public class ConnectViewPresenter implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
 	historyList.setItems(ctx.getHistory());
-	
+
 	clearBtn.setOnAction(a -> historyList.getItems().clear());
 	securityCombo.getItems().addAll(FXCollections.observableArrayList(SecurityType.NONE, SecurityType.VNC_Auth));
 	securityCombo.getSelectionModel().selectedItemProperty().addListener((l, a, b) -> {
@@ -107,20 +115,26 @@ public class ConnectViewPresenter implements Initializable {
 
 	pwdField.disableProperty().bind(Bindings.equal(SecurityType.NONE, securityCombo.getSelectionModel().selectedItemProperty()));
 
-	prop.hostProperty().bind(ipField.textProperty());
+	prop.hostProperty().bindBidirectional(ipField.textProperty());
 	StringConverter<Number> converter = new NumberStringConverter("#");
 	Bindings.bindBidirectional(portField.textProperty(), prop.portProperty(), converter);
-	prop.passwordProperty().bind(pwdField.textProperty());
-	prop.sslProperty().bind(sslCB.selectedProperty());
-	prop.sharedProperty().bind(sharedCB.selectedProperty());
 
-	prop.rawEncProperty().bind(rawCB.selectedProperty());
-	prop.copyRectEncProperty().bind(copyrectCB.selectedProperty());
-	prop.hextileEncProperty().bind(hextileCB.selectedProperty());
+	prop.passwordProperty().bindBidirectional(pwdField.textProperty());
+	prop.sslProperty().bindBidirectional(sslCB.selectedProperty());
+	prop.sharedProperty().bindBidirectional(sharedCB.selectedProperty());
+	forceRfb33CB.setSelected(prop.versionProperty().get() == ProtocolVersion.RFB_3_3);
+	forceRfb33CB.selectedProperty().addListener((l, a, b) -> prop.versionProperty().set(b ? ProtocolVersion.RFB_3_3 : ProtocolVersion.RFB_3_8));
+	listeningCB.selectedProperty().bindBidirectional(con.listeningModeProperty());
+	Bindings.bindBidirectional(listeningPortField.textProperty(), con.listeningPortProperty(), converter);
+	listeningPortField.disableProperty().bind(listeningCB.selectedProperty().not());
 
-	prop.clientCursorProperty().bind(cursorCB.selectedProperty());
-	prop.desktopSizeProperty().bind(desktopCB.selectedProperty());
-	prop.zlibEncProperty().bind(zlibCB.selectedProperty());
+	prop.rawEncProperty().bindBidirectional(rawCB.selectedProperty());
+	prop.copyRectEncProperty().bindBidirectional(copyrectCB.selectedProperty());
+	prop.hextileEncProperty().bindBidirectional(hextileCB.selectedProperty());
+
+	prop.clientCursorProperty().bindBidirectional(cursorCB.selectedProperty());
+	prop.desktopSizeProperty().bindBidirectional(desktopCB.selectedProperty());
+	prop.zlibEncProperty().bindBidirectional(zlibCB.selectedProperty());
 
 	portField.textProperty().addListener((observable, oldValue, newValue) -> {
 	    if (newValue != null && !newValue.isEmpty() && !newValue.matches("[0-9]+")) {
@@ -141,7 +155,11 @@ public class ConnectViewPresenter implements Initializable {
 	ctx.bind(securityCombo, "authType");
 	ctx.bind(sslCB.selectedProperty(), "useSSL");
 	ctx.bind(sharedCB.selectedProperty(), "useSharedView");
-	ctx.bind(rawCB.selectedProperty(), "useRAW");
+	ctx.bind(forceRfb33CB.selectedProperty(), "forceRfb33");
+	ctx.bind(listeningCB.selectedProperty(), "listeningMode");
+	ctx.bind(listeningPortField.textProperty(), "listeningPortField");
+
+	ctx.bind(rawCB.selectedProperty(), "useRaw");
 	ctx.bind(copyrectCB.selectedProperty(), "useCopyRect");
 	ctx.bind(hextileCB.selectedProperty(), "useHextile");
 	ctx.bind(cursorCB.selectedProperty(), "useCursor");
@@ -153,7 +171,6 @@ public class ConnectViewPresenter implements Initializable {
 	}
 
 	historyList.getSelectionModel().selectedItemProperty().addListener((l, a, b) -> updateData(b));
-
 	con.connectInfoProperty().addListener((l, a, b) -> Platform.runLater(() -> addToHistory(b)));
 
     }

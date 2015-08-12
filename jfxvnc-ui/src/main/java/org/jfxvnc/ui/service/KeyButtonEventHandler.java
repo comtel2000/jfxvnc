@@ -1,5 +1,9 @@
 package org.jfxvnc.ui.service;
 
+import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
+import org.jfxvnc.net.rfb.codec.encoder.KeyButtonEvent;
+import org.jfxvnc.net.rfb.codec.encoder.KeyButtonMap;
+
 /*
  * #%L
  * jfxvnc-ui
@@ -26,10 +30,6 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-
-import org.jfxvnc.net.rfb.codec.encoder.KeyButtonMap;
-import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
-import org.jfxvnc.net.rfb.codec.encoder.KeyButtonEvent;
 
 public class KeyButtonEventHandler implements KeyButtonMap {
 

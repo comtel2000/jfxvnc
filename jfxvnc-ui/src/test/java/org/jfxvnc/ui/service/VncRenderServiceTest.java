@@ -19,19 +19,17 @@ package org.jfxvnc.ui.service;
  * limitations under the License.
  * #L%
  */
-
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 
 public class VncRenderServiceTest {
 
-
     @Test
-    public void zoomLevelMinMax(){
+    public void zoomLevelMinMax() {
 	VncRenderService service = new VncRenderService();
-	
+
 	assertEquals(1.0, service.zoomLevelProperty().get(), 0.01);
 	service.zoomLevelProperty().set(0.0);
 	assertNotEquals(0.0, service.zoomLevelProperty().get(), 0.01);

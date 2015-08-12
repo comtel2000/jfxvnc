@@ -1,5 +1,15 @@
 package org.jfxvnc.net.rfb.codec.decoder.rect;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
+
+import org.jfxvnc.net.rfb.codec.PixelFormat;
+import org.jfxvnc.net.rfb.render.rect.ZlibImageRect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * #%L
  * jfxvnc-net
@@ -20,24 +30,13 @@ package org.jfxvnc.net.rfb.codec.decoder.rect;
  * #L%
  */
 
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.zip.DataFormatException;
-import java.util.zip.Inflater;
-
-import org.jfxvnc.net.rfb.codec.PixelFormat;
-import org.jfxvnc.net.rfb.render.rect.ZlibImageRect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ZlibRectDecoder extends RawRectDecoder {
 
     private static Logger logger = LoggerFactory.getLogger(ZlibRectDecoder.class);
-    
+
     private final Inflater inflater;
     private boolean initialized;
 
@@ -63,7 +62,7 @@ public class ZlibRectDecoder extends RawRectDecoder {
     public void setRect(FrameRect rect) {
 	this.rect = rect;
     }
-    
+
     @Override
     protected void sendRect(List<Object> out) {
 	initialized = false;

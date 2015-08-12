@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.exception;
  * #L%
  */
 
-
 public class ProtocolException extends Exception {
 
     private static final long serialVersionUID = 5616560775184943955L;
@@ -28,7 +27,7 @@ public class ProtocolException extends Exception {
     public ProtocolException(String message) {
 	super(message);
     }
-    
+
     public ProtocolException(String message, Throwable throwable) {
 	super(message, throwable);
     }

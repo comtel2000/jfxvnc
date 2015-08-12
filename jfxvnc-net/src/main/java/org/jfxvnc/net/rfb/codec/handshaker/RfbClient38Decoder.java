@@ -1,5 +1,20 @@
 package org.jfxvnc.net.rfb.codec.handshaker;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+
+import org.jfxvnc.net.rfb.codec.PixelFormat;
+import org.jfxvnc.net.rfb.codec.handshaker.event.SecurityResultEvent;
+import org.jfxvnc.net.rfb.codec.handshaker.event.SecurityTypesEvent;
+import org.jfxvnc.net.rfb.codec.handshaker.event.ServerInitEvent;
+import org.jfxvnc.net.rfb.codec.security.SecurityType;
+import org.jfxvnc.net.rfb.exception.ProtocolException;
+import org.jfxvnc.net.rfb.exception.SecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * #%L
  * RFB protocol
@@ -20,33 +35,16 @@ package org.jfxvnc.net.rfb.codec.handshaker;
  * #L%
  */
 
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-
-import org.jfxvnc.net.rfb.codec.PixelFormat;
-import org.jfxvnc.net.rfb.codec.handshaker.event.SecurityResultEvent;
-import org.jfxvnc.net.rfb.codec.handshaker.event.SecurityTypesEvent;
-import org.jfxvnc.net.rfb.codec.handshaker.event.ServerInitEvent;
-import org.jfxvnc.net.rfb.codec.security.SecurityType;
-import org.jfxvnc.net.rfb.exception.ProtocolException;
-import org.jfxvnc.net.rfb.exception.SecurityException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-class RfbClient38Decoder extends ReplayingDecoder<RfbClient38Decoder.State> implements RfbClientDecoder {
+class RfbClient38Decoder extends ReplayingDecoder<RfbClient38Decoder.State>implements RfbClientDecoder {
 
     private static Logger logger = LoggerFactory.getLogger(RfbClient38Decoder.class);
 
     protected final Charset ASCII = StandardCharsets.US_ASCII;
 
-    
     public RfbClient38Decoder() {
 	super(State.SEC_TYPES);
     }
@@ -67,7 +65,7 @@ class RfbClient38Decoder extends ReplayingDecoder<RfbClient38Decoder.State> impl
 	    }
 	    SecurityType[] serverSecTypes = new SecurityType[numberOfSecurtiyTypes];
 	    for (int i = 0; i < numberOfSecurtiyTypes; i++) {
-		int sec  = in.readUnsignedByte();
+		int sec = in.readUnsignedByte();
 		serverSecTypes[i] = SecurityType.valueOf(sec);
 		if (serverSecTypes[i] == SecurityType.UNKNOWN) {
 		    logger.error("un supported security types: {}", sec);
@@ -75,7 +73,7 @@ class RfbClient38Decoder extends ReplayingDecoder<RfbClient38Decoder.State> impl
 	    }
 	    logger.info("supported security types: {}", Arrays.toString(serverSecTypes));
 	    checkpoint(State.SEC_RESULT);
-	    out.add(new SecurityTypesEvent(serverSecTypes));
+	    out.add(new SecurityTypesEvent(true, serverSecTypes));
 	    break;
 	case SEC_RESULT:
 
@@ -146,5 +144,5 @@ class RfbClient38Decoder extends ReplayingDecoder<RfbClient38Decoder.State> impl
 
 	return pf;
     }
-    
+
 }

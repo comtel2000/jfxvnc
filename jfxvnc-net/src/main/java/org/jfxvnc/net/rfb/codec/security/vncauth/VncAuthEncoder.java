@@ -1,5 +1,18 @@
 package org.jfxvnc.net.rfb.codec.security.vncauth;
 
+import java.nio.charset.StandardCharsets;
+import java.security.spec.KeySpec;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
+
+import org.jfxvnc.net.rfb.codec.security.RfbSecurityEncoder;
+import org.jfxvnc.net.rfb.exception.ProtocolException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * #%L
  * RFB protocol
@@ -20,25 +33,11 @@ package org.jfxvnc.net.rfb.codec.security.vncauth;
  * #L%
  */
 
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-import java.nio.charset.StandardCharsets;
-import java.security.spec.KeySpec;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESKeySpec;
-
-import org.jfxvnc.net.rfb.codec.security.RfbSecurityEncoder;
-import org.jfxvnc.net.rfb.exception.ProtocolException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class VncAuthEncoder extends MessageToByteEncoder<VncAuthSecurityMessage> implements RfbSecurityEncoder {
+public class VncAuthEncoder extends MessageToByteEncoder<VncAuthSecurityMessage>implements RfbSecurityEncoder {
 
     private static Logger logger = LoggerFactory.getLogger(VncAuthEncoder.class);
 

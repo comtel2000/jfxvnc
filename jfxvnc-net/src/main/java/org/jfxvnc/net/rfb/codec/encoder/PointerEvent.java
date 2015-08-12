@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.codec.encoder;
  * #L%
  */
 
-
 public class PointerEvent implements InputEvent {
 
     private final byte buttonMask;

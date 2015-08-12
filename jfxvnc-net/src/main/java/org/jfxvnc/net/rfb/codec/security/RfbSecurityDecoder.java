@@ -20,9 +20,8 @@ package org.jfxvnc.net.rfb.codec.security;
  * #L%
  */
 
-
 import io.netty.channel.ChannelInboundHandler;
 
-public interface RfbSecurityDecoder extends ChannelInboundHandler{
+public interface RfbSecurityDecoder extends ChannelInboundHandler {
 
 }

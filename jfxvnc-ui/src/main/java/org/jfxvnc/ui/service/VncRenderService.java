@@ -1,5 +1,23 @@
 package org.jfxvnc.ui.service;
 
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+
+import org.jfxvnc.net.rfb.codec.ProtocolInitializer;
+import org.jfxvnc.net.rfb.codec.ProtocolState;
+import org.jfxvnc.net.rfb.codec.decoder.BellEvent;
+import org.jfxvnc.net.rfb.codec.decoder.ServerCutTextEvent;
+import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
+import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
+import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.RenderCallback;
+import org.jfxvnc.net.rfb.render.RenderProtocol;
+import org.jfxvnc.net.rfb.render.rect.ImageRect;
+import org.slf4j.LoggerFactory;
+
 /*
  * #%L
  * jfxvnc-ui
@@ -21,17 +39,17 @@ package org.jfxvnc.ui.service;
  */
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-
-import java.util.concurrent.TimeUnit;
-
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -40,31 +58,22 @@ import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-
-import org.jfxvnc.net.rfb.codec.ProtocolInitializer;
-import org.jfxvnc.net.rfb.codec.ProtocolState;
-import org.jfxvnc.net.rfb.codec.decoder.BellEvent;
-import org.jfxvnc.net.rfb.codec.decoder.ServerCutTextEvent;
-import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
-import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
-import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
-import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
-import org.jfxvnc.net.rfb.render.RenderProtocol;
-import org.jfxvnc.net.rfb.render.RenderCallback;
-import org.jfxvnc.net.rfb.render.rect.ImageRect;
-import org.slf4j.LoggerFactory;
-
-public class VncRenderService extends Service<Boolean> implements RenderProtocol {
+public class VncRenderService extends Service<Boolean>implements RenderProtocol {
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(VncRenderService.class);
 
     @Inject
     ProtocolConfiguration config;
+
+    private static final int CONNECT_PORT = 5900;
+    private static final int LISTENING_PORT = 5500;
+
+    private final BooleanProperty listeningModeProperty = new SimpleBooleanProperty(false);
+    private final IntegerProperty listeningPortProperty = new SimpleIntegerProperty(LISTENING_PORT);
 
     private final ReadOnlyBooleanWrapper connectProperty = new ReadOnlyBooleanWrapper(false);
     private final ReadOnlyBooleanWrapper onlineProperty = new ReadOnlyBooleanWrapper(false);
@@ -85,6 +94,7 @@ public class VncRenderService extends Service<Boolean> implements RenderProtocol
     private final BooleanProperty fullSceenProperty = new SimpleBooleanProperty(false);
     private final BooleanProperty restartProperty = new SimpleBooleanProperty(false);
 
+    private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
 
     public VncRenderService() {
@@ -115,15 +125,11 @@ public class VncRenderService extends Service<Boolean> implements RenderProtocol
 
     private boolean connect() throws Exception {
 	connectProperty.set(true);
-
-	if (workerGroup != null && !workerGroup.isTerminated()) {
-	    logger.warn("wait for shutting down old connect");
-	    workerGroup.shutdownGracefully(2, 5, TimeUnit.SECONDS);
-	}
+	shutdown();
 	workerGroup = new NioEventLoopGroup();
 
 	String host = config.hostProperty().get();
-	int port = config.portProperty().get();
+	int port = config.portProperty().get() > 0 ? config.portProperty().get() : CONNECT_PORT;
 
 	Bootstrap b = new Bootstrap();
 	b.group(workerGroup);
@@ -136,25 +142,54 @@ public class VncRenderService extends Service<Boolean> implements RenderProtocol
 
 	logger.info("try to connect to {}:{}", host, port);
 	ChannelFuture f = b.connect(host, port);
+	f.await(5000);
 
-	f.awaitUninterruptibly();
 	connectProperty.set(f.isSuccess());
 	logger.info("connection {}", connectProperty.get() ? "established" : "failed");
 	if (f.isCancelled()) {
 	    logger.warn("connection aborted");
 	} else if (!f.isSuccess()) {
-	    exceptionCaughtProperty.set(f.cause());
+	    logger.error("connection failed", f.cause());
+	    exceptionCaughtProperty.set(f.cause() != null ? f.cause() : new Exception("connection failed to host: " + host + ":" + port));
 	}
 	return connectProperty.get();
     }
 
+    private void startListening() throws Exception {
+	connectProperty.set(true);
+	shutdown();
+	bossGroup = new NioEventLoopGroup(1);
+	workerGroup = new NioEventLoopGroup();
+
+	ServerBootstrap b = new ServerBootstrap();
+	b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).option(ChannelOption.SO_BACKLOG, 100);
+
+	b.childHandler(new ProtocolInitializer(VncRenderService.this, config));
+
+	int port = listeningPortProperty.get() > 0 ? listeningPortProperty.get() : LISTENING_PORT;
+	b.bind(port).addListener(l -> {
+	    logger.info("wait for incoming connection request on port: {}..", port);
+	    connectProperty.set(l.isSuccess());
+	}).sync();
+
+    }
+
     @PreDestroy
-    public void disconnect() {
-	cancel();
-	if (workerGroup != null) {
+    @Override
+    public boolean cancel() {
+	super.cancel();
+	shutdown();
+	connectProperty.set(false);
+	return true;
+    }
+
+    private void shutdown() {
+	if (workerGroup != null && !workerGroup.isTerminated()) {
 	    workerGroup.shutdownGracefully(2, 5, TimeUnit.SECONDS);
 	}
-	connectProperty.set(false);
+	if (bossGroup != null && !bossGroup.isTerminated()) {
+	    bossGroup.shutdownGracefully(2, 5, TimeUnit.SECONDS);
+	}
     }
 
     @Override
@@ -162,6 +197,10 @@ public class VncRenderService extends Service<Boolean> implements RenderProtocol
 	return new Task<Boolean>() {
 	    @Override
 	    protected Boolean call() throws Exception {
+		if (listeningModeProperty.get()) {
+		    startListening();
+		    return true;
+		}
 		return connect();
 	    }
 	};
@@ -200,7 +239,7 @@ public class VncRenderService extends Service<Boolean> implements RenderProtocol
     @Override
     public void stateChanged(ProtocolState state) {
 	if (state == ProtocolState.CLOSED) {
-	    Platform.runLater(() -> disconnect());
+	    Platform.runLater(() -> cancel());
 	}
 	protocolStateProperty.set(state);
     }
@@ -258,4 +297,11 @@ public class VncRenderService extends Service<Boolean> implements RenderProtocol
 	return restartProperty;
     }
 
+    public BooleanProperty listeningModeProperty() {
+	return listeningModeProperty;
+    }
+
+    public IntegerProperty listeningPortProperty() {
+	return listeningPortProperty;
+    }
 }

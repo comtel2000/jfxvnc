@@ -1,6 +1,5 @@
 package org.jfxvnc.net.rfb.codec;
 
-
 /*
  * #%L
  * RFB protocol
@@ -21,7 +20,6 @@ package org.jfxvnc.net.rfb.codec;
  * #L%
  */
 
-
 public class PixelFormat {
 
     /**
@@ -41,7 +39,7 @@ public class PixelFormat {
 	RGB_888.setGreenShift(8);
 	RGB_888.setBlueShift(0);
     }
-    
+
     private int bitPerPixel;
     private int depth;
     private boolean bigEndian;
@@ -141,8 +139,8 @@ public class PixelFormat {
 
     @Override
     public String toString() {
-	return "PixelFormat [bitPerPixel=" + bitPerPixel + ", depth=" + depth + ", bigEndian=" + bigEndian + ", trueColor=" + trueColor + ", redMax=" + redMax
-		+ ", greenMax=" + greenMax + ", blueMax=" + blueMax + ", redShift=" + redShift + ", greenShift=" + greenShift + ", blueShift=" + blueShift + "]";
+	return "PixelFormat [bitPerPixel=" + bitPerPixel + ", depth=" + depth + ", bigEndian=" + bigEndian + ", trueColor=" + trueColor + ", redMax=" + redMax + ", greenMax="
+		+ greenMax + ", blueMax=" + blueMax + ", redShift=" + redShift + ", greenShift=" + greenShift + ", blueShift=" + blueShift + "]";
     }
 
     @Override

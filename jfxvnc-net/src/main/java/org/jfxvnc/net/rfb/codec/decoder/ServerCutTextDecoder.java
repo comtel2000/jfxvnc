@@ -1,5 +1,8 @@
 package org.jfxvnc.net.rfb.codec.decoder;
 
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
 /*
  * #%L
  * RFB protocol
@@ -22,9 +25,6 @@ package org.jfxvnc.net.rfb.codec.decoder;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 public class ServerCutTextDecoder implements FrameDecoder {
 

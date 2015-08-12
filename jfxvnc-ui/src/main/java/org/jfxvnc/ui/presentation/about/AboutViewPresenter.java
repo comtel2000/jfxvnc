@@ -40,7 +40,7 @@ public class AboutViewPresenter implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
 	String version = AboutViewPresenter.class.getPackage().getImplementationVersion();
-	appendBuildLine(String.format("JavaFX VNC (%s)",version != null ? version : "DEV"));
+	appendBuildLine(String.format("JavaFX VNC (%s)", version != null ? version : "DEV"));
 	appendBuildLine("Copyright © 2015 - comtel2000");
 	appendBuildLine(null);
 	appendBuildLine(System.getProperty("java.runtime.name"));
@@ -48,7 +48,7 @@ public class AboutViewPresenter implements Initializable {
 	appendBuildLine(String.format("OS: \t%s (%s) %s", System.getProperty("os.name"), System.getProperty("os.arch"), System.getProperty("os.version")));
 
     }
-    
+
     private void appendBuildLine(String text) {
 	if (text != null) {
 	    build.appendText(text);

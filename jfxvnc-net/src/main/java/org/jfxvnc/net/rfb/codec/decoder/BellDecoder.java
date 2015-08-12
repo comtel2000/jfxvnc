@@ -1,5 +1,7 @@
 package org.jfxvnc.net.rfb.codec.decoder;
 
+import java.util.List;
+
 /*
  * #%L
  * RFB protocol
@@ -20,11 +22,8 @@ package org.jfxvnc.net.rfb.codec.decoder;
  * #L%
  */
 
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-
-import java.util.List;
 
 public class BellDecoder implements FrameDecoder {
 
@@ -33,7 +32,7 @@ public class BellDecoder implements FrameDecoder {
 
     @Override
     public boolean decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-	if (!in.isReadable(1)){
+	if (!in.isReadable(1)) {
 	    return false;
 	}
 	in.skipBytes(1);

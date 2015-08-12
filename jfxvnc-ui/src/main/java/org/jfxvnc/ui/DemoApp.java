@@ -22,6 +22,10 @@ package org.jfxvnc.ui;
 
 import java.util.stream.IntStream;
 
+import org.controlsfx.control.MasterDetailPane;
+import org.controlsfx.control.PlusMinusSlider;
+import org.jfxvnc.ui.presentation.about.AboutView;
+
 import javafx.application.Application;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Dimension2D;
@@ -39,10 +43,6 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
-import org.controlsfx.control.MasterDetailPane;
-import org.controlsfx.control.PlusMinusSlider;
-import org.jfxvnc.ui.presentation.about.AboutView;
-
 public class DemoApp extends Application {
 
     private final SimpleDoubleProperty sceneWidthProperty = new SimpleDoubleProperty(1024);
@@ -51,51 +51,52 @@ public class DemoApp extends Application {
     private int w = 19;
     private int h = 19;
 
-    //CursorImageRect [hotspotX=9, hotspotY=9, width=19, height=19, bitmask.length=57, pixels.length=361]
-    private final byte[] bitmask = new byte[] {0, 64, 0, 0, 64, 0, 0, 64, 0, 0, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 0, -16, -31, -32, 0, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 0, 0, 64, 0, 0, 64, 0, 0, 64, 0};
+    // CursorImageRect [hotspotX=9, hotspotY=9, width=19, height=19,
+    // bitmask.length=57, pixels.length=361]
+    private final byte[] bitmask = new byte[] { 0, 64, 0, 0, 64, 0, 0, 64, 0, 0, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 0, -16, -31, -32, 0, 64, 0, 0, 0, 0, 0, 0, 0, 0,
+	    0, 0, 0, 0, 0, 0, 64, 0, 0, 64, 0, 0, 64, 0, 0, 64, 0 };
     private final int[] pixels = new int[] { -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
 	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
-	    -16777216, -1, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
+	    -16777216, -1, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
 	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
-	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -1, -16777216, -16777216, -16777216, -16777216, -16777216,
-	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
-	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
-	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
-	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
-	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
-	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -1,
-	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -1, -16777216, -1, -16777216, -16777216, -16777216,
-	    -16777216, -1, -16777216, -1, -16777216, -16777216, -16777216, -16777216, -1, -16777216, -1, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
-	    -16777216, -16777216, -16777216, -16777216, -1, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
+	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -1, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
 	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
 	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
 	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
 	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
 	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
-	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -1, -16777216, -16777216, -16777216, -16777216, -16777216,
+	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -1, -16777216, -16777216, -16777216,
+	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -1, -16777216, -1, -16777216, -16777216, -16777216, -16777216, -1, -16777216, -1,
+	    -16777216, -16777216, -16777216, -16777216, -1, -16777216, -1, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
+	    -16777216, -1, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
 	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
 	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
-	    -16777216, -16777216, -1, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
 	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
-	    -16777216 };
+	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
+	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
+	    -16777216, -16777216, -16777216, -16777216, -16777216, -1, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
+	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
+	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -1, -16777216, -16777216, -16777216,
+	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216,
+	    -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216, -16777216 };
 
     @Override
     public void start(Stage stage) throws Exception {
 	stage.setTitle("Demo (" + System.getProperty("javafx.runtime.version") + ")");
 
-	//remove transparent pixels
+	// remove transparent pixels
 	int maskBytesPerRow = Math.floorDiv((w + 7), 8);
-	IntStream.range(0, h).forEach(
-		y -> IntStream.range(0, w).filter(x -> (bitmask[(y * maskBytesPerRow) + Math.floorDiv(x, 8)] & (1 << 7 - Math.floorMod(x, 8))) < 1)
-			.forEach(x -> pixels[y * w + x] = 0));
-//	for (int y = 0; y < h; y++) {
-//	    for (int x = 0; x < w; x++) {
-//		int bit = 7 - Math.floorMod(x, 8);
-//		if ((bitmask[(y * maskBytesPerRow) + Math.floorDiv(x, 8)] & (1 << bit)) < 1) {
-//		    pixels[y * w + x] = 0;
-//		}
-//	    }
-//	}
+	IntStream.range(0, h).forEach(y -> IntStream.range(0, w).filter(x -> (bitmask[(y * maskBytesPerRow) + Math.floorDiv(x, 8)] & (1 << 7 - Math.floorMod(x, 8))) < 1)
+		.forEach(x -> pixels[y * w + x] = 0));
+	// for (int y = 0; y < h; y++) {
+	// for (int x = 0; x < w; x++) {
+	// int bit = 7 - Math.floorMod(x, 8);
+	// if ((bitmask[(y * maskBytesPerRow) + Math.floorDiv(x, 8)] & (1 <<
+	// bit)) < 1) {
+	// pixels[y * w + x] = 0;
+	// }
+	// }
+	// }
 
 	Dimension2D dim = ImageCursor.getBestSize(w, h);
 
@@ -103,50 +104,50 @@ public class DemoApp extends Application {
 	cImage.getPixelWriter().setPixels(0, 0, w, h, PixelFormat.getIntArgbInstance(), pixels, 0, w);
 
 	MasterDetailPane mdPane = new MasterDetailPane(Side.RIGHT);
-	
-	
+
 	ImageView imgView = new ImageView(new Image(VncClientApp.class.getResourceAsStream("icon.png")));
-//	imgView.setFitHeight(imgView.getImage().getHeight());
-//	imgView.setFitWidth(imgView.getImage().getWidth());
+	// imgView.setFitHeight(imgView.getImage().getHeight());
+	// imgView.setFitWidth(imgView.getImage().getWidth());
 	imgView.setPreserveRatio(true);
-	
+
 	imgView.setCursor(new ImageCursor(cImage, 0, 0));
 	ScrollPane scrollPane = new ScrollPane(imgView);
 	scrollPane.setFitToHeight(true);
 	scrollPane.setFitToWidth(true);
-	
+
 	BorderPane mainPane = new BorderPane();
-	
+
 	PlusMinusSlider slider = new PlusMinusSlider();
-	
+
 	mdPane.setMasterNode(scrollPane);
-	
+
 	TitledPane tp = new TitledPane("controlsfx css bug #457", new ComboBox<Object>());
-	
+
 	AboutView about = new AboutView();
 	mdPane.setDetailNode(about.getView());
 
 	mdPane.setShowDetailNode(true);
-	
-	slider.setOnValueChanged((e)->{
-	   
+
+	slider.setOnValueChanged((e) -> {
+
 	    double scaleFactor = e.getValue() + 1;
 
 	    // imgView.getTransforms().clear();
-	   // imgView.getTransforms().add(new Scale(scaleFactor, scaleFactor));
-	    //imgView.fitWidthProperty().set(imgView.fitWidthProperty().get() * scaleFactor);
-	    
-	    imgView.setFitHeight(imgView.getImage().getHeight() * scaleFactor);
-	    
-//	    imgView.setFitHeight(imgView.getImage().getHeight() * scaleFactor);
-//	    imgView.setFitWidth(imgView.getImage().getWidth() * scaleFactor);
-	    //System.out.println(imgView.getBoundsInParent());
-	    //System.out.println(imgView.getBoundsInLocal());
+	    // imgView.getTransforms().add(new Scale(scaleFactor, scaleFactor));
+	    // imgView.fitWidthProperty().set(imgView.fitWidthProperty().get() *
+	    // scaleFactor);
 
-	    //scrollPane.setViewportBounds(imgView.getBoundsInLocal());
-	    //imgView.setFitHeight(imgView.getFitHeight() * scaleFactor);
+	    imgView.setFitHeight(imgView.getImage().getHeight() * scaleFactor);
+
+	    // imgView.setFitHeight(imgView.getImage().getHeight() *
+	    // scaleFactor);
+	    // imgView.setFitWidth(imgView.getImage().getWidth() * scaleFactor);
+	    // System.out.println(imgView.getBoundsInParent());
+	    // System.out.println(imgView.getBoundsInLocal());
+
+	    // scrollPane.setViewportBounds(imgView.getBoundsInLocal());
+	    // imgView.setFitHeight(imgView.getFitHeight() * scaleFactor);
 	});
-	
 
 	mainPane.setCenter(mdPane);
 	mainPane.setBottom(new ToolBar(slider));

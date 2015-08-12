@@ -1,5 +1,25 @@
 package org.jfxvnc.net.rfb.codec;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
+import org.jfxvnc.net.rfb.codec.encoder.ClientCutTextEncoder;
+import org.jfxvnc.net.rfb.codec.encoder.KeyButtonEventEncoder;
+import org.jfxvnc.net.rfb.codec.encoder.PixelFormatEncoder;
+import org.jfxvnc.net.rfb.codec.encoder.PointerEventEncoder;
+import org.jfxvnc.net.rfb.codec.encoder.PreferedEncoding;
+import org.jfxvnc.net.rfb.codec.encoder.PreferedEncodingEncoder;
+import org.jfxvnc.net.rfb.codec.handshaker.event.ServerInitEvent;
+import org.jfxvnc.net.rfb.exception.ProtocolException;
+import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.RenderProtocol;
+import org.jfxvnc.net.rfb.render.rect.ImageRect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * #%L
  * RFB protocol
@@ -25,27 +45,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
-import org.jfxvnc.net.rfb.codec.encoder.ClientCutTextEncoder;
-import org.jfxvnc.net.rfb.codec.encoder.KeyButtonEventEncoder;
-import org.jfxvnc.net.rfb.codec.encoder.PixelFormatEncoder;
-import org.jfxvnc.net.rfb.codec.encoder.PointerEventEncoder;
-import org.jfxvnc.net.rfb.codec.encoder.PreferedEncoding;
-import org.jfxvnc.net.rfb.codec.encoder.PreferedEncodingEncoder;
-import org.jfxvnc.net.rfb.codec.handshaker.event.ServerInitEvent;
-import org.jfxvnc.net.rfb.exception.ProtocolException;
-import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
-import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
-import org.jfxvnc.net.rfb.render.RenderProtocol;
-import org.jfxvnc.net.rfb.render.rect.ImageRect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 
@@ -72,7 +73,7 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
 	if (config.sslProperty().get()) {
 	    if (sslContext == null) {
-		sslContext = SslContext.newClientContext(InsecureTrustManagerFactory.INSTANCE);
+		sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
 	    }
 	    ctx.pipeline().addFirst("ssl-handler", sslContext.newHandler(ctx.channel().alloc()));
 	}
@@ -100,7 +101,7 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 		// serverInit.getFrameBufferWidth(),
 		// serverInit.getFrameBufferHeight());
 
-		});
+	    });
 	    return;
 	}
 	if (msg instanceof ServerDecoderEvent) {

@@ -16,61 +16,167 @@
 			<content>
 				<GridPane hgap="3.0" vgap="3.0">
 					<children>
-						<Label text="Host (IP):" GridPane.rowIndex="1" />
-						<Label text="Port:" GridPane.rowIndex="2" />
-						<Label text="User:" GridPane.rowIndex="3" />
-						<Label text="Password:" GridPane.rowIndex="4" />
-						<Label text="Authentication:" GridPane.rowIndex="5" />
-						<Label text="SSL/TLS:" GridPane.rowIndex="6" />
-						<Label text="Shared View:" GridPane.rowIndex="7" />
-						<Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="8" />
-						<Label text="Encodings" GridPane.rowIndex="9">
+						<Label text="Host (IP)" GridPane.rowIndex="1">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin></Label>
+						<Label text="Port" GridPane.rowIndex="2">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin></Label>
+						<Label text="User" GridPane.rowIndex="3">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin></Label>
+						<Label text="Password" GridPane.rowIndex="4">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin></Label>
+						<Label text="Authentication" GridPane.rowIndex="5">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin></Label>
+						<Label text="SSL/TLS" GridPane.rowIndex="6">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin></Label>
+						<Label text="Shared View" GridPane.rowIndex="10">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin></Label>
+						<Separator prefWidth="200.0" GridPane.columnSpan="4" GridPane.halignment="LEFT" GridPane.rowIndex="8" />
+						<Label text="Encodings" GridPane.columnSpan="4" GridPane.halignment="LEFT" GridPane.rowIndex="9">
 							<font>
 								<Font name="System Bold" size="12.0" />
 							</font>
 						</Label>
-						<Label text="RAW (default):" GridPane.rowIndex="10" />
+						<Label text="RAW (default)" GridPane.rowIndex="11">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin></Label>
 
-						<Label text="Copy Rect:" GridPane.rowIndex="11" />
-						<Label text="Hextile:" GridPane.rowIndex="12" />
-						<Label text="Server">
+						<Label text="Copy Rect" GridPane.rowIndex="12">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin></Label>
+						<Label text="Hextile" GridPane.rowIndex="13">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin></Label>
+						<Label text="Server" GridPane.columnSpan="4" GridPane.halignment="LEFT">
 							<font>
 								<Font name="System Bold" size="12.0" />
 							</font>
 						</Label>
-						<Label text="Cursor:" GridPane.rowIndex="13" />
-                  <Label text="Desktop Size:" GridPane.rowIndex="14" />
-                  <Label text="Zlib:" GridPane.rowIndex="15" />
-						<Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="16" />
-						<Label text="History" GridPane.rowIndex="17">
+						<Label text="Cursor" GridPane.columnIndex="2" GridPane.rowIndex="11">
+                     <GridPane.margin>
+                        <Insets left="20.0" right="10.0" />
+                     </GridPane.margin>
+                     <font>
+                        <Font size="12.0" />
+                     </font></Label>
+                  <Label text="Desktop Size" GridPane.columnIndex="2" GridPane.rowIndex="12">
+                     <GridPane.margin>
+                        <Insets left="20.0" right="10.0" />
+                     </GridPane.margin>
+                     <font>
+                        <Font size="12.0" />
+                     </font></Label>
+                  <Label text="Zlib" GridPane.columnIndex="2" GridPane.rowIndex="13">
+                     <GridPane.margin>
+                        <Insets left="20.0" right="10.0" />
+                     </GridPane.margin>
+                     <font>
+                        <Font size="12.0" />
+                     </font></Label>
+						<Separator prefWidth="200.0" GridPane.columnSpan="4" GridPane.halignment="LEFT" GridPane.rowIndex="14" />
+						<Label text="History" GridPane.columnSpan="4" GridPane.halignment="LEFT" GridPane.rowIndex="15">
 							<font>
 								<Font name="System Bold" size="12.0" />
 							</font>
 						</Label>
-						<TextField fx:id="ipField" promptText="host" text="" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-						<TextField fx:id="portField" promptText="default (5900)" text="" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-						<TextField fx:id="userField" disable="true" promptText="user" text="" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-						<PasswordField fx:id="pwdField" promptText="password" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-						<ComboBox fx:id="securityCombo" prefWidth="500.0" promptText="Authentication" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
+						<TextField fx:id="ipField" promptText="host" text="" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" />
+						<TextField fx:id="portField" promptText="default (5900)" text="" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="2" />
+						<TextField fx:id="userField" disable="true" promptText="user" text="" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="3" />
+						<PasswordField fx:id="pwdField" promptText="password" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="4" />
+						<ComboBox fx:id="securityCombo" maxWidth="1.7976931348623157E308" promptText="Authentication" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
 						<CheckBox fx:id="sslCB" mnemonicParsing="false" text="" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-						<CheckBox fx:id="sharedCB" mnemonicParsing="false" selected="true" text="" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-						<CheckBox fx:id="rawCB" disable="true" mnemonicParsing="false" selected="true" text="" GridPane.columnIndex="1" GridPane.rowIndex="10" />
-						<CheckBox fx:id="copyrectCB" mnemonicParsing="false" selected="true" text="" GridPane.columnIndex="1" GridPane.rowIndex="11" />
-						<CheckBox fx:id="hextileCB" disable="true" mnemonicParsing="false" text="" GridPane.columnIndex="1" GridPane.rowIndex="12" />
-						<CheckBox fx:id="cursorCB" mnemonicParsing="false" selected="true" text="" GridPane.columnIndex="1" GridPane.rowIndex="13" />
-                  <CheckBox fx:id="desktopCB" mnemonicParsing="false" selected="true" GridPane.columnIndex="1" GridPane.rowIndex="14" />
-                  <CheckBox fx:id="zlibCB" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="15" />
-						<ListView fx:id="historyList" GridPane.columnSpan="2" GridPane.rowIndex="18" />
-						<Button fx:id="clearBtn" mnemonicParsing="false" text="Clear" GridPane.rowIndex="19" />
+						<CheckBox fx:id="sharedCB" mnemonicParsing="false" selected="true" text="" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+						<CheckBox fx:id="rawCB" disable="true" mnemonicParsing="false" selected="true" text="" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+						<CheckBox fx:id="copyrectCB" mnemonicParsing="false" selected="true" text="" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+						<CheckBox fx:id="hextileCB" disable="true" mnemonicParsing="false" text="" GridPane.columnIndex="1" GridPane.rowIndex="13" />
+						<CheckBox fx:id="cursorCB" mnemonicParsing="false" selected="true" text="" GridPane.columnIndex="3" GridPane.rowIndex="11" />
+                  <CheckBox fx:id="desktopCB" mnemonicParsing="false" selected="true" GridPane.columnIndex="3" GridPane.rowIndex="12" />
+                  <CheckBox fx:id="zlibCB" mnemonicParsing="false" GridPane.columnIndex="3" GridPane.rowIndex="13" />
+						<ListView fx:id="historyList" GridPane.columnSpan="4" GridPane.halignment="LEFT" GridPane.rowIndex="16" />
+						<Button fx:id="clearBtn" mnemonicParsing="false" text="Clear" GridPane.columnSpan="4" GridPane.halignment="LEFT" GridPane.rowIndex="17" />
+                  <Label text="Force RFB 3.3" GridPane.columnIndex="2" GridPane.rowIndex="10">
+                     <GridPane.margin>
+                        <Insets left="20.0" right="10.0" />
+                     </GridPane.margin>
+                     <font>
+                        <Font size="12.0" />
+                     </font></Label>
+                  <CheckBox fx:id="forceRfb33CB" mnemonicParsing="false" GridPane.columnIndex="3" GridPane.rowIndex="10" />
+                  <Label text="Listening Mode" GridPane.rowIndex="7">
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                     <GridPane.margin>
+                        <Insets left="10.0" right="10.0" />
+                     </GridPane.margin>
+                  </Label>
+                  <CheckBox fx:id="listeningCB" mnemonicParsing="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                  <TextField fx:id="listeningPortField" promptText="default (5500)" GridPane.columnIndex="3" GridPane.rowIndex="7" />
+                  <Label text="On Port" GridPane.columnIndex="2" GridPane.rowIndex="7">
+                     <padding>
+                        <Insets left="20.0" right="10.0" />
+                     </padding>
+                     <font>
+                        <Font size="12.0" />
+                     </font>
+                  </Label>
                   
 
 					</children>
 					<columnConstraints>
-						<ColumnConstraints hgrow="SOMETIMES" maxWidth="-1.0" minWidth="110.0" />
-						<ColumnConstraints hgrow="ALWAYS" minWidth="100.0" prefWidth="250.0" />
+						<ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="50.0" />
+						<ColumnConstraints hgrow="SOMETIMES" prefWidth="60.0" />
+                  <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="50.0" />
+                  <ColumnConstraints hgrow="ALWAYS" prefWidth="60.0" />
 					</columnConstraints>
 					<padding>
-						<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+						<Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
 					</padding>
 					<rowConstraints>
 	                  		<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -80,15 +186,13 @@
 							<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
 							<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
 	                  		<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-							<RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
 							<RowConstraints prefHeight="20.0" vgrow="SOMETIMES" />
 		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
 		                  <RowConstraints prefHeight="20.0" vgrow="SOMETIMES" />
 		                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
 		                  <RowConstraints minHeight="100.0" prefHeight="150.0" vgrow="SOMETIMES" />

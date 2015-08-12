@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.codec.handshaker.event;
  * #L%
  */
 
-
 import org.jfxvnc.net.rfb.codec.PixelFormat;
 
 public class ServerInitEvent implements HandshakeEvent {
@@ -69,8 +68,8 @@ public class ServerInitEvent implements HandshakeEvent {
 
     @Override
     public String toString() {
-	return "ServerInitEvent [frameBufferWidth=" + frameBufferWidth + ", frameBufferHeight=" + frameBufferHeight + ", pixelFormat=" + pixelFormat + ", serverName="
-		+ serverName + "]";
+	return "ServerInitEvent [frameBufferWidth=" + frameBufferWidth + ", frameBufferHeight=" + frameBufferHeight + ", pixelFormat=" + pixelFormat + ", serverName=" + serverName
+		+ "]";
     }
 
 }

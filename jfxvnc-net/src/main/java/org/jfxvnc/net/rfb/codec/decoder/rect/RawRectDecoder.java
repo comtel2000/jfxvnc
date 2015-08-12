@@ -1,5 +1,13 @@
 package org.jfxvnc.net.rfb.codec.decoder.rect;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.jfxvnc.net.rfb.codec.PixelFormat;
+import org.jfxvnc.net.rfb.render.rect.RawImageRect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * #%L
  * jfxvnc-net
@@ -20,18 +28,9 @@ package org.jfxvnc.net.rfb.codec.decoder.rect;
  * #L%
  */
 
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.jfxvnc.net.rfb.codec.PixelFormat;
-import org.jfxvnc.net.rfb.render.rect.RawImageRect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RawRectDecoder implements FrameRectDecoder {
 
@@ -42,7 +41,7 @@ public class RawRectDecoder implements FrameRectDecoder {
     protected PixelFormat pixelFormat;
 
     protected ByteBuf framebuffer;
-    
+
     protected final int redPos;
     protected final int bluePos;
 
@@ -80,7 +79,7 @@ public class RawRectDecoder implements FrameRectDecoder {
 	    this.rect = rect;
 	    this.capacity = rect.getWidth() * rect.getHeight() * pixelFormat.getBytePerPixel();
 	}
-	
+
     }
 
     protected void sendRect(List<Object> out) {

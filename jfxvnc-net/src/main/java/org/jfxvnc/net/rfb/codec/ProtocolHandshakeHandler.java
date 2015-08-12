@@ -1,5 +1,25 @@
 package org.jfxvnc.net.rfb.codec;
 
+import java.util.Arrays;
+
+import org.jfxvnc.net.rfb.codec.decoder.ProtocolVersionDecoder;
+import org.jfxvnc.net.rfb.codec.handshaker.RfbClientHandshaker;
+import org.jfxvnc.net.rfb.codec.handshaker.RfbClientHandshakerFactory;
+import org.jfxvnc.net.rfb.codec.handshaker.event.SecurityResultEvent;
+import org.jfxvnc.net.rfb.codec.handshaker.event.SecurityTypesEvent;
+import org.jfxvnc.net.rfb.codec.handshaker.event.ServerInitEvent;
+import org.jfxvnc.net.rfb.codec.handshaker.event.SharedEvent;
+import org.jfxvnc.net.rfb.codec.security.RfbSecurityHandshaker;
+import org.jfxvnc.net.rfb.codec.security.RfbSecurityHandshakerFactory;
+import org.jfxvnc.net.rfb.codec.security.RfbSecurityMessage;
+import org.jfxvnc.net.rfb.codec.security.SecurityType;
+import org.jfxvnc.net.rfb.exception.ProtocolException;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.netty.buffer.Unpooled;
+
 /*
  * #%L
  * RFB protocol
@@ -23,24 +43,6 @@ package org.jfxvnc.net.rfb.codec;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
-
-import java.util.Arrays;
-
-import org.jfxvnc.net.rfb.codec.decoder.ProtocolVersionDecoder;
-import org.jfxvnc.net.rfb.codec.handshaker.RfbClientHandshaker;
-import org.jfxvnc.net.rfb.codec.handshaker.RfbClientHandshakerFactory;
-import org.jfxvnc.net.rfb.codec.handshaker.event.SecurityResultEvent;
-import org.jfxvnc.net.rfb.codec.handshaker.event.SecurityTypesEvent;
-import org.jfxvnc.net.rfb.codec.handshaker.event.ServerInitEvent;
-import org.jfxvnc.net.rfb.codec.handshaker.event.SharedEvent;
-import org.jfxvnc.net.rfb.codec.security.RfbSecurityHandshaker;
-import org.jfxvnc.net.rfb.codec.security.RfbSecurityHandshakerFactory;
-import org.jfxvnc.net.rfb.codec.security.RfbSecurityMessage;
-import org.jfxvnc.net.rfb.codec.security.SecurityType;
-import org.jfxvnc.net.rfb.exception.ProtocolException;
-import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 
@@ -127,13 +129,14 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 	SecurityType userSecType = config.securityProperty().get();
 	boolean isSupported = Arrays.stream(supportTypes).anyMatch(i -> i == userSecType);
 	if (!isSupported) {
-	    ctx.fireExceptionCaught(new ProtocolException(String.format("Authentication: '%s' is not supported. The server supports only (%s)",
-		    userSecType, Arrays.toString(supportTypes))));
+	    ctx.fireExceptionCaught(
+		    new ProtocolException(String.format("Authentication: '%s' is not supported. The server supports only (%s)", userSecType, Arrays.toString(supportTypes))));
 	    return;
 	}
 
 	if (userSecType == SecurityType.NONE) {
-	    logger.info("no security available");
+	    logger.info("none security type available");
+	    ctx.writeAndFlush(Unpooled.buffer(1).writeByte(userSecType.getType()));
 	    ctx.pipeline().fireUserEventTriggered(ProtocolState.SECURITY_COMPLETE);
 	    return;
 	}
@@ -145,13 +148,12 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 	    ctx.fireExceptionCaught(new ProtocolException(String.format("Authentication: '%s' is not supported yet", userSecType)));
 	    return;
 	}
-	secHandshaker.handshake(ctx.channel()).addListener((future) -> {
-	    if (!future.isSuccess()) {
-		ctx.fireExceptionCaught(future.cause());
-	    } else {
+	secHandshaker.handshake(ctx.channel(), msg.isResponse()).addListener((future) -> {
+	    if (future.isSuccess()) {
 		ctx.pipeline().fireUserEventTriggered(ProtocolState.SECURITY_STARTED);
+	    } else {
+		ctx.fireExceptionCaught(future.cause());
 	    }
-
 	});
 
     }

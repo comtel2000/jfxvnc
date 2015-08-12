@@ -36,7 +36,7 @@ public class PreferedEncodingEncoder extends MessageToByteEncoder<PreferedEncodi
 	out.writeZero(1); // padding
 	out.writeShort(enc.getEncodings().length);
 	Arrays.stream(enc.getEncodings()).forEach(e -> out.writeInt(e.getType()));
-	
+
 	ctx.pipeline().remove(this);
     }
 

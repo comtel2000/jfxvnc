@@ -17,6 +17,7 @@
 - Server/Client clipboard transfer
 - Zoom, Full screen (0.0.2)
 - Touch gesture support
+- VNC listening mode (0.0.3)
 
 ## Roadmap
 - TRLE, ZRLE, Tight, Turbo, etc. encodings

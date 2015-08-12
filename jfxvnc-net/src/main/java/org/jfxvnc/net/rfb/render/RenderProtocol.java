@@ -26,7 +26,7 @@ import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;
 
 public interface RenderProtocol {
- 
+
     void render(ImageRect rect, RenderCallback callback);
 
     void eventReceived(ServerDecoderEvent event);

@@ -22,11 +22,10 @@ import org.jfxvnc.net.rfb.codec.Encoding;
  * #L%
  */
 
-
 public abstract class ImageRect {
 
     public abstract Encoding getEncoding();
-    
+
     protected final int x;
     protected final int y;
     protected final int width;

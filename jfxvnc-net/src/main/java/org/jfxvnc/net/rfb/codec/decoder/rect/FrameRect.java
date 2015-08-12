@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.codec.decoder.rect;
  * #L%
  */
 
-
 import org.jfxvnc.net.rfb.codec.Encoding;
 
 public class FrameRect {

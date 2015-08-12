@@ -1,5 +1,11 @@
 package org.jfxvnc.net.rfb.codec.decoder;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import org.jfxvnc.net.rfb.codec.ProtocolVersion;
+
 /*
  * #%L
  * RFB protocol
@@ -20,16 +26,9 @@ package org.jfxvnc.net.rfb.codec.decoder;
  * #L%
  */
 
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
-import org.jfxvnc.net.rfb.codec.ProtocolVersion;
 
 public class ProtocolVersionDecoder extends ByteToMessageDecoder {
 

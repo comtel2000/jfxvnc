@@ -2,7 +2,6 @@ package org.jfxvnc.net.rfb.render.rect;
 
 import org.jfxvnc.net.rfb.codec.Encoding;
 
-
 /*
  * #%L
  * RFB protocol
@@ -33,7 +32,7 @@ public class ZlibImageRect extends RawImageRect {
     public Encoding getEncoding() {
 	return Encoding.ZLIB;
     }
-    
+
     @Override
     public String toString() {
 	return "ZlibRawImageRect [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + ", pixels.length=" + (getPixels() != null ? getPixels().length : "null") + "]";

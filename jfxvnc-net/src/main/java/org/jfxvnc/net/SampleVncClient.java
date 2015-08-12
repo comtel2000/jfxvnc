@@ -1,5 +1,16 @@
 package org.jfxvnc.net;
 
+import org.jfxvnc.net.rfb.codec.ProtocolHandler;
+import org.jfxvnc.net.rfb.codec.ProtocolState;
+import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
+import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
+import org.jfxvnc.net.rfb.codec.security.SecurityType;
+import org.jfxvnc.net.rfb.render.DefaultProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.RenderCallback;
+import org.jfxvnc.net.rfb.render.RenderProtocol;
+import org.jfxvnc.net.rfb.render.rect.ImageRect;
+
 /*
  * #%L
  * RFB protocol
@@ -28,17 +39,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-
-import org.jfxvnc.net.rfb.codec.ProtocolHandler;
-import org.jfxvnc.net.rfb.codec.ProtocolState;
-import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
-import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
-import org.jfxvnc.net.rfb.codec.security.SecurityType;
-import org.jfxvnc.net.rfb.render.DefaultProtocolConfiguration;
-import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
-import org.jfxvnc.net.rfb.render.RenderCallback;
-import org.jfxvnc.net.rfb.render.RenderProtocol;
-import org.jfxvnc.net.rfb.render.rect.ImageRect;
 
 public class SampleVncClient {
 

@@ -20,45 +20,44 @@ package org.jfxvnc.net.rfb.codec.decoder;
  * #L%
  */
 
-
 public class ColourMapEntriesEvent implements ServerDecoderEvent {
 
-	private final int firstColor;
-	private final int numberOfColor;
-	private final int red;
-	private final int green;
-	private final int blue;
-	
-	public ColourMapEntriesEvent(int firstColor, int numberOfColor, int red, int green, int blue) {
-	    this.firstColor = firstColor;
-	    this.numberOfColor = numberOfColor;
-	    this.red = red;
-	    this.green = green;
-	    this.blue = blue;
-	}
+    private final int firstColor;
+    private final int numberOfColor;
+    private final int red;
+    private final int green;
+    private final int blue;
 
-	public int getFirstColor() {
-	    return firstColor;
-	}
+    public ColourMapEntriesEvent(int firstColor, int numberOfColor, int red, int green, int blue) {
+	this.firstColor = firstColor;
+	this.numberOfColor = numberOfColor;
+	this.red = red;
+	this.green = green;
+	this.blue = blue;
+    }
 
-	public int getNumberOfColor() {
-	    return numberOfColor;
-	}
+    public int getFirstColor() {
+	return firstColor;
+    }
 
-	public int getRed() {
-	    return red;
-	}
+    public int getNumberOfColor() {
+	return numberOfColor;
+    }
 
-	public int getGreen() {
-	    return green;
-	}
+    public int getRed() {
+	return red;
+    }
 
-	public int getBlue() {
-	    return blue;
-	}
+    public int getGreen() {
+	return green;
+    }
 
-	@Override
-	public String toString() {
-	    return "ColourMapEntries [firstColor=" + firstColor + ", numberOfColor=" + numberOfColor + ", red=" + red + ", green=" + green + ", blue=" + blue + "]";
-	}
+    public int getBlue() {
+	return blue;
+    }
+
+    @Override
+    public String toString() {
+	return "ColourMapEntries [firstColor=" + firstColor + ", numberOfColor=" + numberOfColor + ", red=" + red + ", green=" + green + ", blue=" + blue + "]";
+    }
 }

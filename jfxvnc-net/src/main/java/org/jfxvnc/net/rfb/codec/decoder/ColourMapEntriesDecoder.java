@@ -1,5 +1,7 @@
 package org.jfxvnc.net.rfb.codec.decoder;
 
+import java.util.List;
+
 /*
  * #%L
  * RFB protocol
@@ -20,11 +22,8 @@ package org.jfxvnc.net.rfb.codec.decoder;
  * #L%
  */
 
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-
-import java.util.List;
 
 public class ColourMapEntriesDecoder implements FrameDecoder {
 

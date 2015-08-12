@@ -20,16 +20,18 @@ package org.jfxvnc.net.rfb.codec.handshaker.event;
  * #L%
  */
 
-
 import java.util.Arrays;
 
 import org.jfxvnc.net.rfb.codec.security.SecurityType;
 
 public class SecurityTypesEvent implements HandshakeEvent {
 
+    private final boolean response;
+
     private final SecurityType[] securityTypes;
 
-    public SecurityTypesEvent(SecurityType[] securityTypes) {
+    public SecurityTypesEvent(boolean response, SecurityType... securityTypes) {
+	this.response = response;
 	this.securityTypes = securityTypes;
     }
 
@@ -37,9 +39,13 @@ public class SecurityTypesEvent implements HandshakeEvent {
 	return securityTypes;
     }
 
+    public boolean isResponse() {
+	return response;
+    }
+
     @Override
     public String toString() {
-	return "RfbSecurityTypesMessage [securityTypes=" + Arrays.toString(securityTypes) + "]";
+	return "SecurityTypesEvent [response=" + response + ", " + (securityTypes != null ? "securityTypes=" + Arrays.toString(securityTypes) : "") + "]";
     }
 
 }

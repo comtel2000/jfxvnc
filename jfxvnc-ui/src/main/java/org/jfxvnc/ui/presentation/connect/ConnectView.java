@@ -20,7 +20,6 @@ package org.jfxvnc.ui.presentation.connect;
  * #L%
  */
 
-
 import com.airhacks.afterburner.views.FXMLView;
 
 public class ConnectView extends FXMLView {

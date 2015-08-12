@@ -33,6 +33,10 @@ import java.nio.file.StandardOpenOption;
 import java.util.Optional;
 import java.util.Properties;
 
+import javax.annotation.PreDestroy;
+
+import org.slf4j.LoggerFactory;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.FloatProperty;
@@ -49,10 +53,6 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.paint.Color;
 
-import javax.annotation.PreDestroy;
-
-import org.slf4j.LoggerFactory;
-
 public class SessionContext {
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(SessionContext.class);
@@ -62,7 +62,7 @@ public class SessionContext {
 
     private ObservableList<HistoryEntry> history;
     private ObservableMap<String, Property<?>> bindings;
-    
+
     private final Properties props = new Properties();
 
     private Path streamPath;
@@ -100,7 +100,7 @@ public class SessionContext {
 	} catch (IOException ex) {
 	    logger.error(ex.getMessage(), ex);
 	}
-	
+
 	try {
 	    saveHistory();
 	} catch (IOException e) {
@@ -108,7 +108,6 @@ public class SessionContext {
 	}
 
     }
-
 
     public void bind(final BooleanProperty property, final String propertyName) {
 	String value = props.getProperty(propertyName);
@@ -211,7 +210,7 @@ public class SessionContext {
      * @return
      */
     public ObservableMap<String, Property<?>> getBindings() {
-	if (bindings == null){
+	if (bindings == null) {
 	    bindings = FXCollections.observableHashMap();
 	}
 	return bindings;
@@ -282,7 +281,7 @@ public class SessionContext {
     }
 
     public ObservableList<HistoryEntry> getHistory() {
-	if (history == null){
+	if (history == null) {
 	    history = FXCollections.observableArrayList();
 	    loadHistory();
 	}

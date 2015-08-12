@@ -22,7 +22,6 @@ import java.util.EventListener;
  * #L%
  */
 
-
 public interface InputEventListener extends EventListener {
 
     void sendInputEvent(InputEvent event);

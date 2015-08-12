@@ -1,5 +1,10 @@
 package org.jfxvnc.net.rfb.codec.decoder.rect;
 
+import java.util.List;
+
+import org.jfxvnc.net.rfb.codec.PixelFormat;
+import org.jfxvnc.net.rfb.render.rect.CopyImageRect;
+
 /*
  * #%L
  * jfxvnc-net
@@ -20,14 +25,8 @@ package org.jfxvnc.net.rfb.codec.decoder.rect;
  * #L%
  */
 
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-
-import java.util.List;
-
-import org.jfxvnc.net.rfb.codec.PixelFormat;
-import org.jfxvnc.net.rfb.render.rect.CopyImageRect;
 
 public class CopyRectDecoder implements FrameRectDecoder {
 

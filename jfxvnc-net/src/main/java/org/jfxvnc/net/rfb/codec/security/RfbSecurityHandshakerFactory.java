@@ -20,9 +20,7 @@ package org.jfxvnc.net.rfb.codec.security;
  * #L%
  */
 
-
 import org.jfxvnc.net.rfb.codec.security.vncauth.VncAuthHandshaker;
-
 
 public class RfbSecurityHandshakerFactory {
 
@@ -30,11 +28,11 @@ public class RfbSecurityHandshakerFactory {
     }
 
     public RfbSecurityHandshaker newRfbSecurityHandshaker(SecurityType securityType) {
-	
-	if (securityType == SecurityType.VNC_Auth){
+
+	if (securityType == SecurityType.VNC_Auth) {
 	    return new VncAuthHandshaker(securityType);
 	}
-	
+
 	return null;
 
     }

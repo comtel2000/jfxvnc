@@ -23,12 +23,6 @@ package org.jfxvnc.ui.presentation.detail;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.TitledPane;
-
 import javax.inject.Inject;
 
 import org.jfxvnc.ui.persist.SessionContext;
@@ -36,6 +30,12 @@ import org.jfxvnc.ui.presentation.about.AboutView;
 import org.jfxvnc.ui.presentation.connect.ConnectView;
 import org.jfxvnc.ui.presentation.info.InfoView;
 import org.jfxvnc.ui.service.VncRenderService;
+
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Accordion;
+import javafx.scene.control.TitledPane;
 
 public class DetailViewPresenter implements Initializable {
 
@@ -54,7 +54,7 @@ public class DetailViewPresenter implements Initializable {
 	ConnectView connectView = new ConnectView();
 	InfoView infoView = new InfoView();
 	AboutView aboutView = new AboutView();
-	
+
 	detailPane.getPanes().addAll((TitledPane) connectView.getView(), (TitledPane) infoView.getView(), (TitledPane) aboutView.getView());
 	detailPane.setExpandedPane((TitledPane) connectView.getView());
 

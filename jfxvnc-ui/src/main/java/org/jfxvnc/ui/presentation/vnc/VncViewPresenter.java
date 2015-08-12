@@ -24,19 +24,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.stream.IntStream;
 
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.geometry.Dimension2D;
-import javafx.scene.Cursor;
-import javafx.scene.ImageCursor;
-import javafx.scene.effect.BoxBlur;
-import javafx.scene.effect.Effect;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.WritableImage;
-
 import javax.inject.Inject;
 
 import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
@@ -53,6 +40,19 @@ import org.jfxvnc.ui.service.VncRenderService;
 import org.slf4j.LoggerFactory;
 
 import com.airhacks.afterburner.injection.Injector;
+
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.geometry.Dimension2D;
+import javafx.scene.Cursor;
+import javafx.scene.ImageCursor;
+import javafx.scene.effect.BoxBlur;
+import javafx.scene.effect.Effect;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
 
 public class VncViewPresenter implements Initializable {
 
@@ -128,7 +128,7 @@ public class VncViewPresenter implements Initializable {
 	    // vncView.getTransforms().clear();
 	    // vncView.getTransforms().add(new Scale(con.scaleProperty().get(),
 	    // con.scaleProperty().get()));
-	    });
+	});
 
 	con.connectInfoProperty().addListener((l, a, rect) -> Platform.runLater(() -> {
 	    vncImage = new WritableImage(rect.getFrameWidth(), rect.getFrameHeight());
@@ -179,8 +179,8 @@ public class VncViewPresenter implements Initializable {
 		if (cRect.getBitmask() != null && cRect.getBitmask().length > 0) {
 		    // remove transparent pixels
 		    int maskBytesPerRow = Math.floorDiv((cRect.getWidth() + 7), 8);
-		    IntStream.range(0, cRect.getHeight()).forEach(
-			    y -> IntStream.range(0, cRect.getWidth())
+		    IntStream.range(0, cRect.getHeight())
+			    .forEach(y -> IntStream.range(0, cRect.getWidth())
 				    .filter(x -> (cRect.getBitmask()[(y * maskBytesPerRow) + Math.floorDiv(x, 8)] & (1 << 7 - Math.floorMod(x, 8))) < 1)
 				    .forEach(x -> cRect.getPixels()[y * cRect.getWidth() + x] = 0));
 		}

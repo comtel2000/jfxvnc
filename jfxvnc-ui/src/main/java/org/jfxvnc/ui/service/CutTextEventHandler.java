@@ -1,5 +1,9 @@
 package org.jfxvnc.ui.service;
 
+import org.jfxvnc.net.rfb.codec.encoder.ClientCutText;
+import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
+import org.jfxvnc.net.rfb.codec.encoder.KeyButtonMap;
+
 /*
  * #%L
  * jfxvnc-ui
@@ -30,10 +34,6 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.util.Duration;
-
-import org.jfxvnc.net.rfb.codec.encoder.ClientCutText;
-import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
-import org.jfxvnc.net.rfb.codec.encoder.KeyButtonMap;
 
 public class CutTextEventHandler implements KeyButtonMap {
 

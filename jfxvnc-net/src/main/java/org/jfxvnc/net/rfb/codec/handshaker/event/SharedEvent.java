@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.codec.handshaker.event;
  * #L%
  */
 
-
 public class SharedEvent implements HandshakeEvent {
 
     private final boolean shared;

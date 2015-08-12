@@ -20,12 +20,10 @@ package org.jfxvnc.net.rfb.codec.security.vncauth;
  * #L%
  */
 
-
 import org.jfxvnc.net.rfb.codec.security.RfbSecurityDecoder;
 import org.jfxvnc.net.rfb.codec.security.RfbSecurityEncoder;
 import org.jfxvnc.net.rfb.codec.security.RfbSecurityHandshaker;
 import org.jfxvnc.net.rfb.codec.security.SecurityType;
-
 
 public class VncAuthHandshaker extends RfbSecurityHandshaker {
 

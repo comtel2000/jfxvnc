@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.codec.decoder.rect;
  * #L%
  */
 
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,9 +47,8 @@ public class CursorRectDecoder extends RawRectDecoder {
     protected void sendRect(List<Object> out) {
 	int[] pixels = new int[(capacity - bitMaskLength) / 4];
 
-	Arrays.setAll(pixels,
-		(i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift() | framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift()
-			| framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
+	Arrays.setAll(pixels, (i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift()
+		| framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift() | framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
 
 	// not required
 	byte[] bitmask = new byte[bitMaskLength];

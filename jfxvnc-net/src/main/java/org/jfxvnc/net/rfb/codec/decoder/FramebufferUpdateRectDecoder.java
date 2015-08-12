@@ -1,5 +1,23 @@
 package org.jfxvnc.net.rfb.codec.decoder;
 
+import java.util.EnumMap;
+import java.util.List;
+
+import org.jfxvnc.net.rfb.codec.Encoding;
+import org.jfxvnc.net.rfb.codec.PixelFormat;
+import org.jfxvnc.net.rfb.codec.ProtocolState;
+import org.jfxvnc.net.rfb.codec.ServerEvent;
+import org.jfxvnc.net.rfb.codec.decoder.rect.CopyRectDecoder;
+import org.jfxvnc.net.rfb.codec.decoder.rect.CursorRectDecoder;
+import org.jfxvnc.net.rfb.codec.decoder.rect.DesktopSizeRectDecoder;
+import org.jfxvnc.net.rfb.codec.decoder.rect.FrameRect;
+import org.jfxvnc.net.rfb.codec.decoder.rect.FrameRectDecoder;
+import org.jfxvnc.net.rfb.codec.decoder.rect.RawRectDecoder;
+import org.jfxvnc.net.rfb.codec.decoder.rect.ZlibRectDecoder;
+import org.jfxvnc.net.rfb.exception.ProtocolException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * #%L
  * RFB protocol
@@ -22,24 +40,6 @@ package org.jfxvnc.net.rfb.codec.decoder;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-
-import java.util.EnumMap;
-import java.util.List;
-
-import org.jfxvnc.net.rfb.codec.Encoding;
-import org.jfxvnc.net.rfb.codec.PixelFormat;
-import org.jfxvnc.net.rfb.codec.ProtocolState;
-import org.jfxvnc.net.rfb.codec.ServerEvent;
-import org.jfxvnc.net.rfb.codec.decoder.rect.CopyRectDecoder;
-import org.jfxvnc.net.rfb.codec.decoder.rect.CursorRectDecoder;
-import org.jfxvnc.net.rfb.codec.decoder.rect.DesktopSizeRectDecoder;
-import org.jfxvnc.net.rfb.codec.decoder.rect.FrameRect;
-import org.jfxvnc.net.rfb.codec.decoder.rect.FrameRectDecoder;
-import org.jfxvnc.net.rfb.codec.decoder.rect.RawRectDecoder;
-import org.jfxvnc.net.rfb.codec.decoder.rect.ZlibRectDecoder;
-import org.jfxvnc.net.rfb.exception.ProtocolException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FramebufferUpdateRectDecoder implements FrameDecoder {
 

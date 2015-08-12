@@ -1,5 +1,8 @@
 package org.jfxvnc.net.rfb.codec;
 
+import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.RenderProtocol;
+
 /*
  * #%L
  * jfxvnc-net
@@ -20,13 +23,9 @@ package org.jfxvnc.net.rfb.codec;
  * #L%
  */
 
-
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-
-import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
-import org.jfxvnc.net.rfb.render.RenderProtocol;
 
 public class ProtocolInitializer extends ChannelInitializer<SocketChannel> {
     private RenderProtocol render;
@@ -41,7 +40,8 @@ public class ProtocolInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
 	ChannelPipeline pipeline = ch.pipeline();
-
+	// pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
 	pipeline.addLast(new ProtocolHandler(render, config));
+
     }
 }

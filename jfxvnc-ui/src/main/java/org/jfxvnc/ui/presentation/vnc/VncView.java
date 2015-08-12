@@ -20,7 +20,6 @@ package org.jfxvnc.ui.presentation.vnc;
  * #L%
  */
 
-
 import com.airhacks.afterburner.views.FXMLView;
 
 public class VncView extends FXMLView {

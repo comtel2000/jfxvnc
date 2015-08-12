@@ -39,7 +39,8 @@ public class ProtocolVersion implements Comparable<ProtocolVersion> {
     /**
      * RFB protocol parser (RFB ([0-9]{3}).([0-9]{3}))
      * 
-     * @param version String
+     * @param version
+     *            String
      */
     public ProtocolVersion(String version) {
 	if (version == null) {

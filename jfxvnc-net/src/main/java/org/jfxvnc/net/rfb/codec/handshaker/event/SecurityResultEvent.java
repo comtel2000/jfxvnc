@@ -20,12 +20,11 @@ package org.jfxvnc.net.rfb.codec.handshaker.event;
  * #L%
  */
 
-
 public class SecurityResultEvent implements HandshakeEvent {
 
     private final boolean passed;
     private Throwable throwable;
-    
+
     public SecurityResultEvent(boolean passed) {
 	this.passed = passed;
     }
@@ -34,7 +33,7 @@ public class SecurityResultEvent implements HandshakeEvent {
 	this.passed = passed;
 	this.setThrowable(t);
     }
-    
+
     public boolean isPassed() {
 	return passed;
     }

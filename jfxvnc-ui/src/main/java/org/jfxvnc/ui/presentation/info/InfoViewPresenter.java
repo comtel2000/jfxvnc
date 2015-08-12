@@ -25,6 +25,15 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
+import javax.inject.Inject;
+
+import org.jfxvnc.net.rfb.codec.PixelFormat;
+import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
+import org.jfxvnc.net.rfb.render.rect.ImageRect;
+import org.jfxvnc.ui.persist.SessionContext;
+import org.jfxvnc.ui.service.VncRenderService;
+import org.slf4j.LoggerFactory;
+
 import javafx.application.Platform;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
@@ -34,19 +43,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
-
-import javax.inject.Inject;
-
-import org.jfxvnc.net.rfb.codec.PixelFormat;
-import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
-import org.jfxvnc.net.rfb.render.rect.ImageRect;
-import org.jfxvnc.ui.persist.SessionContext;
-import org.jfxvnc.ui.presentation.about.AboutView;
-import org.jfxvnc.ui.service.VncRenderService;
-import org.slf4j.LoggerFactory;
 
 /**
  * VNC information screen

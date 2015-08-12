@@ -20,7 +20,6 @@ package org.jfxvnc.net.rfb.render;
  * #L%
  */
 
-
 import java.util.Arrays;
 
 import org.jfxvnc.net.rfb.codec.Encoding;
@@ -34,92 +33,92 @@ public class ConnectInfoEvent implements ServerDecoderEvent {
     String remoteAddress;
 
     String serverName;
-    
+
     ProtocolVersion rfbProtocol;
-    
+
     int frameHeight;
     int frameWidth;
-    
+
     Encoding[] supportedEncodings;
-    
+
     PixelFormat serverPF;
-    
+
     PixelFormat clientPF;
-    
+
     SecurityType security;
 
     String connectionType;
-    
+
     public String getServerName() {
-        return serverName;
+	return serverName;
     }
 
     public void setServerName(String serverName) {
-        this.serverName = serverName;
+	this.serverName = serverName;
     }
 
     public ProtocolVersion getRfbProtocol() {
-        return rfbProtocol;
+	return rfbProtocol;
     }
 
     public void setRfbProtocol(ProtocolVersion rfbProtocol) {
-        this.rfbProtocol = rfbProtocol;
+	this.rfbProtocol = rfbProtocol;
     }
 
     public int getFrameHeight() {
-        return frameHeight;
+	return frameHeight;
     }
 
     public void setFrameHeight(int frameHeight) {
-        this.frameHeight = frameHeight;
+	this.frameHeight = frameHeight;
     }
 
     public int getFrameWidth() {
-        return frameWidth;
+	return frameWidth;
     }
 
     public void setFrameWidth(int frameWidth) {
-        this.frameWidth = frameWidth;
+	this.frameWidth = frameWidth;
     }
 
     public Encoding[] getSupportedEncodings() {
-        return supportedEncodings;
+	return supportedEncodings;
     }
 
     public void setSupportedEncodings(Encoding[] supportedEncodings) {
-        this.supportedEncodings = supportedEncodings;
+	this.supportedEncodings = supportedEncodings;
     }
 
     public PixelFormat getServerPF() {
-        return serverPF;
+	return serverPF;
     }
 
     public void setServerPF(PixelFormat serverPF) {
-        this.serverPF = serverPF;
+	this.serverPF = serverPF;
     }
 
     public PixelFormat getClientPF() {
-        return clientPF;
+	return clientPF;
     }
 
     public void setClientPF(PixelFormat clientPF) {
-        this.clientPF = clientPF;
+	this.clientPF = clientPF;
     }
 
     public SecurityType getSecurity() {
-        return security;
+	return security;
     }
 
     public void setSecurity(SecurityType securityType) {
-        this.security = securityType;
+	this.security = securityType;
     }
 
     public String getRemoteAddress() {
-        return remoteAddress;
+	return remoteAddress;
     }
 
     public void setRemoteAddress(String adr) {
-        this.remoteAddress = adr;
+	this.remoteAddress = adr;
     }
 
     public String getConnectionType() {
@@ -127,7 +126,7 @@ public class ConnectInfoEvent implements ServerDecoderEvent {
     }
 
     public void setConnectionType(String connectionType) {
-        this.connectionType = connectionType;
+	this.connectionType = connectionType;
     }
 
     @Override
@@ -138,5 +137,5 @@ public class ConnectInfoEvent implements ServerDecoderEvent {
 		+ (clientPF != null ? "clientPF=" + clientPF + ", " : "") + "security=" + security + ", " + (connectionType != null ? "connectionType=" + connectionType : "")
 		+ "]";
     }
-    
+
 }

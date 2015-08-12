@@ -20,8 +20,7 @@ package org.jfxvnc.net.rfb.codec.encoder;
  * #L%
  */
 
-
-public class ClientCutText implements InputEvent{
+public class ClientCutText implements InputEvent {
 
     private final String text;
 

@@ -25,19 +25,6 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.geometry.Side;
-import javafx.scene.control.Button;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-
 import javax.inject.Inject;
 
 import org.controlsfx.control.MasterDetailPane;
@@ -50,6 +37,21 @@ import org.jfxvnc.ui.persist.SessionContext;
 import org.jfxvnc.ui.presentation.detail.DetailView;
 import org.jfxvnc.ui.presentation.vnc.VncView;
 import org.jfxvnc.ui.service.VncRenderService;
+
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.css.PseudoClass;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
+import javafx.geometry.Side;
+import javafx.scene.control.Button;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 
 public class MainViewPresenter implements Initializable {
 
@@ -66,6 +68,11 @@ public class MainViewPresenter implements Initializable {
     BorderPane mainPane;
 
     private MasterDetailPane mdPane;
+
+    private final static PseudoClass CONNECT_CLASS = PseudoClass.getPseudoClass("connect");
+    private final static PseudoClass ONLINE_CLASS = PseudoClass.getPseudoClass("online");
+
+    private final static PseudoClass WINDOW_CLASS = PseudoClass.getPseudoClass("window");
 
     private final StringProperty statusProperty = new SimpleStringProperty("-", "mainview.status");
 
@@ -85,7 +92,7 @@ public class MainViewPresenter implements Initializable {
 	mdPane.setShowDetailNode(true);
 
 	StatusBar statusBar = new StatusBar();
-	statusBar.setId("menu-status-bar");
+	statusBar.getStyleClass().add("menu-status-bar");
 
 	mainPane.setCenter(mdPane);
 	mainPane.setBottom(statusBar);
@@ -96,24 +103,21 @@ public class MainViewPresenter implements Initializable {
 	gearButton.setId("menu-settings");
 	gearButton.selectedProperty().bindBidirectional(mdPane.showDetailNodeProperty());
 
-	Button connectBtn = new Button(rb.getString("connect.button"));
-	connectBtn.setPrefWidth(100);
-	connectBtn.setOnAction((a) -> con.restart());
+	Button connectBtn = new Button();
+	connectBtn.textProperty().bind(Bindings.createStringBinding(() -> con.listeningModeProperty().get() ? rb.getString("button.listening") : rb.getString("button.connect"),
+		con.listeningModeProperty()));
+	connectBtn.setOnAction(a -> con.restart());
 
-	Button disconnectBtn = new Button(rb.getString("disconnect.button"));
-	disconnectBtn.setPrefWidth(100);
+	Button disconnectBtn = new Button();
+	disconnectBtn.textProperty().bind(Bindings.createStringBinding(() -> con.listeningModeProperty().get() ? rb.getString("button.cancel") : rb.getString("button.disconnect"),
+		con.listeningModeProperty()));
 	disconnectBtn.disableProperty().bind(connectBtn.disabledProperty().not());
-	disconnectBtn.setOnAction(a -> con.disconnect());
-
-	// Button restartBtn = new Button(rb.getString("restart.button"));
-	// restartBtn.setPrefWidth(100);
-	// restartBtn.setOnAction(a ->
-	// con.restartProperty().set(!con.restartProperty().get()));
+	disconnectBtn.setOnAction(a -> con.cancel());
 
 	ToggleButton switchFullScreen = new ToggleButton("", new Pane());
-	switchFullScreen.setId(switchFullScreen.isSelected() ? "menu-fullscreen-off" : "menu-fullscreen-on");
+	switchFullScreen.setId("menu-fullscreen");
 	switchFullScreen.selectedProperty().bindBidirectional(con.fullSceenProperty());
-	switchFullScreen.selectedProperty().addListener((l, o, n) -> switchFullScreen.setId(n ? "menu-fullscreen-off" : "menu-fullscreen-on"));
+	switchFullScreen.selectedProperty().addListener((l, o, n) -> switchFullScreen.pseudoClassStateChanged(WINDOW_CLASS, n));
 
 	ProgressIndicator progressIndicator = new ProgressIndicator(-1);
 	progressIndicator.visibleProperty().bind(con.runningProperty());
@@ -131,6 +135,9 @@ public class MainViewPresenter implements Initializable {
 
 	con.protocolStateProperty().addListener((l, o, event) -> Platform.runLater(() -> {
 	    switch (event) {
+	    case LISTENING:
+		statusProperty.set(rb.getString("status.listening"));
+		break;
 	    case CLOSED:
 		statusProperty.set(rb.getString("status.closed"));
 		break;
@@ -154,10 +161,10 @@ public class MainViewPresenter implements Initializable {
 	}));
 
 	con.connectProperty().addListener((l, o, n) -> Platform.runLater(() -> {
-	    connectBtn.setDisable(n.booleanValue());
-	    gearButton.setId(n ? "menu-settings-online" : "menu-settings");
-
+	    connectBtn.setDisable(n);
+	    gearButton.pseudoClassStateChanged(CONNECT_CLASS, n);
 	}));
+	con.onlineProperty().addListener((l, o, n) -> Platform.runLater(() -> gearButton.pseudoClassStateChanged(ONLINE_CLASS, n)));
 
 	con.exceptionCaughtProperty().addListener((l, o, n) -> Platform.runLater(() -> {
 	    Notifications.create().owner(mainPane).position(Pos.TOP_CENTER).text(n.getMessage()).showError();
@@ -168,6 +175,7 @@ public class MainViewPresenter implements Initializable {
 	    statusProperty.set("Bell");
 	    Toolkit.getDefaultToolkit().beep();
 	}));
+
     }
 
     private Pane createSpace(double w, double h) {

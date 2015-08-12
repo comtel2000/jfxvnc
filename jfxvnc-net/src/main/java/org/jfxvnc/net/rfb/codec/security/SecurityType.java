@@ -20,27 +20,14 @@ package org.jfxvnc.net.rfb.codec.security;
  * #L%
  */
 
-
 /**
  * VNC SecurityType types
  * 
  */
 public enum SecurityType {
-    
-    UNKNOWN(-1), 
-    INVALID(0),
-    NONE(1),
-    VNC_Auth(2),
-    RA2(5),
-    RA2ne(6),
-    Tight(16),
-    Ultra(17),
-    TLS(18),
-    VeNCrypt(19),
-    GTK_VNC_SAS(20),
-    MD5(21),
-    Colin_Dean_xvp(22);
-    
+
+    UNKNOWN(-1), INVALID(0), NONE(1), VNC_Auth(2), RA2(5), RA2ne(6), Tight(16), Ultra(17), TLS(18), VeNCrypt(19), GTK_VNC_SAS(20), MD5(21), Colin_Dean_xvp(22);
+
     private final int type;
 
     private SecurityType(int type) {
@@ -55,8 +42,8 @@ public enum SecurityType {
 	}
 	return UNKNOWN;
     }
-    
-    public int getType(){
+
+    public int getType() {
 	return type;
     }
 }
