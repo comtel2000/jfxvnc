@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jfxvnc</groupId>
 		<artifactId>jfxvnc-parent</artifactId>
-		<version>0.0.3-SNAPSHOT</version>
+		<version>1.0.0</version>
 	</parent>
 	<artifactId>jfxvnc-net</artifactId>
 	<name>jfxvnc-net</name>
