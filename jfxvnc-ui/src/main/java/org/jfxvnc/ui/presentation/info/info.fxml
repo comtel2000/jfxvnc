@@ -190,7 +190,7 @@
 
 						<CheckBox fx:id="enableCB" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.rowIndex="20" />
 						<Button mnemonicParsing="false" onAction="#reset" text="Reset" GridPane.halignment="LEFT" GridPane.rowIndex="20" />
-                  <Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="10" />
+                  <Separator prefWidth="200.0" GridPane.columnSpan="3" GridPane.rowIndex="10" />
                   <Label text="%server.details" GridPane.halignment="LEFT">
                      <font>
                         <Font name="System Bold" size="12.0" />
