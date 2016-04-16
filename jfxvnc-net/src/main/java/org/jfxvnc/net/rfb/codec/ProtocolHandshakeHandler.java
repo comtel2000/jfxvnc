@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright (c) 2016 comtel inc.
+ *
+ * Licensed under the Apache License, version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *******************************************************************************/
 package org.jfxvnc.net.rfb.codec;
 
 import java.util.Arrays;
@@ -19,27 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.Unpooled;
-
-/*
- * #%L
- * RFB protocol
- * %%
- * Copyright (C) 2015 comtel2000
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
@@ -129,8 +123,9 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 	SecurityType userSecType = config.securityProperty().get();
 	boolean isSupported = Arrays.stream(supportTypes).anyMatch(i -> i == userSecType);
 	if (!isSupported) {
-	    ctx.fireExceptionCaught(
-		    new ProtocolException(String.format("Authentication: '%s' is not supported. The server supports only (%s)", userSecType, Arrays.toString(supportTypes))));
+	    ctx.fireExceptionCaught(new ProtocolException(
+		    String.format("Authentication: '%s' is not supported. The server supports only (%s)", userSecType,
+			    Arrays.toString(supportTypes))));
 	    return;
 	}
 
@@ -145,7 +140,8 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 
 	secHandshaker = secFactory.newRfbSecurityHandshaker(userSecType);
 	if (secHandshaker == null) {
-	    ctx.fireExceptionCaught(new ProtocolException(String.format("Authentication: '%s' is not supported yet", userSecType)));
+	    ctx.fireExceptionCaught(
+		    new ProtocolException(String.format("Authentication: '%s' is not supported yet", userSecType)));
 	    return;
 	}
 	secHandshaker.handshake(ctx.channel(), msg.isResponse()).addListener((future) -> {

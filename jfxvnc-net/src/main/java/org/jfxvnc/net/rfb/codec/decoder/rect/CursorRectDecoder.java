@@ -1,24 +1,19 @@
-package org.jfxvnc.net.rfb.codec.decoder.rect;
-
-/*
- * #%L
- * jfxvnc-net
- * %%
- * Copyright (C) 2015 comtel2000
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+/*******************************************************************************
+ * Copyright (c) 2016 comtel inc.
+ *
+ * Licensed under the Apache License, version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *******************************************************************************/
+package org.jfxvnc.net.rfb.codec.decoder.rect;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,8 +42,10 @@ public class CursorRectDecoder extends RawRectDecoder {
     protected void sendRect(List<Object> out) {
 	int[] pixels = new int[(capacity - bitMaskLength) / 4];
 
-	Arrays.setAll(pixels, (i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift()
-		| framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift() | framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
+	Arrays.setAll(pixels,
+		(i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift()
+			| framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift()
+			| framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
 
 	// not required
 	byte[] bitmask = new byte[bitMaskLength];

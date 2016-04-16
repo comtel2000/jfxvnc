@@ -1,24 +1,19 @@
-package org.jfxvnc.ui.presentation.connect;
-
-/*
- * #%L
- * jfxvnc-ui
- * %%
- * Copyright (C) 2015 comtel2000
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+/*******************************************************************************
+ * Copyright (c) 2016 comtel inc.
+ *
+ * Licensed under the Apache License, version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *******************************************************************************/
+package org.jfxvnc.ui.presentation.connect;
 
 import java.net.URL;
 import java.util.Optional;
@@ -113,7 +108,8 @@ public class ConnectViewPresenter implements Initializable {
 	    prop.securityProperty().set(b != null ? b : SecurityType.UNKNOWN);
 	});
 
-	pwdField.disableProperty().bind(Bindings.equal(SecurityType.NONE, securityCombo.getSelectionModel().selectedItemProperty()));
+	pwdField.disableProperty()
+		.bind(Bindings.equal(SecurityType.NONE, securityCombo.getSelectionModel().selectedItemProperty()));
 
 	prop.hostProperty().bindBidirectional(ipField.textProperty());
 	StringConverter<Number> converter = new NumberStringConverter("#");
@@ -123,7 +119,8 @@ public class ConnectViewPresenter implements Initializable {
 	prop.sslProperty().bindBidirectional(sslCB.selectedProperty());
 	prop.sharedProperty().bindBidirectional(sharedCB.selectedProperty());
 	forceRfb33CB.setSelected(prop.versionProperty().get() == ProtocolVersion.RFB_3_3);
-	forceRfb33CB.selectedProperty().addListener((l, a, b) -> prop.versionProperty().set(b ? ProtocolVersion.RFB_3_3 : ProtocolVersion.RFB_3_8));
+	forceRfb33CB.selectedProperty().addListener(
+		(l, a, b) -> prop.versionProperty().set(b ? ProtocolVersion.RFB_3_3 : ProtocolVersion.RFB_3_8));
 	listeningCB.selectedProperty().bindBidirectional(con.listeningModeProperty());
 	Bindings.bindBidirectional(listeningPortField.textProperty(), con.listeningPortProperty(), converter);
 	listeningPortField.disableProperty().bind(listeningCB.selectedProperty().not());

@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright (c) 2016 comtel inc.
+ *
+ * Licensed under the Apache License, version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *******************************************************************************/
 package org.jfxvnc.ui.service;
 
 import java.util.concurrent.TimeUnit;
@@ -17,26 +32,6 @@ import org.jfxvnc.net.rfb.render.RenderCallback;
 import org.jfxvnc.net.rfb.render.RenderProtocol;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;
 import org.slf4j.LoggerFactory;
-
-/*
- * #%L
- * jfxvnc-ui
- * %%
- * Copyright (C) 2015 comtel2000
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
@@ -82,7 +77,8 @@ public class VncRenderService extends Service<Boolean>implements RenderProtocol 
     private final ReadOnlyStringWrapper serverCutTextProperty = new ReadOnlyStringWrapper();
 
     private final ReadOnlyObjectWrapper<ConnectInfoEvent> connectInfoProperty = new ReadOnlyObjectWrapper<>();
-    private final ReadOnlyObjectWrapper<ProtocolState> protocolStateProperty = new ReadOnlyObjectWrapper<>(ProtocolState.CLOSED);
+    private final ReadOnlyObjectWrapper<ProtocolState> protocolStateProperty = new ReadOnlyObjectWrapper<>(
+	    ProtocolState.CLOSED);
     private final ReadOnlyObjectWrapper<InputEventListener> inputProperty = new ReadOnlyObjectWrapper<>();
     private final ReadOnlyObjectWrapper<ImageRect> imageProperty = new ReadOnlyObjectWrapper<>();
     private final ReadOnlyObjectWrapper<Throwable> exceptionCaughtProperty = new ReadOnlyObjectWrapper<>();
@@ -150,7 +146,8 @@ public class VncRenderService extends Service<Boolean>implements RenderProtocol 
 	    logger.warn("connection aborted");
 	} else if (!f.isSuccess()) {
 	    logger.error("connection failed", f.cause());
-	    exceptionCaughtProperty.set(f.cause() != null ? f.cause() : new Exception("connection failed to host: " + host + ":" + port));
+	    exceptionCaughtProperty.set(
+		    f.cause() != null ? f.cause() : new Exception("connection failed to host: " + host + ":" + port));
 	}
 	return connectProperty.get();
     }
@@ -177,7 +174,7 @@ public class VncRenderService extends Service<Boolean>implements RenderProtocol 
     @PreDestroy
     @Override
     public boolean cancel() {
-	super.cancel();
+	Platform.runLater(() -> super.cancel());
 	shutdown();
 	connectProperty.set(false);
 	return true;
@@ -238,10 +235,10 @@ public class VncRenderService extends Service<Boolean>implements RenderProtocol 
 
     @Override
     public void stateChanged(ProtocolState state) {
-	if (state == ProtocolState.CLOSED) {
-	    Platform.runLater(() -> cancel());
-	}
 	protocolStateProperty.set(state);
+	if (state == ProtocolState.CLOSED) {
+	    cancel();
+	}
     }
 
     @Override

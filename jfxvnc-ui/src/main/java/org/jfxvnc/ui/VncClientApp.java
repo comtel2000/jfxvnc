@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright (c) 2016 comtel inc.
+ *
+ * Licensed under the Apache License, version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *******************************************************************************/
 package org.jfxvnc.ui;
 
 import org.jfxvnc.net.rfb.render.DefaultProtocolConfiguration;
@@ -8,26 +23,6 @@ import org.jfxvnc.ui.service.VncRenderService;
 import org.slf4j.LoggerFactory;
 
 import com.airhacks.afterburner.injection.Injector;
-
-/*
- * #%L
- * jfxvnc-ui
- * %%
- * Copyright (C) 2015 comtel2000
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -45,7 +40,8 @@ public class VncClientApp extends Application {
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(VncClientApp.class);
 
-    private final StringProperty headerProperty = new SimpleStringProperty(System.getProperty("javafx.runtime.version"));
+    private final StringProperty headerProperty = new SimpleStringProperty(
+	    System.getProperty("javafx.runtime.version"));
     private final StringExpression headerExpr = Bindings.format("JavaFX VNC Viewer (%s)", headerProperty);
 
     private final DoubleProperty sceneWidthProperty = new SimpleDoubleProperty(1024);
@@ -67,13 +63,15 @@ public class VncClientApp extends Application {
 	Injector.setLogger((t) -> logger.trace(t));
 
 	// Injector.setModelOrService(Stage.class, stage);
-	Injector.setModelOrService(ProtocolConfiguration.class, Injector.instantiateModelOrService(DefaultProtocolConfiguration.class));
+	Injector.setModelOrService(ProtocolConfiguration.class,
+		Injector.instantiateModelOrService(DefaultProtocolConfiguration.class));
 
 	VncRenderService vncService = Injector.instantiateModelOrService(VncRenderService.class);
 
 	vncService.fullSceenProperty().addListener((l, a, b) -> Platform.runLater(() -> stage.setFullScreen(b)));
 	vncService.restartProperty().addListener(l -> restart());
-	vncService.connectInfoProperty().addListener((l, a, b) -> Platform.runLater(() -> headerProperty.set(b.getServerName())));
+	vncService.connectInfoProperty()
+		.addListener((l, a, b) -> Platform.runLater(() -> headerProperty.set(b.getServerName())));
 	vncService.onlineProperty().addListener((l, a, b) -> Platform.runLater(() -> {
 	    stage.getIcons().add(b ? onlineImg : offlineImg);
 	    stage.getIcons().remove(!b ? onlineImg : offlineImg);

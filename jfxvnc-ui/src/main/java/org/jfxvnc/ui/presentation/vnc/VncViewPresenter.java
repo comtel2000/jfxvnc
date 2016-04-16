@@ -1,24 +1,19 @@
-package org.jfxvnc.ui.presentation.vnc;
-
-/*
- * #%L
- * jfxvnc-ui
- * %%
- * Copyright (C) 2015 comtel2000
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+/*******************************************************************************
+ * Copyright (c) 2016 comtel inc.
+ *
+ * Licensed under the Apache License, version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *******************************************************************************/
+package org.jfxvnc.ui.presentation.vnc;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -152,17 +147,19 @@ public class VncViewPresenter implements Initializable {
 	    case RAW:
 	    case ZLIB:
 		RawImageRect rawRect = (RawImageRect) rect;
-		vncImage.getPixelWriter().setPixels(rawRect.getX(), rawRect.getY(), rawRect.getWidth(), rawRect.getHeight(), PixelFormat.getIntArgbInstance(), rawRect.getPixels(),
-			0, rawRect.getWidth());
+		vncImage.getPixelWriter().setPixels(rawRect.getX(), rawRect.getY(), rawRect.getWidth(),
+			rawRect.getHeight(), PixelFormat.getIntArgbInstance(), rawRect.getPixels(), 0,
+			rawRect.getWidth());
 		break;
 	    case COPY_RECT:
 		CopyImageRect copyImageRect = (CopyImageRect) rect;
 
 		PixelReader reader = vncImage.getPixelReader();
 		WritableImage copyRect = new WritableImage(copyImageRect.getWidth(), copyImageRect.getHeight());
-		copyRect.getPixelWriter().setPixels(0, 0, copyImageRect.getWidth(), copyImageRect.getHeight(), reader, copyImageRect.getSrcX(), copyImageRect.getSrcY());
-		vncImage.getPixelWriter().setPixels(copyImageRect.getX(), copyImageRect.getY(), copyImageRect.getWidth(), copyImageRect.getHeight(), copyRect.getPixelReader(), 0,
-			0);
+		copyRect.getPixelWriter().setPixels(0, 0, copyImageRect.getWidth(), copyImageRect.getHeight(), reader,
+			copyImageRect.getSrcX(), copyImageRect.getSrcY());
+		vncImage.getPixelWriter().setPixels(copyImageRect.getX(), copyImageRect.getY(),
+			copyImageRect.getWidth(), copyImageRect.getHeight(), copyRect.getPixelReader(), 0, 0);
 		break;
 	    case CURSOR:
 		if (!prop.clientCursorProperty().get()) {
@@ -180,15 +177,18 @@ public class VncViewPresenter implements Initializable {
 		    // remove transparent pixels
 		    int maskBytesPerRow = Math.floorDiv((cRect.getWidth() + 7), 8);
 		    IntStream.range(0, cRect.getHeight())
-			    .forEach(y -> IntStream.range(0, cRect.getWidth())
-				    .filter(x -> (cRect.getBitmask()[(y * maskBytesPerRow) + Math.floorDiv(x, 8)] & (1 << 7 - Math.floorMod(x, 8))) < 1)
-				    .forEach(x -> cRect.getPixels()[y * cRect.getWidth() + x] = 0));
+			    .forEach(
+				    y -> IntStream.range(0, cRect.getWidth())
+					    .filter(x -> (cRect.getBitmask()[(y * maskBytesPerRow)
+						    + Math.floorDiv(x, 8)] & (1 << 7 - Math.floorMod(x, 8))) < 1)
+			    .forEach(x -> cRect.getPixels()[y * cRect.getWidth() + x] = 0));
 		}
 
 		Dimension2D dim = ImageCursor.getBestSize(cRect.getWidth(), cRect.getHeight());
 		WritableImage cImage = new WritableImage((int) dim.getWidth(), (int) dim.getHeight());
-		cImage.getPixelWriter().setPixels(0, 0, (int) Math.min(dim.getWidth(), cRect.getWidth()), (int) Math.min(dim.getHeight(), cRect.getHeight()),
-			PixelFormat.getIntArgbInstance(), cRect.getPixels(), 0, cRect.getWidth());
+		cImage.getPixelWriter().setPixels(0, 0, (int) Math.min(dim.getWidth(), cRect.getWidth()),
+			(int) Math.min(dim.getHeight(), cRect.getHeight()), PixelFormat.getIntArgbInstance(),
+			cRect.getPixels(), 0, cRect.getWidth());
 		remoteCursor = new ImageCursor(cImage, cRect.getHotspotX(), cRect.getHotspotY());
 		vncView.setCursor(remoteCursor);
 		break;
@@ -212,21 +212,21 @@ public class VncViewPresenter implements Initializable {
 	}
 	if (pointerHandler == null) {
 
-	    pointerHandler = (PointerEventHandler) Injector.instantiateModelOrService(PointerEventHandler.class);
+	    pointerHandler = Injector.instantiateModelOrService(PointerEventHandler.class);
 	    pointerHandler.register(vncView);
 	    pointerHandler.enabledProperty().bind(con.connectProperty());
 	}
 	pointerHandler.setInputEventListener(listener);
 
 	if (keyHandler == null) {
-	    keyHandler = (KeyButtonEventHandler) Injector.instantiateModelOrService(KeyButtonEventHandler.class);
+	    keyHandler = Injector.instantiateModelOrService(KeyButtonEventHandler.class);
 	    keyHandler.register(vncView.getScene());
 	    keyHandler.enabledProperty().bind(con.connectProperty());
 	}
 	keyHandler.setInputEventListener(listener);
 
 	if (cutTextHandler == null) {
-	    cutTextHandler = (CutTextEventHandler) Injector.instantiateModelOrService(CutTextEventHandler.class);
+	    cutTextHandler = Injector.instantiateModelOrService(CutTextEventHandler.class);
 	    cutTextHandler.enabledProperty().bind(con.connectProperty());
 	}
 	cutTextHandler.setInputEventListener(listener);

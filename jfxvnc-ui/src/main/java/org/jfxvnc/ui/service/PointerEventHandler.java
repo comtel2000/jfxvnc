@@ -1,24 +1,19 @@
-package org.jfxvnc.ui.service;
-
-/*
- * #%L
- * jfxvnc-ui
- * %%
- * Copyright (C) 2015 comtel2000
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+/*******************************************************************************
+ * Copyright (c) 2016 comtel inc.
+ *
+ * Licensed under the Apache License, version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *******************************************************************************/
+package org.jfxvnc.ui.service;
 
 import javax.inject.Inject;
 
@@ -50,13 +45,13 @@ public class PointerEventHandler implements KeyButtonMap {
     private final ReadOnlyIntegerWrapper yPosProperty = new ReadOnlyIntegerWrapper(0);
 
     public PointerEventHandler() {
-	this.mouseEventHandler = (e) -> {
+	mouseEventHandler = (e) -> {
 	    if (enabledProperty.get()) {
 		sendMouseEvents(e);
 		e.consume();
 	    }
 	};
-	this.scrollEventHandler = (e) -> {
+	scrollEventHandler = (e) -> {
 	    if (enabledProperty.get()) {
 		sendScrollEvents(e);
 		e.consume();
@@ -109,7 +104,8 @@ public class PointerEventHandler implements KeyButtonMap {
 		buttonMask = 1;
 	    }
 	    fire(new PointerEvent(buttonMask, xPosProperty.get(), yPosProperty.get()));
-	} else if (event.getEventType() == MouseEvent.MOUSE_RELEASED || event.getEventType() == MouseEvent.MOUSE_MOVED) {
+	} else
+	    if (event.getEventType() == MouseEvent.MOUSE_RELEASED || event.getEventType() == MouseEvent.MOUSE_MOVED) {
 	    buttonMask = 0;
 	}
 
@@ -118,7 +114,8 @@ public class PointerEventHandler implements KeyButtonMap {
     }
 
     private void sendScrollEvents(ScrollEvent event) {
-	fire(new PointerEvent(event.getDeltaY() > 0 ? (byte) 8 : (byte) 16, (int) Math.floor(event.getX() / con.zoomLevelProperty().get()),
+	fire(new PointerEvent(event.getDeltaY() > 0 ? (byte) 8 : (byte) 16,
+		(int) Math.floor(event.getX() / con.zoomLevelProperty().get()),
 		(int) Math.floor(event.getY() / con.zoomLevelProperty().get())));
     }
 

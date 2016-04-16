@@ -1,28 +1,23 @@
+/*******************************************************************************
+ * Copyright (c) 2016 comtel inc.
+ *
+ * Licensed under the Apache License, version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *******************************************************************************/
 package org.jfxvnc.ui.service;
 
 import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
 import org.jfxvnc.net.rfb.codec.encoder.KeyButtonEvent;
 import org.jfxvnc.net.rfb.codec.encoder.KeyButtonMap;
-
-/*
- * #%L
- * jfxvnc-ui
- * %%
- * Copyright (C) 2015 comtel2000
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -41,13 +36,8 @@ public class KeyButtonEventHandler implements KeyButtonMap {
     private boolean lastCodePointRelease;
     private int lastCodePoint;
 
-    private boolean shiftKeyDown = false;
-    private boolean ctrlKeyDown = false;
-    private boolean metaKeyDown = false;
-    private boolean altKeyDown = false;
-
     public KeyButtonEventHandler() {
-	this.keyEventHandler = (e) -> {
+	keyEventHandler = (e) -> {
 	    if (enabledProperty.get()) {
 		sendKeyEvents(e);
 		e.consume();
@@ -64,7 +54,6 @@ public class KeyButtonEventHandler implements KeyButtonMap {
     }
 
     public void register(Scene scene) {
-	resetModifier();
 	scene.addEventFilter(KeyEvent.KEY_PRESSED, keyEventHandler);
 	scene.addEventFilter(KeyEvent.KEY_TYPED, keyEventHandler);
 	scene.addEventFilter(KeyEvent.KEY_RELEASED, keyEventHandler);
@@ -78,13 +67,6 @@ public class KeyButtonEventHandler implements KeyButtonMap {
 
     private static boolean isModifierPressed(KeyEvent event) {
 	return event.isAltDown() || event.isControlDown() || event.isMetaDown() || event.isShortcutDown();
-    }
-
-    private void resetModifier() {
-	shiftKeyDown = false;
-	ctrlKeyDown = false;
-	metaKeyDown = false;
-	altKeyDown = false;
     }
 
     public void sendKeyEvents(KeyEvent event) {
@@ -338,52 +320,22 @@ public class KeyButtonEventHandler implements KeyButtonMap {
     private void sendModifierKeyEvents(KeyEvent event, boolean isDown) {
 	switch (event.getCode()) {
 	case SHIFT:
-	    fire(new KeyButtonEvent(shiftKeyDown = isDown, RFB_Shift_L));
+	    fire(new KeyButtonEvent(isDown, RFB_Shift_L));
 	    break;
 	case CONTROL:
-	    fire(new KeyButtonEvent(ctrlKeyDown = isDown, RFB_Control_L));
+	    fire(new KeyButtonEvent(isDown, RFB_Control_L));
 	    break;
 	case META:
-	    fire(new KeyButtonEvent(metaKeyDown = isDown, RFB_Meta_L));
+	    fire(new KeyButtonEvent(isDown, RFB_Meta_L));
 	    break;
 	case ALT:
-	    fire(new KeyButtonEvent(altKeyDown = isDown, RFB_Alt_L));
+	    fire(new KeyButtonEvent(isDown, RFB_Alt_L));
 	    break;
 	case ALT_GRAPH:
-	    fire(new KeyButtonEvent(altKeyDown = isDown, RFB_Alt_R));
+	    fire(new KeyButtonEvent(isDown, RFB_Alt_R));
 	    break;
 	default:
 	    break;
-	}
-    }
-
-    private void sendModifierEvents(KeyEvent event) {
-	if (!shiftKeyDown && event.isShiftDown()) {
-	    fire(new KeyButtonEvent(shiftKeyDown = true, RFB_Shift_L));
-	}
-	if (!ctrlKeyDown && event.isControlDown()) {
-	    fire(new KeyButtonEvent(ctrlKeyDown = true, RFB_Control_L));
-	}
-	if (!metaKeyDown && event.isMetaDown()) {
-	    fire(new KeyButtonEvent(metaKeyDown = true, RFB_Meta_L));
-	}
-	if (!altKeyDown && event.isAltDown()) {
-	    fire(new KeyButtonEvent(altKeyDown = true, RFB_Alt_L));
-	}
-    }
-
-    private void releaseModifier() {
-	if (shiftKeyDown) {
-	    fire(new KeyButtonEvent(shiftKeyDown = false, RFB_Shift_L));
-	}
-	if (ctrlKeyDown) {
-	    fire(new KeyButtonEvent(ctrlKeyDown = false, RFB_Control_L));
-	}
-	if (metaKeyDown) {
-	    fire(new KeyButtonEvent(metaKeyDown = false, RFB_Meta_L));
-	}
-	if (altKeyDown) {
-	    fire(new KeyButtonEvent(altKeyDown = false, RFB_Alt_L));
 	}
     }
 

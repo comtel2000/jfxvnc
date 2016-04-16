@@ -1,24 +1,19 @@
-package org.jfxvnc.ui.presentation;
-
-/*
- * #%L
- * jfxvnc-ui
- * %%
- * Copyright (C) 2015 comtel2000
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+/*******************************************************************************
+ * Copyright (c) 2016 comtel inc.
+ *
+ * Licensed under the Apache License, version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *******************************************************************************/
+package org.jfxvnc.ui.presentation;
 
 import java.awt.Toolkit;
 import java.net.URL;
@@ -104,12 +99,16 @@ public class MainViewPresenter implements Initializable {
 	gearButton.selectedProperty().bindBidirectional(mdPane.showDetailNodeProperty());
 
 	Button connectBtn = new Button();
-	connectBtn.textProperty().bind(Bindings.createStringBinding(() -> con.listeningModeProperty().get() ? rb.getString("button.listening") : rb.getString("button.connect"),
+	connectBtn.textProperty()
+		.bind(Bindings.createStringBinding(() -> con.listeningModeProperty().get()
+			? rb.getString("button.listening") : rb.getString("button.connect"),
 		con.listeningModeProperty()));
 	connectBtn.setOnAction(a -> con.restart());
 
 	Button disconnectBtn = new Button();
-	disconnectBtn.textProperty().bind(Bindings.createStringBinding(() -> con.listeningModeProperty().get() ? rb.getString("button.cancel") : rb.getString("button.disconnect"),
+	disconnectBtn.textProperty()
+		.bind(Bindings.createStringBinding(() -> con.listeningModeProperty().get()
+			? rb.getString("button.cancel") : rb.getString("button.disconnect"),
 		con.listeningModeProperty()));
 	disconnectBtn.disableProperty().bind(connectBtn.disabledProperty().not());
 	disconnectBtn.setOnAction(a -> con.cancel());
@@ -117,7 +116,8 @@ public class MainViewPresenter implements Initializable {
 	ToggleButton switchFullScreen = new ToggleButton("", new Pane());
 	switchFullScreen.setId("menu-fullscreen");
 	switchFullScreen.selectedProperty().bindBidirectional(con.fullSceenProperty());
-	switchFullScreen.selectedProperty().addListener((l, o, n) -> switchFullScreen.pseudoClassStateChanged(WINDOW_CLASS, n));
+	switchFullScreen.selectedProperty()
+		.addListener((l, o, n) -> switchFullScreen.pseudoClassStateChanged(WINDOW_CLASS, n));
 
 	ProgressIndicator progressIndicator = new ProgressIndicator(-1);
 	progressIndicator.visibleProperty().bind(con.runningProperty());
@@ -126,11 +126,14 @@ public class MainViewPresenter implements Initializable {
 	PlusMinusSlider zoomSlider = new PlusMinusSlider();
 	zoomSlider.setOnValueChanged(e -> con.zoomLevelProperty().set(e.getValue() + 1));
 
-	mdPane.setOnScroll(e -> con.zoomLevelProperty().set(con.zoomLevelProperty().get() + (e.getDeltaY() > 0.0 ? 0.01 : -0.01)));
+	mdPane.setOnScroll(
+		e -> con.zoomLevelProperty().set(con.zoomLevelProperty().get() + (e.getDeltaY() > 0.0 ? 0.01 : -0.01)));
 
-	con.zoomLevelProperty().addListener((l, o, z) -> statusProperty.set(MessageFormat.format(rb.getString("status.zoom.scale"), Math.floor(z.doubleValue() * 100))));
+	con.zoomLevelProperty().addListener((l, o, z) -> statusProperty
+		.set(MessageFormat.format(rb.getString("status.zoom.scale"), Math.floor(z.doubleValue() * 100))));
 
-	statusBar.getRightItems().addAll(progressIndicator, createSpace(10, 20), Borders.wrap(zoomSlider).emptyBorder().buildAll(), createSpace(10, 20), switchFullScreen,
+	statusBar.getRightItems().addAll(progressIndicator, createSpace(10, 20),
+		Borders.wrap(zoomSlider).emptyBorder().buildAll(), createSpace(10, 20), switchFullScreen,
 		createSpace(10, 20), connectBtn, disconnectBtn, createSpace(10, 20), gearButton);
 
 	con.protocolStateProperty().addListener((l, o, event) -> Platform.runLater(() -> {
@@ -142,7 +145,8 @@ public class MainViewPresenter implements Initializable {
 		statusProperty.set(rb.getString("status.closed"));
 		break;
 	    case HANDSHAKE_STARTED:
-		statusProperty.set(MessageFormat.format(rb.getString("status.try.connect"), config.hostProperty().get(), config.portProperty().get()));
+		statusProperty.set(MessageFormat.format(rb.getString("status.try.connect"), config.hostProperty().get(),
+			config.portProperty().get()));
 		break;
 	    case HANDSHAKE_COMPLETE:
 		statusProperty.set(rb.getString("status.open"));
@@ -164,7 +168,8 @@ public class MainViewPresenter implements Initializable {
 	    connectBtn.setDisable(n);
 	    gearButton.pseudoClassStateChanged(CONNECT_CLASS, n);
 	}));
-	con.onlineProperty().addListener((l, o, n) -> Platform.runLater(() -> gearButton.pseudoClassStateChanged(ONLINE_CLASS, n)));
+	con.onlineProperty()
+		.addListener((l, o, n) -> Platform.runLater(() -> gearButton.pseudoClassStateChanged(ONLINE_CLASS, n)));
 
 	con.exceptionCaughtProperty().addListener((l, o, n) -> Platform.runLater(() -> {
 	    Notifications.create().owner(mainPane).position(Pos.TOP_CENTER).text(n.getMessage()).showError();

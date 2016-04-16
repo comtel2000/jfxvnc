@@ -153,38 +153,6 @@
 				</pluginManagement>
 				<plugins>
 					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>license-maven-plugin</artifactId>
-						<version>1.8</version>
-						<configuration>
-							<verbose>true</verbose>
-							<excludes>
-								<exclude>**/*.fxml</exclude>
-								<exclude>**/*.xml</exclude>
-								<exclude>**/*.css</exclude>
-								<exclude>**/*.properties</exclude>
-								<exclude>**/src/test/resources/**</exclude>
-								<exclude>**/src/main/resources/**</exclude>
-							</excludes>
-						</configuration>
-						<executions>
-							<execution>
-								<id>add-apache-headers</id>
-								<goals>
-									<goal>update-file-header</goal>
-								</goals>
-								<phase>process-sources</phase>
-								<configuration>
-									<licenseName>apache_v2</licenseName>
-									<roots>
-										<root>src/main/java</root>
-									</roots>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-
-					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-site-plugin</artifactId>
 						<version>3.4</version>

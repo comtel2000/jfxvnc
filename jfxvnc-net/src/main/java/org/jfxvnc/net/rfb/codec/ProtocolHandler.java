@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright (c) 2016 comtel inc.
+ *
+ * Licensed under the Apache License, version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at:
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *******************************************************************************/
 package org.jfxvnc.net.rfb.codec;
 
 import java.util.Arrays;
@@ -20,26 +35,6 @@ import org.jfxvnc.net.rfb.render.rect.ImageRect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
- * #%L
- * RFB protocol
- * %%
- * Copyright (C) 2015 comtel2000
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
@@ -57,7 +52,8 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
     private ServerInitEvent serverInit;
 
     private RenderProtocol render;
-    private final AtomicReference<ProtocolState> state = new AtomicReference<ProtocolState>(ProtocolState.HANDSHAKE_STARTED);
+    private final AtomicReference<ProtocolState> state = new AtomicReference<ProtocolState>(
+	    ProtocolState.HANDSHAKE_STARTED);
 
     private SslContext sslContext;
 
@@ -145,7 +141,8 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 	render.registerInputEventListener(event -> ctx.writeAndFlush(event, ctx.voidPromise()));
 
 	logger.info("request full framebuffer update");
-	sendFramebufferUpdateRequest(ctx, false, 0, 0, serverInit.getFrameBufferWidth(), serverInit.getFrameBufferHeight());
+	sendFramebufferUpdateRequest(ctx, false, 0, 0, serverInit.getFrameBufferWidth(),
+		serverInit.getFrameBufferHeight());
 
 	logger.debug("channel pipeline: {}", cp.toMap().keySet());
     }
@@ -189,7 +186,8 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 	return new PreferedEncoding(enc);
     }
 
-    public void sendFramebufferUpdateRequest(ChannelHandlerContext ctx, boolean incremental, int x, int y, int w, int h) {
+    public void sendFramebufferUpdateRequest(ChannelHandlerContext ctx, boolean incremental, int x, int y, int w,
+	    int h) {
 	ByteBuf buf = ctx.alloc().buffer(10);
 	buf.writeByte(ClientEventType.FRAMEBUFFER_UPDATE_REQUEST);
 	buf.writeByte(incremental ? 1 : 0);
@@ -224,7 +222,8 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 	    ProtocolState uvent = (ProtocolState) evt;
 	    state.set(uvent);
 	    if (uvent == ProtocolState.FBU_REQUEST) {
-		sendFramebufferUpdateRequest(ctx, true, 0, 0, serverInit.getFrameBufferWidth(), serverInit.getFrameBufferHeight());
+		sendFramebufferUpdateRequest(ctx, true, 0, 0, serverInit.getFrameBufferWidth(),
+			serverInit.getFrameBufferHeight());
 	    }
 
 	    render.stateChanged(uvent);
