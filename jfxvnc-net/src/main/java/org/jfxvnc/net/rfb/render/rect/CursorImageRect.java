@@ -17,15 +17,13 @@ package org.jfxvnc.net.rfb.render.rect;
 
 import org.jfxvnc.net.rfb.codec.Encoding;
 
-public class CursorImageRect extends ImageRect {
+import io.netty.buffer.ByteBuf;
 
-    private final byte[] bitmask;
-    private final int[] pixels;
+public class CursorImageRect extends RawImageRect {
 
-    public CursorImageRect(int x, int y, int width, int height, int[] pixels, byte[] bitmask) {
-	super(x, y, width, height);
-	this.pixels = pixels;
-	this.bitmask = bitmask;
+
+    public CursorImageRect(int x, int y, int width, int height, ByteBuf pixels) {
+	super(x, y, width, height, pixels);
     }
 
     public int getHotspotX() {
@@ -36,24 +34,15 @@ public class CursorImageRect extends ImageRect {
 	return y;
     }
 
-    public int[] getPixels() {
-	return pixels;
-    }
-
-    public byte[] getBitmask() {
-	return bitmask;
-    }
-
     @Override
     public Encoding getEncoding() {
 	return Encoding.CURSOR;
     }
-
+    
     @Override
     public String toString() {
 	return "CursorImageRect [hotspotX=" + x + ", hotspotY=" + y + ", width=" + width + ", height=" + height
-		+ ", bitmask.length=" + (bitmask != null ? bitmask.length : "null") + ", pixels.length="
-		+ (pixels != null ? pixels.length : "null") + "]";
+		+ ", pixels.capacity=" + (pixels != null ? pixels.capacity() : "null") + "]";
     }
 
 }

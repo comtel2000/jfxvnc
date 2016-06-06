@@ -15,7 +15,6 @@
  *******************************************************************************/
 package org.jfxvnc.net.rfb.codec.decoder.rect;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
@@ -31,7 +30,7 @@ import io.netty.channel.ChannelHandlerContext;
 public class ZlibRectDecoder extends RawRectDecoder {
 
     private static Logger logger = LoggerFactory.getLogger(ZlibRectDecoder.class);
-
+    
     private final Inflater inflater;
     private boolean initialized;
 
@@ -68,7 +67,6 @@ public class ZlibRectDecoder extends RawRectDecoder {
 	    framebuffer.getBytes(framebuffer.readerIndex(), array);
 	    inflater.setInput(array);
 	}
-
 	byte[] result = new byte[rect.getWidth() * rect.getHeight() * pixelFormat.getBytePerPixel()];
 	try {
 	    int resultLength = inflater.inflate(result);
@@ -76,18 +74,20 @@ public class ZlibRectDecoder extends RawRectDecoder {
 		logger.error("incorrect zlib ({}/{})", resultLength, result.length);
 		return;
 	    }
+
+	    int i = 0;
+	    ByteBuf pixels = aloc.buffer(result.length - (result.length / 4));
+	    while (pixels.isWritable()) {
+		pixels.writeByte(result[i + redPos] & 0xFF);
+		pixels.writeByte(result[i + 1] & 0xFF);
+		pixels.writeByte(result[i + bluePos] & 0xFF);
+		i += 4;
+	    }
+	    out.add(new ZlibImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), pixels));
+	    
 	} catch (DataFormatException e) {
 	    logger.error(e.getMessage(), e);
 	    return;
 	}
-	int[] pixels = new int[result.length / 4];
-	if (pixels.length > 5000) {
-	    Arrays.parallelSetAll(pixels, (i) -> (result[i * 4 + 2] & 0xFF) << 16 | (result[i * 4 + 1] & 0xFF) << 8
-		    | (result[i * 4] & 0xFF) | 0xff000000);
-	} else {
-	    Arrays.setAll(pixels, (i) -> (result[i * 4 + 2] & 0xFF) << 16 | (result[i * 4 + 1] & 0xFF) << 8
-		    | (result[i * 4] & 0xFF) | 0xff000000);
-	}
-	out.add(new ZlibImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), pixels));
     }
 }

@@ -49,6 +49,10 @@ public abstract class ImageRect {
 	return height;
     }
 
+    public boolean release() {
+	return true;
+    }
+    
     @Override
     public String toString() {
 	return "ImageRect [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + "]";

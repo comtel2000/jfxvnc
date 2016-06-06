@@ -15,7 +15,6 @@
  *******************************************************************************/
 package org.jfxvnc.net.rfb.codec.decoder.rect;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.jfxvnc.net.rfb.codec.PixelFormat;
@@ -24,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -31,6 +31,8 @@ public class RawRectDecoder implements FrameRectDecoder {
 
     private static Logger logger = LoggerFactory.getLogger(RawRectDecoder.class);
 
+    protected final PooledByteBufAllocator aloc = new PooledByteBufAllocator();
+    
     protected int capacity;
     protected FrameRect rect;
     protected PixelFormat pixelFormat;
@@ -50,7 +52,7 @@ public class RawRectDecoder implements FrameRectDecoder {
     public boolean decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
 
 	if (framebuffer == null) {
-	    framebuffer = Unpooled.buffer(capacity);
+	    framebuffer = Unpooled.unreleasableBuffer(ctx.alloc().buffer(capacity));
 	} else if (framebuffer.capacity() != capacity) {
 	    framebuffer.capacity(capacity);
 	}
@@ -78,18 +80,36 @@ public class RawRectDecoder implements FrameRectDecoder {
     }
 
     protected void sendRect(List<Object> out) {
-	int[] pixels = new int[capacity / 4];
-	if (pixels.length > 5000) {
-	    Arrays.parallelSetAll(pixels,
-		    (i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift()
-			    | framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift()
-			    | framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
-	} else {
-	    Arrays.setAll(pixels,
-		    (i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift()
-			    | framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift()
-			    | framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
+	int i = 0;
+//	ByteBuf pixels = aloc.buffer(capacity);
+//	while (pixels.isWritable()) {
+//	    pixels.writeInt(framebuffer.getUnsignedByte(i + redPos) << pixelFormat.getRedShift()
+//		    | framebuffer.getUnsignedByte(i + 1) << pixelFormat.getGreenShift()
+//		    | framebuffer.getUnsignedByte(i + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
+//	    i+=4;
+//	}
+
+	//reduce 4 byte to 3 byte
+	ByteBuf pixels = aloc.buffer(capacity - (capacity / 4));
+	while (pixels.isWritable()) {
+	    pixels.writeByte(framebuffer.getUnsignedByte(i + redPos));
+	    pixels.writeByte(framebuffer.getUnsignedByte(i + 1));
+	    pixels.writeByte(framebuffer.getUnsignedByte(i + bluePos));
+	    i += 4;
 	}
+	
+	
+//	if (pixels.length > 5000) {
+//	    Arrays.parallelSetAll(pixels,
+//		    (i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift()
+//			    | framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift()
+//			    | framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
+//	} else {
+//	    Arrays.setAll(pixels,
+//		    (i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift()
+//			    | framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift()
+//			    | framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
+//	}
 	out.add(new RawImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), pixels));
     }
 }

@@ -60,7 +60,7 @@ public class VncClientApp extends Application {
 	offlineImg = new Image(VncClientApp.class.getResourceAsStream("icon.png"));
 	onlineImg = new Image(VncClientApp.class.getResourceAsStream("icon_green.png"));
 
-	Injector.setLogger((t) -> logger.trace(t));
+	Injector.setLogger(logger::trace);
 
 	// Injector.setModelOrService(Stage.class, stage);
 	Injector.setModelOrService(ProtocolConfiguration.class,

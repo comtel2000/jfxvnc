@@ -17,7 +17,6 @@ package org.jfxvnc.ui.presentation.vnc;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.stream.IntStream;
 
 import javax.inject.Inject;
 
@@ -148,8 +147,9 @@ public class VncViewPresenter implements Initializable {
 	    case ZLIB:
 		RawImageRect rawRect = (RawImageRect) rect;
 		vncImage.getPixelWriter().setPixels(rawRect.getX(), rawRect.getY(), rawRect.getWidth(),
-			rawRect.getHeight(), PixelFormat.getIntArgbInstance(), rawRect.getPixels(), 0,
-			rawRect.getWidth());
+			rawRect.getHeight(), PixelFormat.getByteRgbInstance(), rawRect.getPixels().nioBuffer(),
+			rawRect.getWidth() * 3);
+		rawRect.release();
 		break;
 	    case COPY_RECT:
 		CopyImageRect copyImageRect = (CopyImageRect) rect;
@@ -173,22 +173,12 @@ public class VncViewPresenter implements Initializable {
 		    return;
 		}
 
-		if (cRect.getBitmask() != null && cRect.getBitmask().length > 0) {
-		    // remove transparent pixels
-		    int maskBytesPerRow = Math.floorDiv((cRect.getWidth() + 7), 8);
-		    IntStream.range(0, cRect.getHeight())
-			    .forEach(
-				    y -> IntStream.range(0, cRect.getWidth())
-					    .filter(x -> (cRect.getBitmask()[(y * maskBytesPerRow)
-						    + Math.floorDiv(x, 8)] & (1 << 7 - Math.floorMod(x, 8))) < 1)
-			    .forEach(x -> cRect.getPixels()[y * cRect.getWidth() + x] = 0));
-		}
-
 		Dimension2D dim = ImageCursor.getBestSize(cRect.getWidth(), cRect.getHeight());
 		WritableImage cImage = new WritableImage((int) dim.getWidth(), (int) dim.getHeight());
 		cImage.getPixelWriter().setPixels(0, 0, (int) Math.min(dim.getWidth(), cRect.getWidth()),
 			(int) Math.min(dim.getHeight(), cRect.getHeight()), PixelFormat.getIntArgbInstance(),
-			cRect.getPixels(), 0, cRect.getWidth());
+			cRect.getPixels().nioBuffer().asIntBuffer(), cRect.getWidth());
+		cRect.release();
 		remoteCursor = new ImageCursor(cImage, cRect.getHotspotX(), cRect.getHotspotY());
 		vncView.setCursor(remoteCursor);
 		break;

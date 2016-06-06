@@ -17,16 +17,18 @@ package org.jfxvnc.net.rfb.render.rect;
 
 import org.jfxvnc.net.rfb.codec.Encoding;
 
+import io.netty.buffer.ByteBuf;
+
 public class RawImageRect extends ImageRect {
 
-    private final int[] pixels;
+    protected final ByteBuf pixels;
 
-    public RawImageRect(int x, int y, int width, int height, int[] pixels) {
+    public RawImageRect(int x, int y, int width, int height, ByteBuf pixels) {
 	super(x, y, width, height);
 	this.pixels = pixels;
     }
 
-    public int[] getPixels() {
+    public ByteBuf getPixels() {
 	return pixels;
     }
 
@@ -36,8 +38,13 @@ public class RawImageRect extends ImageRect {
     }
 
     @Override
+    public boolean release() {
+        return pixels != null ? pixels.release() : true;
+    }
+    
+    @Override
     public String toString() {
-	return "RawImageRect [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + ", pixels.length="
-		+ (pixels != null ? pixels.length : "null") + "]";
+	return "RawImageRect [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + ", pixels.capacity="
+		+ (pixels != null ? pixels.capacity() : "null") + "]";
     }
 }
