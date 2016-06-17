@@ -113,10 +113,10 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 
 	serverInit = (ServerInitEvent) msg;
 	logger.info("handshake completed with {}", serverInit);
-
-	FrameDecoderHandler frameHandler = new FrameDecoderHandler(config.clientPixelFormatProperty().get());
+	
+	FrameDecoderHandler frameHandler = new FrameDecoderHandler(serverInit.getPixelFormat());
 	if (!frameHandler.isPixelFormatSupported()) {
-	    ProtocolException e = new ProtocolException("pixelformat not supported yet");
+	    ProtocolException e = new ProtocolException(String.format("pixelformat: (%s bpp) not supported yet", serverInit.getPixelFormat().getBitPerPixel()));
 	    exceptionCaught(ctx, e);
 	    return;
 	}
