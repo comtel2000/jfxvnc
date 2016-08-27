@@ -7,5 +7,6 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="mainPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jfxvnc.ui.presentation.MainViewPresenter">
+<BorderPane fx:id="mainPane" xmlns="http://javafx.com/javafx/8"
+	xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jfxvnc.ui.presentation.MainViewPresenter">
 </BorderPane>

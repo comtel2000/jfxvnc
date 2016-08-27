@@ -79,7 +79,7 @@ public class VncViewPresenter implements Initializable {
   private final PixelFormat<ByteBuffer> DEFAULT_PIXELFORMAT = PixelFormat.getByteRgbInstance();
 
   private AtomicReference<PixelFormat<ByteBuffer>> pixelFormat = new AtomicReference<>(DEFAULT_PIXELFORMAT);
-  
+
   @Override
   public void initialize(URL location, ResourceBundle resources) {
 
@@ -143,7 +143,7 @@ public class VncViewPresenter implements Initializable {
   }
 
   private void setPixelFormat(ColourMapEntriesEvent event) {
-    if (event == null){
+    if (event == null) {
       pixelFormat.set(DEFAULT_PIXELFORMAT);
       return;
     }
@@ -151,12 +151,12 @@ public class VncViewPresenter implements Initializable {
     int[] colors = new int[event.getNumberOfColor()];
     int r, g, b;
     for (int i = event.getFirstColor(); i < colors.length; i++) {
-	r = event.getColors().readUnsignedShort();
-	g = event.getColors().readUnsignedShort();
-	b = event.getColors().readUnsignedShort();
+      r = event.getColors().readUnsignedShort();
+      g = event.getColors().readUnsignedShort();
+      b = event.getColors().readUnsignedShort();
       colors[i] = (0xff << 24) | ((r >> 8) << 16) | ((g >> 8) << 8) | (b >> 8);
     }
-    
+
     pixelFormat.set(PixelFormat.createByteIndexedInstance(colors));
   }
 

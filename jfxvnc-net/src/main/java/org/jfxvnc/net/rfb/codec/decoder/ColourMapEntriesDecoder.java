@@ -26,8 +26,7 @@ class ColourMapEntriesDecoder implements FrameDecoder {
   private int firstColor;
   private int numberOfColor;
 
-  public ColourMapEntriesDecoder() {
-  }
+  public ColourMapEntriesDecoder() {}
 
   @Override
   public boolean decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {

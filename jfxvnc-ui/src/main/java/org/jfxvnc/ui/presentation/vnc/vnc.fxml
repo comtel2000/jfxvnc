@@ -12,8 +12,11 @@
 <?import java.net.URL?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<ScrollPane centerShape="false" fitToHeight="true" fitToWidth="true" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jfxvnc.ui.presentation.vnc.VncViewPresenter">
+<ScrollPane centerShape="false" fitToHeight="true"
+	fitToWidth="true" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="org.jfxvnc.ui.presentation.vnc.VncViewPresenter">
 	<content>
-		<ImageView fx:id="vncView" pickOnBounds="true" preserveRatio="true" smooth="false" />
+		<ImageView fx:id="vncView" pickOnBounds="true"
+			preserveRatio="true" smooth="false" />
 	</content>
 </ScrollPane>

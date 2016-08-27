@@ -1,17 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 2016 comtel inc.
  *
- * Licensed under the Apache License, version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at:
+ * Licensed under the Apache License, version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at:
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  *******************************************************************************/
 package org.jfxvnc.net.rfb.codec;
 
@@ -54,54 +52,54 @@ package org.jfxvnc.net.rfb.codec;
  */
 public enum Encoding {
 
-    UNKNOWN(Integer.MIN_VALUE),
+  UNKNOWN(Integer.MIN_VALUE),
 
-    RAW(0),
+  RAW(0),
 
-    COPY_RECT(1),
+  COPY_RECT(1),
 
-    RRE(2),
+  RRE(2),
 
-    CO_RRE(4),
+  CO_RRE(4),
 
-    HEXTILE(5),
+  HEXTILE(5),
 
-    ZLIB(6),
+  ZLIB(6),
 
-    TIGHT(7),
+  TIGHT(7),
 
-    ZLIB_HEX(8),
+  ZLIB_HEX(8),
 
-    TRLE(15),
+  TRLE(15),
 
-    ZRLE(16),
+  ZRLE(16),
 
-    H_ZYWRLE(17),
+  H_ZYWRLE(17),
 
-    AW_XZ(18),
+  AW_XZ(18),
 
-    AW_XZYW(19),
+  AW_XZYW(19),
 
-    DESKTOP_SIZE(-223),
+  DESKTOP_SIZE(-223),
 
-    CURSOR(-239);
+  CURSOR(-239);
 
-    private final int type;
+  private final int type;
 
-    private Encoding(int type) {
-	this.type = type;
+  private Encoding(int type) {
+    this.type = type;
+  }
+
+  public static Encoding valueOf(int type) {
+    for (Encoding e : values()) {
+      if (e.type == type) {
+        return e;
+      }
     }
+    return UNKNOWN;
+  }
 
-    public static Encoding valueOf(int type) {
-	for (Encoding e : values()) {
-	    if (e.type == type) {
-		return e;
-	    }
-	}
-	return UNKNOWN;
-    }
-
-    public int getType() {
-	return type;
-    }
+  public int getType() {
+    return type;
+  }
 }

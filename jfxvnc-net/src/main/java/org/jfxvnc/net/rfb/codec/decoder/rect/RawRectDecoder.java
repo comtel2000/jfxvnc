@@ -86,11 +86,11 @@ public class RawRectDecoder implements FrameRectDecoder {
     // i+=4;
     // }
 
-    if (pixelFormat.getBytePerPixel() == 1){
-	out.add(new RawImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), framebuffer.copy(), rect.getWidth()));
-	return;
+    if (pixelFormat.getBytePerPixel() == 1) {
+      out.add(new RawImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), framebuffer.copy(), rect.getWidth()));
+      return;
     }
-    
+
     // reduce 4 byte to 3 byte
     int size = capacity - (capacity / 4);
     ByteBuf pixels = aloc.buffer(size, size);
@@ -113,6 +113,6 @@ public class RawRectDecoder implements FrameRectDecoder {
     // | framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift()
     // | framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
     // }
-    
+
   }
 }

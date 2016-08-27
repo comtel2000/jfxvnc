@@ -73,7 +73,7 @@ class FramebufferUpdateRectDecoder implements FrameDecoder {
 
   public boolean isPixelFormatSupported() {
     logger.debug("is pixelformat supported: {}", pixelFormat);
-    return true;//PixelFormat.RGB_888.equals(pixelFormat);
+    return true;// PixelFormat.RGB_888.equals(pixelFormat);
   }
 
   @Override
