@@ -1,17 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 2016 comtel inc.
  *
- * Licensed under the Apache License, version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at:
+ * Licensed under the Apache License, version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at:
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  *******************************************************************************/
 package org.jfxvnc.ui.presentation;
 
@@ -50,142 +48,145 @@ import javafx.scene.layout.Pane;
 
 public class MainViewPresenter implements Initializable {
 
-    @Inject
-    SessionContext ctx;
+  @Inject
+  SessionContext ctx;
 
-    @Inject
-    VncRenderService con;
+  @Inject
+  VncRenderService con;
 
-    @Inject
-    ProtocolConfiguration config;
+  @Inject
+  ProtocolConfiguration config;
 
-    @FXML
-    BorderPane mainPane;
+  @FXML
+  BorderPane mainPane;
 
-    private MasterDetailPane mdPane;
+  private volatile long lastPing = 0;
 
-    private final static PseudoClass CONNECT_CLASS = PseudoClass.getPseudoClass("connect");
-    private final static PseudoClass ONLINE_CLASS = PseudoClass.getPseudoClass("online");
+  private MasterDetailPane mdPane;
 
-    private final static PseudoClass WINDOW_CLASS = PseudoClass.getPseudoClass("window");
+  private final static PseudoClass CONNECT_CLASS = PseudoClass.getPseudoClass("connect");
+  private final static PseudoClass ONLINE_CLASS = PseudoClass.getPseudoClass("online");
 
-    private final StringProperty statusProperty = new SimpleStringProperty("-", "mainview.status");
+  private final static PseudoClass WINDOW_CLASS = PseudoClass.getPseudoClass("window");
 
-    @Override
-    public void initialize(URL location, ResourceBundle rb) {
+  private final StringProperty statusProperty = new SimpleStringProperty("-", "mainview.status");
 
-	ctx.addBinding(statusProperty);
+  @Override
+  public void initialize(URL location, ResourceBundle rb) {
 
-	mdPane = new MasterDetailPane(Side.RIGHT);
-	VncView vncView = new VncView();
-	mdPane.setMasterNode(vncView.getView());
+    ctx.addBinding(statusProperty);
 
-	DetailView detailView = new DetailView();
-	mdPane.setDetailNode(detailView.getView());
-	mdPane.setDividerPosition(0.75);
-	ctx.bind(mdPane.dividerPositionProperty(), "detailDividerPosition");
-	mdPane.setShowDetailNode(true);
+    mdPane = new MasterDetailPane(Side.RIGHT);
+    VncView vncView = new VncView();
+    mdPane.setMasterNode(vncView.getView());
 
-	StatusBar statusBar = new StatusBar();
-	statusBar.getStyleClass().add("menu-status-bar");
+    DetailView detailView = new DetailView();
+    mdPane.setDetailNode(detailView.getView());
+    mdPane.setDividerPosition(0.75);
+    ctx.bind(mdPane.dividerPositionProperty(), "detailDividerPosition");
+    mdPane.setShowDetailNode(true);
 
-	mainPane.setCenter(mdPane);
-	mainPane.setBottom(statusBar);
+    StatusBar statusBar = new StatusBar();
+    statusBar.getStyleClass().add("menu-status-bar");
 
-	statusBar.textProperty().bind(statusProperty);
+    mainPane.setCenter(mdPane);
+    mainPane.setBottom(statusBar);
 
-	ToggleButton gearButton = new ToggleButton("", new Pane());
-	gearButton.setId("menu-settings");
-	gearButton.selectedProperty().bindBidirectional(mdPane.showDetailNodeProperty());
+    statusBar.textProperty().bind(statusProperty);
 
-	Button connectBtn = new Button();
-	connectBtn.textProperty()
-		.bind(Bindings.createStringBinding(() -> con.listeningModeProperty().get()
-			? rb.getString("button.listening") : rb.getString("button.connect"),
-		con.listeningModeProperty()));
-	connectBtn.setOnAction(a -> con.restart());
+    ToggleButton gearButton = new ToggleButton("", new Pane());
+    gearButton.setId("menu-settings");
+    gearButton.selectedProperty().bindBidirectional(mdPane.showDetailNodeProperty());
 
-	Button disconnectBtn = new Button();
-	disconnectBtn.textProperty()
-		.bind(Bindings.createStringBinding(() -> con.listeningModeProperty().get()
-			? rb.getString("button.cancel") : rb.getString("button.disconnect"),
-		con.listeningModeProperty()));
-	disconnectBtn.disableProperty().bind(connectBtn.disabledProperty().not());
-	disconnectBtn.setOnAction(a -> con.cancel());
+    Button connectBtn = new Button();
+    connectBtn.textProperty().bind(Bindings.createStringBinding(
+        () -> con.listeningModeProperty().get() ? rb.getString("button.listening") : rb.getString("button.connect"), con.listeningModeProperty()));
+    connectBtn.setOnAction(a -> con.restart());
 
-	ToggleButton switchFullScreen = new ToggleButton("", new Pane());
-	switchFullScreen.setId("menu-fullscreen");
-	switchFullScreen.selectedProperty().bindBidirectional(con.fullSceenProperty());
-	switchFullScreen.selectedProperty()
-		.addListener((l, o, n) -> switchFullScreen.pseudoClassStateChanged(WINDOW_CLASS, n));
+    Button disconnectBtn = new Button();
+    disconnectBtn.textProperty().bind(Bindings.createStringBinding(
+        () -> con.listeningModeProperty().get() ? rb.getString("button.cancel") : rb.getString("button.disconnect"), con.listeningModeProperty()));
+    disconnectBtn.disableProperty().bind(connectBtn.disabledProperty().not());
+    disconnectBtn.setOnAction(a -> con.cancel());
 
-	ProgressIndicator progressIndicator = new ProgressIndicator(-1);
-	progressIndicator.visibleProperty().bind(con.runningProperty());
-	progressIndicator.setPrefSize(16, 16);
+    ToggleButton switchFullScreen = new ToggleButton("", new Pane());
+    switchFullScreen.setId("menu-fullscreen");
+    switchFullScreen.selectedProperty().bindBidirectional(con.fullSceenProperty());
+    switchFullScreen.selectedProperty().addListener((l, o, n) -> switchFullScreen.pseudoClassStateChanged(WINDOW_CLASS, n));
 
-	PlusMinusSlider zoomSlider = new PlusMinusSlider();
-	zoomSlider.setOnValueChanged(e -> con.zoomLevelProperty().set(e.getValue() + 1));
+    ProgressIndicator progressIndicator = new ProgressIndicator(-1);
+    progressIndicator.visibleProperty().bind(con.runningProperty());
+    progressIndicator.setPrefSize(16, 16);
 
-	mdPane.setOnScroll(
-		e -> con.zoomLevelProperty().set(con.zoomLevelProperty().get() + (e.getDeltaY() > 0.0 ? 0.01 : -0.01)));
+    PlusMinusSlider zoomSlider = new PlusMinusSlider();
+    zoomSlider.setOnValueChanged(e -> con.zoomLevelProperty().set(e.getValue() + 1));
 
-	con.zoomLevelProperty().addListener((l, o, z) -> statusProperty
-		.set(MessageFormat.format(rb.getString("status.zoom.scale"), Math.floor(z.doubleValue() * 100))));
+    mdPane.setOnScroll(e -> con.zoomLevelProperty().set(con.zoomLevelProperty().get() + (e.getDeltaY() > 0.0 ? 0.01 : -0.01)));
 
-	statusBar.getRightItems().addAll(progressIndicator, createSpace(10, 20),
-		Borders.wrap(zoomSlider).emptyBorder().buildAll(), createSpace(10, 20), switchFullScreen,
-		createSpace(10, 20), connectBtn, disconnectBtn, createSpace(10, 20), gearButton);
+    con.zoomLevelProperty()
+        .addListener((l, o, z) -> statusProperty.set(MessageFormat.format(rb.getString("status.zoom.scale"), Math.floor(z.doubleValue() * 100))));
 
-	con.protocolStateProperty().addListener((l, o, event) -> Platform.runLater(() -> {
-	    switch (event) {
-	    case LISTENING:
-		statusProperty.set(rb.getString("status.listening"));
-		break;
-	    case CLOSED:
-		statusProperty.set(rb.getString("status.closed"));
-		break;
-	    case HANDSHAKE_STARTED:
-		statusProperty.set(MessageFormat.format(rb.getString("status.try.connect"), config.hostProperty().get(),
-			config.portProperty().get()));
-		break;
-	    case HANDSHAKE_COMPLETE:
-		statusProperty.set(rb.getString("status.open"));
-		gearButton.setSelected(false);
-		break;
-	    case SECURITY_FAILED:
-		statusProperty.set(rb.getString("status.auth.failed"));
-		break;
-	    case SECURITY_COMPLETE:
-		statusProperty.set(rb.getString("status.auth.done"));
-		break;
-	    default:
-		break;
-	    }
+    statusBar.getRightItems().addAll(progressIndicator, createSpace(10, 20), Borders.wrap(zoomSlider).emptyBorder().buildAll(), createSpace(10, 20),
+        switchFullScreen, createSpace(10, 20), connectBtn, disconnectBtn, createSpace(10, 20), gearButton);
 
-	}));
+    con.protocolStateProperty().addListener((l, o, event) -> Platform.runLater(() -> {
+      switch (event) {
+        case LISTENING:
+          statusProperty.set(rb.getString("status.listening"));
+          break;
+        case CLOSED:
+          statusProperty.set(rb.getString("status.closed"));
+          break;
+        case HANDSHAKE_STARTED:
+          statusProperty.set(MessageFormat.format(rb.getString("status.try.connect"), config.hostProperty().get(), config.portProperty().get()));
+          break;
+        case HANDSHAKE_COMPLETE:
+          statusProperty.set(rb.getString("status.open"));
+          gearButton.setSelected(false);
+          break;
+        case SECURITY_FAILED:
+          statusProperty.set(rb.getString("status.auth.failed"));
+          break;
+        case SECURITY_COMPLETE:
+          statusProperty.set(rb.getString("status.auth.done"));
+          break;
+        default:
+          break;
+      }
 
-	con.connectProperty().addListener((l, o, n) -> Platform.runLater(() -> {
-	    connectBtn.setDisable(n);
-	    gearButton.pseudoClassStateChanged(CONNECT_CLASS, n);
-	}));
-	con.onlineProperty()
-		.addListener((l, o, n) -> Platform.runLater(() -> gearButton.pseudoClassStateChanged(ONLINE_CLASS, n)));
+    }));
 
-	con.exceptionCaughtProperty().addListener((l, o, n) -> Platform.runLater(() -> {
-	    Notifications.create().owner(mainPane).position(Pos.TOP_CENTER).text(n.getMessage()).showError();
-	    statusProperty.set(n.getMessage());
-	}));
+    con.connectProperty().addListener((l, o, n) -> Platform.runLater(() -> {
+      connectBtn.setDisable(n);
+      gearButton.pseudoClassStateChanged(CONNECT_CLASS, n);
+    }));
+    con.onlineProperty().addListener((l, o, n) -> Platform.runLater(() -> gearButton.pseudoClassStateChanged(ONLINE_CLASS, n)));
 
-	con.bellProperty().addListener(l -> Platform.runLater(() -> {
-	    statusProperty.set("Bell");
-	    Toolkit.getDefaultToolkit().beep();
-	}));
+    con.exceptionCaughtProperty().addListener((l, o, n) -> Platform.runLater(() -> {
+      Notifications.create().owner(mainPane).position(Pos.TOP_CENTER).text(n.getMessage()).showError();
+      statusProperty.set(n.getMessage());
+    }));
 
+    con.bellProperty().addListener(l -> bell());
+
+  }
+
+  private void bell() {
+    long time = System.currentTimeMillis();
+    if (lastPing > time - 2000) {
+      return;
     }
+    lastPing = time;
+    Toolkit.getDefaultToolkit().beep();
+    Platform.runLater(() -> statusProperty.set("Bell"));
+  }
 
-    private Pane createSpace(double w, double h) {
-	Pane space = new Pane();
-	space.setPrefSize(w, h);
-	return space;
-    }
+  private Pane createSpace(double w, double h) {
+    Pane space = new Pane();
+    space.setPrefSize(w, h);
+    return space;
+  }
+
+
+
 }

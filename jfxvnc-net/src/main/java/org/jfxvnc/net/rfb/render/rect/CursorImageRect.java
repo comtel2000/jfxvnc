@@ -21,9 +21,8 @@ import io.netty.buffer.ByteBuf;
 
 public class CursorImageRect extends RawImageRect {
 
-
     public CursorImageRect(int x, int y, int width, int height, ByteBuf pixels) {
-	super(x, y, width, height, pixels);
+	super(x, y, width, height, pixels, 1);
     }
 
     public int getHotspotX() {

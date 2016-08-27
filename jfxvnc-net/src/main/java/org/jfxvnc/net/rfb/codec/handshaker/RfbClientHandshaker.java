@@ -82,7 +82,7 @@ public abstract class RfbClientHandshaker {
 	p.remove("rfb-handshake-decoder");
 	p.remove("rfb-handshake-encoder");
 
-	logger.info("server {} - client {}", version, response);
+	logger.debug("server {} - client {}", version, response);
 
     }
 

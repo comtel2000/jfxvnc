@@ -1,17 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 2016 comtel inc.
  *
- * Licensed under the Apache License, version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at:
+ * Licensed under the Apache License, version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at:
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  *******************************************************************************/
 package org.jfxvnc.net.rfb.codec;
 
@@ -19,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.jfxvnc.net.rfb.codec.decoder.FrameDecoderHandler;
 import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
 import org.jfxvnc.net.rfb.codec.encoder.ClientCutTextEncoder;
 import org.jfxvnc.net.rfb.codec.encoder.KeyButtonEventEncoder;
@@ -45,188 +44,184 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 
 public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 
-    private static Logger logger = LoggerFactory.getLogger(ProtocolHandler.class);
+  private static Logger logger = LoggerFactory.getLogger(ProtocolHandler.class);
 
-    private final ProtocolConfiguration config;
+  private final ProtocolConfiguration config;
 
-    private ServerInitEvent serverInit;
+  private ServerInitEvent serverInit;
 
-    private RenderProtocol render;
-    private final AtomicReference<ProtocolState> state = new AtomicReference<ProtocolState>(
-	    ProtocolState.HANDSHAKE_STARTED);
+  private RenderProtocol render;
+  private final AtomicReference<ProtocolState> state = new AtomicReference<ProtocolState>(ProtocolState.HANDSHAKE_STARTED);
 
-    private SslContext sslContext;
+  private SslContext sslContext;
 
-    public ProtocolHandler(RenderProtocol render, ProtocolConfiguration config) {
-	if (config == null) {
-	    throw new IllegalArgumentException("configuration must not be empty");
-	}
-	this.config = config;
-	this.render = render;
+  public ProtocolHandler(RenderProtocol render, ProtocolConfiguration config) {
+    if (config == null) {
+      throw new IllegalArgumentException("configuration must not be empty");
+    }
+    this.config = config;
+    this.render = render;
+  }
+
+  @Override
+  public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+    if (config.sslProperty().get()) {
+      if (sslContext == null) {
+        sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+      }
+      ctx.pipeline().addFirst("ssl-handler", sslContext.newHandler(ctx.channel().alloc()));
+    }
+    super.channelRegistered(ctx);
+  }
+
+  @Override
+  public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    logger.debug("connection closed");
+    if (state.get() == ProtocolState.SECURITY_STARTED) {
+      ProtocolException e = new ProtocolException("connection closed without error message");
+      render.exceptionCaught(e);
+    }
+    userEventTriggered(ctx, ProtocolState.CLOSED);
+    super.channelInactive(ctx);
+  }
+
+  @Override
+  protected void decode(final ChannelHandlerContext ctx, Object msg, List<Object> out) throws Exception {
+
+    if (msg instanceof ImageRect) {
+      render.render((ImageRect) msg, () -> {
+        // logger.debug("render completed");
+        // sendFramebufferUpdateRequest(ctx, true, 0, 0,
+        // serverInit.getFrameBufferWidth(),
+        // serverInit.getFrameBufferHeight());
+
+      });
+      return;
+    }
+    if (msg instanceof ServerDecoderEvent) {
+      render.eventReceived((ServerDecoderEvent) msg);
+      return;
     }
 
-    @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-	if (config.sslProperty().get()) {
-	    if (sslContext == null) {
-		sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-	    }
-	    ctx.pipeline().addFirst("ssl-handler", sslContext.newHandler(ctx.channel().alloc()));
-	}
-	super.channelRegistered(ctx);
+    if (!(msg instanceof ServerInitEvent)) {
+      logger.error("unknown message: {}", msg);
+      ctx.fireChannelRead(msg);
+      return;
     }
 
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-	logger.info("connection closed");
-	if (state.get() == ProtocolState.SECURITY_STARTED) {
-	    ProtocolException e = new ProtocolException("connection closed without error message");
-	    render.exceptionCaught(e);
-	}
-	userEventTriggered(ctx, ProtocolState.CLOSED);
-	super.channelInactive(ctx);
+    serverInit = (ServerInitEvent) msg;
+    logger.debug("handshake completed with {}", serverInit);
+
+    FrameDecoderHandler frameHandler = new FrameDecoderHandler(serverInit.getPixelFormat());
+    if (!frameHandler.isPixelFormatSupported()) {
+      ProtocolException e = new ProtocolException(String.format("pixelformat: (%s bpp) not supported yet", serverInit.getPixelFormat().getBitPerPixel()));
+      exceptionCaught(ctx, e);
+      return;
     }
 
-    @Override
-    protected void decode(final ChannelHandlerContext ctx, Object msg, List<Object> out) throws Exception {
+    ChannelPipeline cp = ctx.pipeline();
 
-	if (msg instanceof ImageRect) {
-	    render.render((ImageRect) msg, () -> {
-		// logger.debug("render completed");
-		// sendFramebufferUpdateRequest(ctx, true, 0, 0,
-		// serverInit.getFrameBufferWidth(),
-		// serverInit.getFrameBufferHeight());
+    cp.addBefore(ctx.name(), "rfb-encoding-encoder", new PreferedEncodingEncoder());
+    PreferedEncoding prefEncodings = getPreferedEncodings(frameHandler.getSupportedEncodings());
+    ctx.write(prefEncodings);
 
-	    });
-	    return;
-	}
-	if (msg instanceof ServerDecoderEvent) {
-	    render.eventReceived((ServerDecoderEvent) msg);
-	    return;
-	}
+    cp.addBefore(ctx.name(), "rfb-pixelformat-encoder", new PixelFormatEncoder());
+    ctx.write(serverInit.getPixelFormat());
+    ctx.flush();
 
-	if (!(msg instanceof ServerInitEvent)) {
-	    logger.error("unknown message: {}", msg);
-	    ctx.fireChannelRead(msg);
-	    return;
-	}
+    cp.addBefore(ctx.name(), "rfb-frame-handler", frameHandler);
+    cp.addBefore(ctx.name(), "rfb-keyevent-encoder", new KeyButtonEventEncoder());
+    cp.addBefore(ctx.name(), "rfb-pointerevent-encoder", new PointerEventEncoder());
+    cp.addBefore(ctx.name(), "rfb-cuttext-encoder", new ClientCutTextEncoder());
 
-	serverInit = (ServerInitEvent) msg;
-	logger.info("handshake completed with {}", serverInit);
-	
-	FrameDecoderHandler frameHandler = new FrameDecoderHandler(serverInit.getPixelFormat());
-	if (!frameHandler.isPixelFormatSupported()) {
-	    ProtocolException e = new ProtocolException(String.format("pixelformat: (%s bpp) not supported yet", serverInit.getPixelFormat().getBitPerPixel()));
-	    exceptionCaught(ctx, e);
-	    return;
-	}
+    render.eventReceived(getConnectInfoEvent(ctx, prefEncodings));
 
-	ChannelPipeline cp = ctx.pipeline();
+    render.registerInputEventListener(event -> ctx.writeAndFlush(event, ctx.voidPromise()));
 
-	cp.addBefore(ctx.name(), "rfb-encoding-encoder", new PreferedEncodingEncoder());
-	PreferedEncoding prefEncodings = getPreferedEncodings(frameHandler.getSupportedEncodings());
-	ctx.write(prefEncodings);
+    logger.debug("request full framebuffer update");
+    sendFramebufferUpdateRequest(ctx, false, 0, 0, serverInit.getFrameBufferWidth(), serverInit.getFrameBufferHeight());
 
-	cp.addBefore(ctx.name(), "rfb-pixelformat-encoder", new PixelFormatEncoder());
-	ctx.write(config.clientPixelFormatProperty().get());
-	ctx.flush();
+    logger.trace("channel pipeline: {}", cp.toMap().keySet());
+  }
 
-	cp.addBefore(ctx.name(), "rfb-frame-handler", frameHandler);
-	cp.addBefore(ctx.name(), "rfb-keyevent-encoder", new KeyButtonEventEncoder());
-	cp.addBefore(ctx.name(), "rfb-pointerevent-encoder", new PointerEventEncoder());
-	cp.addBefore(ctx.name(), "rfb-cuttext-encoder", new ClientCutTextEncoder());
+  private ConnectInfoEvent getConnectInfoEvent(ChannelHandlerContext ctx, PreferedEncoding enc) {
+    ConnectInfoEvent details = new ConnectInfoEvent();
+    details.setRemoteAddress(ctx.channel().remoteAddress().toString().substring(1));
+    details.setServerName(serverInit.getServerName());
+    details.setFrameWidth(serverInit.getFrameBufferWidth());
+    details.setFrameHeight(serverInit.getFrameBufferHeight());
+    details.setRfbProtocol(config.versionProperty().get());
+    details.setSecurity(config.securityProperty().get());
+    details.setServerPF(serverInit.getPixelFormat());
+    details.setClientPF(config.clientPixelFormatProperty().get());
+    details.setSupportedEncodings(enc.getEncodings());
+    details.setConnectionType(config.sslProperty().get() ? "SSL" : "TCP (standard)");
+    return details;
+  }
 
-	render.eventReceived(getConnectInfoEvent(ctx, prefEncodings));
+  public PreferedEncoding getPreferedEncodings(Encoding[] supported) {
+    Encoding[] enc = Arrays.stream(supported).filter(value -> {
+      switch (value) {
+        case COPY_RECT:
+          return config.copyRectEncProperty().get();
+        case RAW:
+          return config.rawEncProperty().get();
+        case HEXTILE:
+          return config.hextileEncProperty().get();
+        case CURSOR:
+          return config.clientCursorProperty().get();
+        case DESKTOP_SIZE:
+          return config.desktopSizeProperty().get();
+        case ZLIB:
+          return config.zlibEncProperty().get();
+        default:
+          return true;
+      }
+    }).toArray(Encoding[]::new);
 
-	render.registerInputEventListener(event -> ctx.writeAndFlush(event, ctx.voidPromise()));
+    logger.debug("encodings: {}", Arrays.toString(enc));
+    return new PreferedEncoding(enc);
+  }
 
-	logger.info("request full framebuffer update");
-	sendFramebufferUpdateRequest(ctx, false, 0, 0, serverInit.getFrameBufferWidth(),
-		serverInit.getFrameBufferHeight());
+  public void sendFramebufferUpdateRequest(ChannelHandlerContext ctx, boolean incremental, int x, int y, int w, int h) {
+    ByteBuf buf = ctx.alloc().buffer(10);
+    buf.writeByte(ClientEventType.FRAMEBUFFER_UPDATE_REQUEST);
+    buf.writeByte(incremental ? 1 : 0);
 
-	logger.debug("channel pipeline: {}", cp.toMap().keySet());
+    buf.writeShort(x);
+    buf.writeShort(y);
+    buf.writeShort(w);
+    buf.writeShort(h);
+
+    ctx.writeAndFlush(buf);
+  }
+
+  @Override
+  public void handlerAdded(ChannelHandlerContext ctx) {
+    ChannelPipeline cp = ctx.pipeline();
+    if (cp.get(ProtocolHandshakeHandler.class) == null) {
+      cp.addBefore(ctx.name(), "rfb-handshake-handler", new ProtocolHandshakeHandler(config));
     }
+  }
 
-    private ConnectInfoEvent getConnectInfoEvent(ChannelHandlerContext ctx, PreferedEncoding enc) {
-	ConnectInfoEvent details = new ConnectInfoEvent();
-	details.setRemoteAddress(ctx.channel().remoteAddress().toString().substring(1));
-	details.setServerName(serverInit.getServerName());
-	details.setFrameWidth(serverInit.getFrameBufferWidth());
-	details.setFrameHeight(serverInit.getFrameBufferHeight());
-	details.setRfbProtocol(config.versionProperty().get());
-	details.setSecurity(config.securityProperty().get());
-	details.setServerPF(serverInit.getPixelFormat());
-	details.setClientPF(config.clientPixelFormatProperty().get());
-	details.setSupportedEncodings(enc.getEncodings());
-	details.setConnectionType(config.sslProperty().get() ? "SSL" : "TCP (standard)");
-	return details;
+  @Override
+  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+    logger.error(cause.getMessage(), cause);
+    render.exceptionCaught(cause);
+    ctx.close();
+  }
+
+  @Override
+  public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+    logger.debug("user event: {}", evt);
+    if (evt instanceof ProtocolState) {
+      ProtocolState uvent = (ProtocolState) evt;
+      state.set(uvent);
+      if (uvent == ProtocolState.FBU_REQUEST) {
+        sendFramebufferUpdateRequest(ctx, true, 0, 0, serverInit.getFrameBufferWidth(), serverInit.getFrameBufferHeight());
+      }
+
+      render.stateChanged(uvent);
     }
-
-    public PreferedEncoding getPreferedEncodings(Encoding[] supported) {
-	Encoding[] enc = Arrays.stream(supported).filter(value -> {
-	    switch (value) {
-	    case COPY_RECT:
-		return config.copyRectEncProperty().get();
-	    case RAW:
-		return config.rawEncProperty().get();
-	    case HEXTILE:
-		return config.hextileEncProperty().get();
-	    case CURSOR:
-		return config.clientCursorProperty().get();
-	    case DESKTOP_SIZE:
-		return config.desktopSizeProperty().get();
-	    case ZLIB:
-		return config.zlibEncProperty().get();
-	    default:
-		return true;
-	    }
-	}).toArray(Encoding[]::new);
-
-	logger.info("encodings: {}", Arrays.toString(enc));
-	return new PreferedEncoding(enc);
-    }
-
-    public void sendFramebufferUpdateRequest(ChannelHandlerContext ctx, boolean incremental, int x, int y, int w,
-	    int h) {
-	ByteBuf buf = ctx.alloc().buffer(10);
-	buf.writeByte(ClientEventType.FRAMEBUFFER_UPDATE_REQUEST);
-	buf.writeByte(incremental ? 1 : 0);
-
-	buf.writeShort(x);
-	buf.writeShort(y);
-	buf.writeShort(w);
-	buf.writeShort(h);
-
-	ctx.writeAndFlush(buf);
-    }
-
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) {
-	ChannelPipeline cp = ctx.pipeline();
-	if (cp.get(ProtocolHandshakeHandler.class) == null) {
-	    cp.addBefore(ctx.name(), "rfb-handshake-handler", new ProtocolHandshakeHandler(config));
-	}
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-	logger.error(cause.getMessage(), cause);
-	render.exceptionCaught(cause);
-	ctx.close();
-    }
-
-    @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-	logger.debug("user event: {}", evt);
-	if (evt instanceof ProtocolState) {
-	    ProtocolState uvent = (ProtocolState) evt;
-	    state.set(uvent);
-	    if (uvent == ProtocolState.FBU_REQUEST) {
-		sendFramebufferUpdateRequest(ctx, true, 0, 0, serverInit.getFrameBufferWidth(),
-			serverInit.getFrameBufferHeight());
-	    }
-
-	    render.stateChanged(uvent);
-	}
-    }
+  }
 }

@@ -75,6 +75,11 @@ public class ZlibRectDecoder extends RawRectDecoder {
 		return;
 	    }
 
+	    if (pixelFormat.getBytePerPixel() == 1){
+		out.add(new ZlibImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), framebuffer.copy(), rect.getWidth()));
+		return;
+	    }
+	    
 	    int i = 0;
 	    ByteBuf pixels = aloc.buffer(result.length - (result.length / 4));
 	    while (pixels.isWritable()) {
@@ -83,7 +88,7 @@ public class ZlibRectDecoder extends RawRectDecoder {
 		pixels.writeByte(result[i + bluePos] & 0xFF);
 		i += 4;
 	    }
-	    out.add(new ZlibImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), pixels));
+	    out.add(new ZlibImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), pixels, rect.getWidth() * 3));
 	    
 	} catch (DataFormatException e) {
 	    logger.error(e.getMessage(), e);

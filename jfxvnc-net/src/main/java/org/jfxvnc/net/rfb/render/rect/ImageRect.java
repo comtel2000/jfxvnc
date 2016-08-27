@@ -19,8 +19,6 @@ import org.jfxvnc.net.rfb.codec.Encoding;
 
 public abstract class ImageRect {
 
-    public abstract Encoding getEncoding();
-
     protected final int x;
     protected final int y;
     protected final int width;
@@ -33,26 +31,49 @@ public abstract class ImageRect {
 	this.height = height;
     }
 
+    /**
+     * @return the image {@link Encoding} type
+     */
+    public abstract Encoding getEncoding();
+
+    
+    /**
+     * @return the X coordinate of the image rectangular
+     */
     public int getX() {
 	return x;
     }
 
+    /**
+     * @return the Y coordinate of the image rectangular
+     */
     public int getY() {
 	return y;
     }
 
+    /**
+     * @return the width of the image rectangular
+     */
     public int getWidth() {
 	return width;
     }
 
+    /**
+     * @return the height of the image rectangular
+     */
     public int getHeight() {
 	return height;
     }
 
+    /**
+     * Release the image buffer
+     * 
+     * @return if successful
+     */
     public boolean release() {
 	return true;
     }
-    
+
     @Override
     public String toString() {
 	return "ImageRect [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + "]";

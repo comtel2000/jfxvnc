@@ -21,8 +21,8 @@ import io.netty.buffer.ByteBuf;
 
 public class ZlibImageRect extends RawImageRect {
 
-    public ZlibImageRect(int x, int y, int width, int height, ByteBuf pixels) {
-	super(x, y, width, height, pixels);
+    public ZlibImageRect(int x, int y, int width, int height, ByteBuf pixels, int scanlineStride) {
+	super(x, y, width, height, pixels, scanlineStride);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ZlibImageRect extends RawImageRect {
 
     @Override
     public String toString() {
-	return "ZlibRawImageRect [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height
-		+ ", pixels.capacity=" + (getPixels() != null ? getPixels().capacity() : "null") + "]";
+	return "ZlibRawImageRect [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + ", pixels.capacity="
+		+ (pixels != null ? pixels.capacity() : "null") + ", scanLine=" + scanlineStride + "]";
     }
 }

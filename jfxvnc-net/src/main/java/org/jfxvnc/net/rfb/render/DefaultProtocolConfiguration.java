@@ -31,8 +31,7 @@ import javafx.beans.property.StringProperty;
 public class DefaultProtocolConfiguration implements ProtocolConfiguration {
 
     private final ObjectProperty<ProtocolVersion> versionProperty = new SimpleObjectProperty<>(ProtocolVersion.RFB_3_8);
-    private final ObjectProperty<PixelFormat> clientPixelFormatProperty = new SimpleObjectProperty<>(
-	    PixelFormat.RGB_888);
+    private final ObjectProperty<PixelFormat> clientPixelFormatProperty = new SimpleObjectProperty<>(PixelFormat.RGB_888);
     private final ObjectProperty<SecurityType> securityProperty = new SimpleObjectProperty<>(SecurityType.VNC_Auth);
 
     private final StringProperty hostProperty = new SimpleStringProperty("127.0.0.1");

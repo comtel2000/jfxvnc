@@ -54,13 +54,37 @@ package org.jfxvnc.net.rfb.codec;
  */
 public enum Encoding {
 
-    UNKNOWN(Integer.MIN_VALUE), RAW(0), COPY_RECT(1), RRE(2), HEXTILE(3),
+    UNKNOWN(Integer.MIN_VALUE),
 
-    CO_RRE(4), ZLIB(6), TIGHT(7), ZLIB_HEX(8), TRLE(15), ZRLE(16),
+    RAW(0),
 
-    H_ZYWRLE(17), AW_XZ(18), AW_XZYW(19),
+    COPY_RECT(1),
 
-    DESKTOP_SIZE(-223), CURSOR(-239);
+    RRE(2),
+
+    CO_RRE(4),
+
+    HEXTILE(5),
+
+    ZLIB(6),
+
+    TIGHT(7),
+
+    ZLIB_HEX(8),
+
+    TRLE(15),
+
+    ZRLE(16),
+
+    H_ZYWRLE(17),
+
+    AW_XZ(18),
+
+    AW_XZYW(19),
+
+    DESKTOP_SIZE(-223),
+
+    CURSOR(-239);
 
     private final int type;
 

@@ -66,14 +66,14 @@ class RfbClient38Decoder extends ReplayingDecoder<RfbClient38Decoder.State>imple
 		    logger.error("un supported security types: {}", sec);
 		}
 	    }
-	    logger.info("supported security types: {}", Arrays.toString(serverSecTypes));
+	    logger.debug("supported security types: {}", Arrays.toString(serverSecTypes));
 	    checkpoint(State.SEC_RESULT);
 	    out.add(new SecurityTypesEvent(true, serverSecTypes));
 	    break;
 	case SEC_RESULT:
 
 	    int secResult = in.readInt();
-	    logger.info("server login {}", secResult == 0 ? "succeed" : "failed");
+	    logger.debug("server login {}", secResult == 0 ? "succeed" : "failed");
 	    if (secResult == 1) {
 		int length = in.readInt();
 		if (length == 0) {

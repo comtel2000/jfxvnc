@@ -22,14 +22,31 @@ import io.netty.buffer.ByteBuf;
 public class RawImageRect extends ImageRect {
 
     protected final ByteBuf pixels;
+    protected final int scanlineStride;
 
-    public RawImageRect(int x, int y, int width, int height, ByteBuf pixels) {
+    public RawImageRect(int x, int y, int width, int height, ByteBuf pixels, int scanlineStride) {
 	super(x, y, width, height);
 	this.pixels = pixels;
+	this.scanlineStride = scanlineStride;
     }
 
+    /**
+     * Returns a byte buffer of a pixel data
+     * 
+     * @return pixels
+     */
     public ByteBuf getPixels() {
 	return pixels;
+    }
+
+    /**
+     * Returns the distance between the pixel data for the start of one row of
+     * data in the buffer to the start of the next row of data.
+     * 
+     * @return scanlineStride
+     */
+    public int getScanlineStride() {
+	return scanlineStride;
     }
 
     @Override
@@ -39,12 +56,12 @@ public class RawImageRect extends ImageRect {
 
     @Override
     public boolean release() {
-        return pixels != null ? pixels.release() : true;
+	return pixels != null ? pixels.release() : true;
     }
-    
+
     @Override
     public String toString() {
 	return "RawImageRect [x=" + x + ", y=" + y + ", width=" + width + ", height=" + height + ", pixels.capacity="
-		+ (pixels != null ? pixels.capacity() : "null") + "]";
+		+ (pixels != null ? pixels.capacity() : "null") + ", scanlineStride=" + scanlineStride + "]";
     }
 }

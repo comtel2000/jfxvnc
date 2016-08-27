@@ -20,7 +20,12 @@ public class PixelFormat {
      * depth 24 (32bpp) little-endian rgb888
      */
     public final static PixelFormat RGB_888 = new PixelFormat();
-
+    
+    /**
+     * depth 16 (16bpp) little-endian rgb555
+     */
+    public final static PixelFormat RGB_555 = new PixelFormat();
+    
     static {
 	RGB_888.setBitPerPixel(32);
 	RGB_888.setDepth(24);
@@ -32,6 +37,17 @@ public class PixelFormat {
 	RGB_888.setRedShift(16);
 	RGB_888.setGreenShift(8);
 	RGB_888.setBlueShift(0);
+	
+	RGB_555.setBitPerPixel(16);
+	RGB_555.setDepth(16);
+	RGB_555.setBigEndian(false);
+	RGB_555.setTrueColor(true);
+	RGB_555.setRedMax(255);
+	RGB_555.setGreenMax(255);
+	RGB_555.setBlueMax(255);
+	RGB_555.setRedShift(16);
+	RGB_555.setGreenShift(8);
+	RGB_555.setBlueShift(0);
     }
 
     private int bitPerPixel;

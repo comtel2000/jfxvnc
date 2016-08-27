@@ -94,9 +94,9 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 
     private void handleServerVersion(final ChannelHandlerContext ctx, ProtocolVersion version) {
 
-	logger.info("server version: {}", version);
+	logger.debug("server version: {}", version);
 	if (version.isGreaterThan(config.versionProperty().get())) {
-	    logger.info("set client version: {}", config.versionProperty().get());
+	    logger.debug("set client version: {}", config.versionProperty().get());
 	    version = config.versionProperty().get();
 	}
 
@@ -130,7 +130,7 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 	}
 
 	if (userSecType == SecurityType.NONE) {
-	    logger.info("none security type available");
+	    logger.debug("none security type available");
 	    ctx.writeAndFlush(Unpooled.buffer(1).writeByte(userSecType.getType()));
 	    ctx.pipeline().fireUserEventTriggered(ProtocolState.SECURITY_COMPLETE);
 	    return;

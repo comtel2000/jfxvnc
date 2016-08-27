@@ -54,7 +54,7 @@ class RfbClient33Decoder extends ReplayingDecoder<RfbClient33Decoder.State>imple
 	case SEC_TYPES:
 	    int type = in.readInt();
 	    SecurityType securityType = SecurityType.valueOf(type);
-	    logger.info("supported security type: {}", securityType);
+	    logger.debug("supported security type: {}", securityType);
 	    checkpoint(securityType == SecurityType.VNC_Auth ? State.VNC_AUTH : State.SERVER_INIT);
 	    out.add(new SecurityTypesEvent(false, securityType));
 	    break;
@@ -66,7 +66,7 @@ class RfbClient33Decoder extends ReplayingDecoder<RfbClient33Decoder.State>imple
 	    break;
 	case SEC_RESULT:
 	    int secResult = in.readInt();
-	    logger.info("server login {}", secResult == 0 ? "succeed" : "failed");
+	    logger.debug("server login {}", secResult == 0 ? "succeed" : "failed");
 	    if (secResult == 1) {
 		int length = in.readInt();
 		if (length == 0) {

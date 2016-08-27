@@ -21,7 +21,7 @@ import java.util.List;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
-public class ServerCutTextDecoder implements FrameDecoder {
+class ServerCutTextDecoder implements FrameDecoder {
 
     @Override
     public boolean decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
