@@ -13,32 +13,17 @@
  *******************************************************************************/
 package org.jfxvnc.net;
 
-import org.jfxvnc.net.rfb.codec.ProtocolHandler;
-import org.jfxvnc.net.rfb.codec.ProtocolState;
-import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
-import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
+import org.jfxvnc.net.rfb.VncConnection;
 import org.jfxvnc.net.rfb.codec.security.SecurityType;
-import org.jfxvnc.net.rfb.render.DefaultProtocolConfiguration;
 import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
-import org.jfxvnc.net.rfb.render.RenderCallback;
-import org.jfxvnc.net.rfb.render.RenderProtocol;
-import org.jfxvnc.net.rfb.render.rect.ImageRect;
-
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 
 public class SampleVncClient {
 
   public static void main(String[] args) throws Exception {
 
-    ProtocolConfiguration config = new DefaultProtocolConfiguration();
-
+    VncConnection connector = new VncConnection();
+    ProtocolConfiguration config = connector.getConfiguration();
+    
     if (args != null && args.length >= 3) {
       config.securityProperty().set(SecurityType.VNC_Auth);
       config.hostProperty().set(args[0]);
@@ -54,61 +39,12 @@ public class SampleVncClient {
       config.sharedProperty().set(Boolean.TRUE);
     }
 
-    String host = config.hostProperty().get();
-    int port = config.portProperty().get();
-
-    // final SslContext sslContext =
-    // SslContext.newClientContext(InsecureTrustManagerFactory.INSTANCE);
-
-    EventLoopGroup workerGroup = new NioEventLoopGroup(1);
-    try {
-      Bootstrap b = new Bootstrap();
-      b.group(workerGroup);
-      b.channel(NioSocketChannel.class);
-      b.option(ChannelOption.SO_KEEPALIVE, true);
-      b.option(ChannelOption.TCP_NODELAY, true);
-
-      b.handler(new ChannelInitializer<SocketChannel>() {
-        @Override
-        public void initChannel(SocketChannel ch) throws Exception {
-
-          // use ssl
-          // ch.pipeline().addLast(sslContext.newHandler(ch.alloc()));
-          ch.pipeline().addLast(new ProtocolHandler(new RenderProtocol() {
-
-            @Override
-            public void render(ImageRect rect, RenderCallback callback) {
-              System.out.println(rect);
-              callback.renderComplete();
-            }
-
-            @Override
-            public void exceptionCaught(Throwable t) {
-              t.printStackTrace();
-            }
-
-            @Override
-            public void stateChanged(ProtocolState state) {
-              System.out.println(state);
-            }
-
-            @Override
-            public void registerInputEventListener(InputEventListener listener) {}
-
-            @Override
-            public void eventReceived(ServerDecoderEvent evnt) {
-              System.out.println(evnt);
-            }
-
-          }, config));
-        }
-      });
-
-      ChannelFuture f = b.connect(host, port).sync();
-
-      f.channel().closeFuture().sync();
-    } finally {
-      workerGroup.shutdownGracefully();
-    }
+    connector.connect().whenComplete((c, th) -> {
+      if (th != null){
+        th.printStackTrace();
+      }
+      c.disconnect();
+    }).join();
+    
   }
 }

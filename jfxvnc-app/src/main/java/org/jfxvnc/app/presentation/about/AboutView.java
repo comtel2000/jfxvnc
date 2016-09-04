@@ -11,26 +11,10 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  *******************************************************************************/
-package org.jfxvnc.ui.service;
+package org.jfxvnc.app.presentation.about;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import com.airhacks.afterburner.views.FXMLView;
 
-import org.junit.Test;
-
-public class VncRenderServiceTest {
-
-  @Test
-  public void zoomLevelMinMax() {
-    VncRenderService service = new VncRenderService(null);
-
-    assertEquals(1.0, service.zoomLevelProperty().get(), 0.01);
-    service.zoomLevelProperty().set(0.0);
-    assertNotEquals(0.0, service.zoomLevelProperty().get(), 0.01);
-    service.zoomLevelProperty().set(Double.MAX_VALUE);
-    assertNotEquals(Double.MAX_VALUE, service.zoomLevelProperty().get(), 0.01);
-    service.zoomLevelProperty().set(1.1);
-    assertEquals(1.1, service.zoomLevelProperty().get(), 0.01);
-  }
+public class AboutView extends FXMLView {
 
 }

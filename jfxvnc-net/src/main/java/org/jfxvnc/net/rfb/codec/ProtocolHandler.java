@@ -29,12 +29,15 @@ import org.jfxvnc.net.rfb.codec.handshaker.event.ServerInitEvent;
 import org.jfxvnc.net.rfb.exception.ProtocolException;
 import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
 import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
+import org.jfxvnc.net.rfb.render.RenderCallback;
 import org.jfxvnc.net.rfb.render.RenderProtocol;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufUtil;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.MessageToMessageDecoder;
@@ -51,6 +54,9 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
   private ServerInitEvent serverInit;
 
   private RenderProtocol render;
+  
+  private final RenderCallback voidCallback = () -> {};
+  
   private final AtomicReference<ProtocolState> state = new AtomicReference<ProtocolState>(ProtocolState.HANDSHAKE_STARTED);
 
   private SslContext sslContext;
@@ -89,13 +95,7 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
   protected void decode(final ChannelHandlerContext ctx, Object msg, List<Object> out) throws Exception {
 
     if (msg instanceof ImageRect) {
-      render.render((ImageRect) msg, () -> {
-        // logger.debug("render completed");
-        // sendFramebufferUpdateRequest(ctx, true, 0, 0,
-        // serverInit.getFrameBufferWidth(),
-        // serverInit.getFrameBufferHeight());
-
-      });
+      render.render((ImageRect) msg, voidCallback);
       return;
     }
     if (msg instanceof ServerDecoderEvent) {
@@ -184,7 +184,7 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
   }
 
   public void sendFramebufferUpdateRequest(ChannelHandlerContext ctx, boolean incremental, int x, int y, int w, int h) {
-    ByteBuf buf = ctx.alloc().buffer(10);
+    ByteBuf buf = ctx.alloc().buffer(10, 10);
     buf.writeByte(ClientEventType.FRAMEBUFFER_UPDATE_REQUEST);
     buf.writeByte(incremental ? 1 : 0);
 
@@ -193,9 +193,9 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
     buf.writeShort(w);
     buf.writeShort(h);
 
-    ctx.writeAndFlush(buf);
+    ctx.writeAndFlush(buf, ctx.voidPromise());
   }
-
+  
   @Override
   public void handlerAdded(ChannelHandlerContext ctx) {
     ChannelPipeline cp = ctx.pipeline();
@@ -213,7 +213,7 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 
   @Override
   public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-    logger.debug("user event: {}", evt);
+    logger.trace("user event: {}", evt);
     if (evt instanceof ProtocolState) {
       ProtocolState uvent = (ProtocolState) evt;
       state.set(uvent);

@@ -23,33 +23,44 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.StringProperty;
 
 public interface ProtocolConfiguration {
+
+  final int DEFAULT_PORT = 5900;
+  final int DEFAULT_LISTENING_PORT = 5500;
+
   /**
    * VNC server name or IP address
    * 
    * @return host
    */
-  public StringProperty hostProperty();
+  StringProperty hostProperty();
 
   /**
    * VNC server port (default: 5900)
    * 
    * @return port
    */
-  public IntegerProperty portProperty();
+  IntegerProperty portProperty();
+
+  /**
+   * listening mode to accept incoming connection requests (default: 5500)
+   * 
+   * @return listening port
+   */
+  IntegerProperty listeningPortProperty();
 
   /**
    * VNC authentication password
    * 
    * @return password
    */
-  public StringProperty passwordProperty();
+  StringProperty passwordProperty();
 
   /**
    * Enable SSL/TLS transfer
    * 
    * @return SSL/TLS enabled
    */
-  public BooleanProperty sslProperty();
+  BooleanProperty sslProperty();
 
   /**
    * Security Type {@link SecurityType}
@@ -57,21 +68,21 @@ public interface ProtocolConfiguration {
    * @return current {@link SecurityType}
    * @see org.jfxvnc.net.rfb.codec.security.SecurityType
    */
-  public ObjectProperty<SecurityType> securityProperty();
+  ObjectProperty<SecurityType> securityProperty();
 
   /**
    * VNC connection shared by other clients
    * 
    * @return shared
    */
-  public BooleanProperty sharedProperty();
+  BooleanProperty sharedProperty();
 
   /**
    * Used Protocol Version {@link ProtocolVersion}
    * 
    * @return current {@link ProtocolVersion}
    */
-  public ObjectProperty<ProtocolVersion> versionProperty();
+  ObjectProperty<ProtocolVersion> versionProperty();
 
   /**
    * Used PixelFormat {@link PixelFormat}
@@ -79,7 +90,7 @@ public interface ProtocolConfiguration {
    * @return current {@link PixelFormat}
    * @see org.jfxvnc.net.rfb.codec.PixelFormat
    */
-  public ObjectProperty<PixelFormat> clientPixelFormatProperty();
+  ObjectProperty<PixelFormat> clientPixelFormatProperty();
 
   /**
    * Activate RAW encoding
@@ -87,7 +98,7 @@ public interface ProtocolConfiguration {
    * @return raw enabled
    * @see org.jfxvnc.net.rfb.codec.Encoding
    */
-  public BooleanProperty rawEncProperty();
+  BooleanProperty rawEncProperty();
 
   /**
    * Activate COPY RECT encoding
@@ -95,7 +106,7 @@ public interface ProtocolConfiguration {
    * @return raw enabled
    * @see org.jfxvnc.net.rfb.codec.Encoding
    */
-  public BooleanProperty copyRectEncProperty();
+  BooleanProperty copyRectEncProperty();
 
   /**
    * Activate Hextile encoding
@@ -103,7 +114,7 @@ public interface ProtocolConfiguration {
    * @return Hextile enabled
    * @see org.jfxvnc.net.rfb.codec.Encoding
    */
-  public BooleanProperty hextileEncProperty();
+  BooleanProperty hextileEncProperty();
 
   /**
    * Activate Cursor pseudo encoding
@@ -111,7 +122,7 @@ public interface ProtocolConfiguration {
    * @return Cursor enabled
    * @see org.jfxvnc.net.rfb.codec.Encoding
    */
-  public BooleanProperty clientCursorProperty();
+  BooleanProperty clientCursorProperty();
 
   /**
    * Activate Desktop Resize pseudo encoding
@@ -119,7 +130,7 @@ public interface ProtocolConfiguration {
    * @return Desktop Resize enabled
    * @see org.jfxvnc.net.rfb.codec.Encoding
    */
-  public BooleanProperty desktopSizeProperty();
+  BooleanProperty desktopSizeProperty();
 
   /**
    * Activate Zlib pseudo encoding
@@ -127,6 +138,6 @@ public interface ProtocolConfiguration {
    * @return Zlib enabled
    * @see org.jfxvnc.net.rfb.codec.Encoding
    */
-  public BooleanProperty zlibEncProperty();
+  BooleanProperty zlibEncProperty();
 
 }

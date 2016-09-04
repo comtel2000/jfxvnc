@@ -16,6 +16,7 @@ package org.jfxvnc.net.rfb.codec.decoder;
 import java.util.EnumMap;
 import java.util.List;
 
+import org.jfxvnc.net.rfb.codec.ClientEventType;
 import org.jfxvnc.net.rfb.codec.Encoding;
 import org.jfxvnc.net.rfb.codec.PixelFormat;
 import org.jfxvnc.net.rfb.codec.ProtocolState;
@@ -86,7 +87,7 @@ class FramebufferUpdateRectDecoder implements FrameDecoder {
       }
       if (m.getByte(0) != ServerEvent.FRAMEBUFFER_UPDATE.getType()) {
         logger.error("no FBU type!!! {}", m.getByte(0));
-        ctx.pipeline().fireChannelReadComplete();
+        ctx.fireChannelReadComplete();
         return false;
       }
       if (!m.isReadable(4)) {
@@ -120,7 +121,7 @@ class FramebufferUpdateRectDecoder implements FrameDecoder {
 
     if (currentRect == numberRects) {
       state = State.INIT;
-      ctx.pipeline().fireUserEventTriggered(ProtocolState.FBU_REQUEST);
+      ctx.fireUserEventTriggered(ProtocolState.FBU_REQUEST);
       return true;
     }
 
@@ -130,6 +131,7 @@ class FramebufferUpdateRectDecoder implements FrameDecoder {
     return false;
   }
 
+  
   private boolean readRect(ChannelHandlerContext ctx, ByteBuf m, List<Object> out) {
     if (!m.isReadable(12)) {
       return false;
@@ -142,12 +144,12 @@ class FramebufferUpdateRectDecoder implements FrameDecoder {
 
     rect = new FrameRect(x, y, w, h, Encoding.valueOf(enc));
     currentRect++;
-    logger.debug("{}of{} - ({}) {}", currentRect, numberRects, rect, enc);
+    logger.trace("{}of{} - ({}) {}", currentRect, numberRects, rect, enc);
 
     if (w == 0 || h == 0) {
       if (currentRect == numberRects) {
         state = State.INIT;
-        ctx.pipeline().fireUserEventTriggered(ProtocolState.FBU_REQUEST);
+        ctx.fireUserEventTriggered(ProtocolState.FBU_REQUEST);
         return true;
       }
       return false;

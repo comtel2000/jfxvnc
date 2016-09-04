@@ -17,102 +17,64 @@ import java.util.List;
 
 import org.jfxvnc.net.rfb.codec.PixelFormat;
 import org.jfxvnc.net.rfb.render.rect.RawImageRect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 
 public class RawRectDecoder implements FrameRectDecoder {
 
-  private static Logger logger = LoggerFactory.getLogger(RawRectDecoder.class);
-
-  protected final PooledByteBufAllocator aloc = new PooledByteBufAllocator();
-
+  protected final boolean bigEndian;
+  protected final int bpp;
   protected int capacity;
   protected FrameRect rect;
   protected PixelFormat pixelFormat;
-
-  protected ByteBuf framebuffer;
 
   protected final int redPos;
   protected final int bluePos;
 
   public RawRectDecoder(PixelFormat pixelFormat) {
     this.pixelFormat = pixelFormat;
-    this.redPos = pixelFormat.isBigEndian() ? 0 : 2;
-    this.bluePos = pixelFormat.isBigEndian() ? 2 : 0;
+    this.bigEndian = pixelFormat.isBigEndian();
+    this.redPos = bigEndian ? 0 : 2;
+    this.bluePos = bigEndian ? 2 : 0;
+    this.bpp = pixelFormat.getBytePerPixel();
   }
 
   @Override
   public boolean decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-    if (framebuffer == null) {
-      framebuffer = Unpooled.unreleasableBuffer(ctx.alloc().buffer(capacity));
-    } else if (framebuffer.capacity() != capacity) {
-      framebuffer.capacity(capacity);
+    if (!in.isReadable(capacity)) {
+      return false;
     }
 
-    if (framebuffer.isWritable() && in.isReadable()) {
-      logger.trace("readable/writable {}/{}", in.readableBytes(), framebuffer.writableBytes());
-      framebuffer.writeBytes(in, Math.min(in.readableBytes(), framebuffer.writableBytes()));
-    }
-    if (!framebuffer.isWritable()) {
-      logger.trace("read {} raw bytes completed", framebuffer.readableBytes());
-      sendRect(out);
-      framebuffer.clear();
-      return true;
-    }
-    return false;
+    sendRect(ctx, in.readRetainedSlice(capacity), out);
+    return true;
   }
 
   @Override
   public void setRect(FrameRect rect) {
-    if (framebuffer == null || framebuffer.writerIndex() == 0) {
-      this.rect = rect;
-      this.capacity = rect.getWidth() * rect.getHeight() * pixelFormat.getBytePerPixel();
-    }
-
+    this.rect = rect;
+    this.capacity = rect.getWidth() * rect.getHeight() * bpp;
   }
 
-  protected void sendRect(List<Object> out) {
-    int i = 0;
-    // ByteBuf pixels = aloc.buffer(capacity);
-    // while (pixels.isWritable()) {
-    // pixels.writeInt(framebuffer.getUnsignedByte(i + redPos) << pixelFormat.getRedShift()
-    // | framebuffer.getUnsignedByte(i + 1) << pixelFormat.getGreenShift()
-    // | framebuffer.getUnsignedByte(i + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
-    // i+=4;
-    // }
-
-    if (pixelFormat.getBytePerPixel() == 1) {
-      out.add(new RawImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), framebuffer.copy(), rect.getWidth()));
+  protected void sendRect(ChannelHandlerContext ctx, ByteBuf frame, List<Object> out) {
+    if (bpp == 1) {
+      out.add(new RawImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), frame.copy(), rect.getWidth()));
       return;
     }
 
     // reduce 4 byte to 3 byte
     int size = capacity - (capacity / 4);
-    ByteBuf pixels = aloc.buffer(size, size);
+    ByteBuf pixels = ctx.alloc().buffer(size);
+    byte[] buffer = new byte[3];
     while (pixels.isWritable()) {
-      pixels.writeByte(framebuffer.getUnsignedByte(i + redPos));
-      pixels.writeByte(framebuffer.getUnsignedByte(i + 1));
-      pixels.writeByte(framebuffer.getUnsignedByte(i + bluePos));
-      i += 4;
+      buffer[redPos] = frame.readByte();
+      buffer[1] = frame.readByte();
+      buffer[bluePos] = frame.readByte();
+      pixels.writeBytes(buffer);
+      frame.skipBytes(1);
     }
+    frame.release();
     out.add(new RawImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), pixels, rect.getWidth() * 3));
-
-    // if (pixels.length > 5000) {
-    // Arrays.parallelSetAll(pixels,
-    // (i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift()
-    // | framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift()
-    // | framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
-    // } else {
-    // Arrays.setAll(pixels,
-    // (i) -> framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift()
-    // | framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift()
-    // | framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
-    // }
 
   }
 }
