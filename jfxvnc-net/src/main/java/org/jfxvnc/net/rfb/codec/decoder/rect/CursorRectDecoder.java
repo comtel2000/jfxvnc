@@ -20,6 +20,7 @@ import org.jfxvnc.net.rfb.codec.PixelFormat;
 import org.jfxvnc.net.rfb.render.rect.CursorImageRect;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 
 public class CursorRectDecoder extends RawRectDecoder {
 
@@ -31,27 +32,26 @@ public class CursorRectDecoder extends RawRectDecoder {
 
   @Override
   public void setRect(FrameRect rect) {
-    if (framebuffer == null || framebuffer.writerIndex() == 0) {
       this.rect = rect;
       this.bitMaskLength = Math.floorDiv(rect.getWidth() + 7, 8) * rect.getHeight();
-      this.capacity = (rect.getWidth() * rect.getHeight() * pixelFormat.getBytePerPixel()) + bitMaskLength;
-    }
+      this.capacity = (rect.getWidth() * rect.getHeight() * bpp) + bitMaskLength;
+
   }
 
   @Override
-  protected void sendRect(List<Object> out) {
+  protected void sendRect(ChannelHandlerContext ctx, ByteBuf frame, List<Object> out) {
     int i = 0;
-    ByteBuf pixels = aloc.buffer(capacity - bitMaskLength);
+    ByteBuf pixels = ctx.alloc().buffer(capacity - bitMaskLength);
     while (pixels.isWritable(4)) {
       pixels.writeInt(
-          framebuffer.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift() | framebuffer.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift()
-              | framebuffer.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
+          frame.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift() | frame.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift()
+              | frame.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
       i++;
     }
 
     if (bitMaskLength > 0) {
-      ByteBuf bitmask = aloc.buffer(bitMaskLength);
-      framebuffer.getBytes(capacity - bitMaskLength, bitmask);
+      ByteBuf bitmask = ctx.alloc().buffer(bitMaskLength);
+      frame.getBytes(capacity - bitMaskLength, bitmask);
       // remove transparent pixels
       int maskBytesPerRow = Math.floorDiv((rect.getWidth() + 7), 8);
       IntStream.range(0, rect.getHeight())

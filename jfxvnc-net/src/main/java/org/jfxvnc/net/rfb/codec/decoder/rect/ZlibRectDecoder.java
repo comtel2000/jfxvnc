@@ -56,16 +56,16 @@ public class ZlibRectDecoder extends RawRectDecoder {
   }
 
   @Override
-  protected void sendRect(List<Object> out) {
+  protected void sendRect(ChannelHandlerContext ctx, ByteBuf frame, List<Object> out) {
     initialized = false;
-    if (framebuffer.hasArray()) {
-      inflater.setInput(framebuffer.array(), 0, framebuffer.capacity());
+    if (frame.hasArray()) {
+      inflater.setInput(frame.array(), 0, frame.capacity());
     } else {
-      byte[] array = new byte[framebuffer.readableBytes()];
-      framebuffer.getBytes(framebuffer.readerIndex(), array);
+      byte[] array = new byte[frame.readableBytes()];
+      frame.getBytes(frame.readerIndex(), array);
       inflater.setInput(array);
     }
-    byte[] result = new byte[rect.getWidth() * rect.getHeight() * pixelFormat.getBytePerPixel()];
+    byte[] result = new byte[rect.getWidth() * rect.getHeight() * bpp];
     try {
       int resultLength = inflater.inflate(result);
       if (resultLength != result.length) {
@@ -73,13 +73,13 @@ public class ZlibRectDecoder extends RawRectDecoder {
         return;
       }
 
-      if (pixelFormat.getBytePerPixel() == 1) {
-        out.add(new ZlibImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), framebuffer.copy(), rect.getWidth()));
+      if (bpp == 1) {
+        out.add(new ZlibImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), frame.copy(), rect.getWidth()));
         return;
       }
 
       int i = 0;
-      ByteBuf pixels = aloc.buffer(result.length - (result.length / 4));
+      ByteBuf pixels = ctx.alloc().buffer(result.length - (result.length / 4));
       while (pixels.isWritable()) {
         pixels.writeByte(result[i + redPos] & 0xFF);
         pixels.writeByte(result[i + 1] & 0xFF);

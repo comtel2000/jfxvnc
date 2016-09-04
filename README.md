@@ -7,7 +7,8 @@
 
 ## Modules
 - jfxvnc-net (netty based VNC / RFB protocol)
-- jfxvnc-ui (JavaFX VNC client app)
+- jfxvnc-ui (JavaFX VNC components)
+- jfxvnc-app (JavaFX VNC client app)
 
 ## Supports
 - RFB 3.3 to 3.8 protocol
@@ -20,7 +21,8 @@
 - VNC listening mode (0.0.3)
 
 ## Roadmap
-- TRLE, ZRLE, Tight, Turbo, etc. encodings
+- Hextile, TRLE, ZRLE, Tight, Turbo, etc. encodings
+- Restricted color maps
 - more than 'VNC Auth' security
 - ...
 
@@ -32,7 +34,7 @@ What is required:
 
 ```shell
 mvn clean install
-java -jar jfxvnc-ui/target/jfxvnc-jar-with-dependencies.jar
+java -jar jfxvnc-app/target/jfxvnc-jar-with-dependencies.jar
 ```
 
 ## Maven central repository
@@ -48,6 +50,12 @@ java -jar jfxvnc-ui/target/jfxvnc-jar-with-dependencies.jar
 <dependency>
   <groupId>org.jfxvnc</groupId>
   <artifactId>jfxvnc-ui</artifactId>
+  <version>[LATEST_RELEASE]</version>
+</dependency>
+
+<dependency>
+  <groupId>org.jfxvnc</groupId>
+  <artifactId>jfxvnc-app</artifactId>
   <version>[LATEST_RELEASE]</version>
 </dependency>
 

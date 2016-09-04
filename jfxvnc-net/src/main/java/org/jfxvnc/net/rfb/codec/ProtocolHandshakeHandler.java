@@ -165,7 +165,7 @@ public class ProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 
   private void handleSecurityResult(final ChannelHandlerContext ctx, final SecurityResultEvent msg) {
     if (msg.isPassed()) {
-      logger.info("security passed: {}", msg);
+      logger.debug("security passed: {}", msg);
       boolean sharedFlag = config.sharedProperty().get();
       ctx.writeAndFlush(new SharedEvent(sharedFlag)).addListener((future) -> {
         if (!future.isSuccess()) {

@@ -32,37 +32,43 @@ public class DefaultProtocolConfiguration implements ProtocolConfiguration {
   private final ObjectProperty<PixelFormat> clientPixelFormatProperty = new SimpleObjectProperty<>(PixelFormat.RGB_888);
   private final ObjectProperty<SecurityType> securityProperty = new SimpleObjectProperty<>(SecurityType.VNC_Auth);
 
-  private final StringProperty hostProperty = new SimpleStringProperty("127.0.0.1");
-  private final IntegerProperty portProperty = new SimpleIntegerProperty(5900);
-  private final StringProperty passwordProperty = new SimpleStringProperty();
-  private final BooleanProperty sharedProperty = new SimpleBooleanProperty(true);
-  private final BooleanProperty sslProperty = new SimpleBooleanProperty(false);
+  private final StringProperty host = new SimpleStringProperty("127.0.0.1");
+  private final IntegerProperty port = new SimpleIntegerProperty(DEFAULT_PORT);
+  private final IntegerProperty listeningPort = new SimpleIntegerProperty(DEFAULT_LISTENING_PORT);
+  private final StringProperty password = new SimpleStringProperty();
+  private final BooleanProperty shared = new SimpleBooleanProperty(true);
+  private final BooleanProperty ssl = new SimpleBooleanProperty(false);
 
-  private final BooleanProperty rawEncProperty = new SimpleBooleanProperty(true);
-  private final BooleanProperty copyRectEncProperty = new SimpleBooleanProperty(true);
-  private final BooleanProperty hextileEncProperty = new SimpleBooleanProperty(false);
-  private final BooleanProperty zlibEncProperty = new SimpleBooleanProperty(false);
-  private final BooleanProperty clientCursorProperty = new SimpleBooleanProperty(false);
-  private final BooleanProperty desktopSizeProperty = new SimpleBooleanProperty(true);
+  private final BooleanProperty rawEnc = new SimpleBooleanProperty(true);
+  private final BooleanProperty copyRectEnc = new SimpleBooleanProperty(true);
+  private final BooleanProperty hextileEnc = new SimpleBooleanProperty(false);
+  private final BooleanProperty zlibEnc = new SimpleBooleanProperty(false);
+  private final BooleanProperty clientCursor = new SimpleBooleanProperty(false);
+  private final BooleanProperty desktopSize = new SimpleBooleanProperty(true);
 
   @Override
   public StringProperty hostProperty() {
-    return hostProperty;
+    return host;
   }
 
   @Override
   public IntegerProperty portProperty() {
-    return portProperty;
+    return port;
   }
 
   @Override
+  public IntegerProperty listeningPortProperty() {
+    return listeningPort;
+  }
+  
+  @Override
   public StringProperty passwordProperty() {
-    return passwordProperty;
+    return password;
   }
 
   @Override
   public BooleanProperty sslProperty() {
-    return sslProperty;
+    return ssl;
   }
 
   @Override
@@ -72,7 +78,7 @@ public class DefaultProtocolConfiguration implements ProtocolConfiguration {
 
   @Override
   public BooleanProperty sharedProperty() {
-    return sharedProperty;
+    return shared;
   }
 
   @Override
@@ -87,32 +93,33 @@ public class DefaultProtocolConfiguration implements ProtocolConfiguration {
 
   @Override
   public BooleanProperty rawEncProperty() {
-    return rawEncProperty;
+    return rawEnc;
   }
 
   @Override
   public BooleanProperty copyRectEncProperty() {
-    return copyRectEncProperty;
+    return copyRectEnc;
   }
 
   @Override
   public BooleanProperty hextileEncProperty() {
-    return hextileEncProperty;
+    return hextileEnc;
   }
 
   @Override
   public BooleanProperty clientCursorProperty() {
-    return clientCursorProperty;
+    return clientCursor;
   }
 
   @Override
   public BooleanProperty desktopSizeProperty() {
-    return desktopSizeProperty;
+    return desktopSize;
   }
 
   @Override
   public BooleanProperty zlibEncProperty() {
-    return zlibEncProperty;
+    return zlibEnc;
   }
+
 
 }

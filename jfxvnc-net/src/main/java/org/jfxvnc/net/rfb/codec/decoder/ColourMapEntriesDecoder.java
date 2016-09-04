@@ -44,7 +44,7 @@ class ColourMapEntriesDecoder implements FrameDecoder {
     colorBuf.writeBytes(in);
 
     if (!colorBuf.isWritable()) {
-      return out.add(new ColourMapEntriesEvent(firstColor, numberOfColor, colorBuf));
+      return out.add(new ColourMapEvent(firstColor, numberOfColor, colorBuf));
     }
     return false;
   }

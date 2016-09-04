@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?scenebuilder-stylesheet main.css?>
+<?import javafx.scene.control.ScrollPane?>
+
+<ScrollPane fx:id="scrollPane" centerShape="false" fitToHeight="true" fitToWidth="true" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jfxvnc.app.presentation.vnc.VncViewPresenter" />

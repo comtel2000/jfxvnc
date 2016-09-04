@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?scenebuilder-stylesheet main.css?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+
+<Accordion fx:id="detailPane" styleClass="settings, settings-header"
+	xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+	fx:controller="org.jfxvnc.app.presentation.detail.DetailViewPresenter">
+</Accordion>
