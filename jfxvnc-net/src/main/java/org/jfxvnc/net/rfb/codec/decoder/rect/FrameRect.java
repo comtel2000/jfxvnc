@@ -26,7 +26,6 @@ public class FrameRect {
     this.width = width;
     this.height = height;
     this.encoding = encoding;
-
   }
 
   public int getX() {
@@ -37,6 +36,14 @@ public class FrameRect {
     return y;
   }
 
+  public int getX2() {
+    return x + width;
+  }
+
+  public int getY2() {
+    return y + height;
+  }
+  
   public int getWidth() {
     return width;
   }

@@ -16,7 +16,6 @@ package org.jfxvnc.net.rfb.codec.decoder;
 import java.util.EnumMap;
 import java.util.List;
 
-import org.jfxvnc.net.rfb.codec.ClientEventType;
 import org.jfxvnc.net.rfb.codec.Encoding;
 import org.jfxvnc.net.rfb.codec.PixelFormat;
 import org.jfxvnc.net.rfb.codec.ProtocolState;
@@ -26,6 +25,7 @@ import org.jfxvnc.net.rfb.codec.decoder.rect.CursorRectDecoder;
 import org.jfxvnc.net.rfb.codec.decoder.rect.DesktopSizeRectDecoder;
 import org.jfxvnc.net.rfb.codec.decoder.rect.FrameRect;
 import org.jfxvnc.net.rfb.codec.decoder.rect.FrameRectDecoder;
+import org.jfxvnc.net.rfb.codec.decoder.rect.HextileDecoder;
 import org.jfxvnc.net.rfb.codec.decoder.rect.RawRectDecoder;
 import org.jfxvnc.net.rfb.codec.decoder.rect.ZlibRectDecoder;
 import org.jfxvnc.net.rfb.exception.ProtocolException;
@@ -63,13 +63,14 @@ class FramebufferUpdateRectDecoder implements FrameDecoder {
 
     frameRectDecoder.put(Encoding.ZLIB, new ZlibRectDecoder(pixelFormat));
     frameRectDecoder.put(Encoding.COPY_RECT, new CopyRectDecoder(pixelFormat));
+    frameRectDecoder.put(Encoding.HEXTILE, new HextileDecoder(pixelFormat));
     frameRectDecoder.put(Encoding.RAW, new RawRectDecoder(pixelFormat));
     frameRectDecoder.put(Encoding.CURSOR, new CursorRectDecoder(pixelFormat));
     frameRectDecoder.put(Encoding.DESKTOP_SIZE, new DesktopSizeRectDecoder(pixelFormat));
   }
 
   public Encoding[] getSupportedEncodings() {
-    return frameRectDecoder.keySet().stream().toArray(Encoding[]::new);
+    return new Encoding[] {Encoding.ZLIB, Encoding.COPY_RECT, Encoding.HEXTILE, Encoding.RAW, Encoding.CURSOR, Encoding.DESKTOP_SIZE};
   }
 
   public boolean isPixelFormatSupported() {

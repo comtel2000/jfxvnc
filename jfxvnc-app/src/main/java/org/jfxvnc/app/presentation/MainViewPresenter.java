@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.jfxvnc.app.presentation;
 
+
 import java.awt.Toolkit;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -20,31 +21,31 @@ import java.util.ResourceBundle;
 
 import javax.inject.Inject;
 
-import org.controlsfx.control.MasterDetailPane;
-import org.controlsfx.control.Notifications;
-import org.controlsfx.control.PlusMinusSlider;
-import org.controlsfx.control.StatusBar;
-import org.controlsfx.tools.Borders;
 import org.jfxvnc.app.persist.SessionContext;
 import org.jfxvnc.app.presentation.detail.DetailView;
 import org.jfxvnc.app.presentation.vnc.VncView;
 import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
 import org.jfxvnc.ui.service.VncRenderService;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.css.PseudoClass;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.geometry.Side;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Slider;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 
 public class MainViewPresenter implements Initializable {
 
@@ -54,13 +55,35 @@ public class MainViewPresenter implements Initializable {
   @Inject
   VncRenderService service;
 
-
   @FXML
   BorderPane mainPane;
 
+  @FXML
+  private Label statusLabel;
+
+  @FXML
+  private ProgressIndicator progress;
+
+  @FXML
+  private Button connectBtn;
+
+  @FXML
+  private Button disconnectBtn;
+
+  @FXML
+  private ToggleButton gearBtn;
+
+  @FXML
+  private Slider zoomSlider;
+
+  @FXML
+  private ToggleButton fullScreenBtn;
+
+  @FXML
+  private SplitPane splitPane;
+
   private volatile long lastPing = 0;
 
-  private MasterDetailPane mdPane;
 
   private final static PseudoClass CONNECT_CLASS = PseudoClass.getPseudoClass("connect");
   private final static PseudoClass ONLINE_CLASS = PseudoClass.getPseudoClass("online");
@@ -74,58 +97,38 @@ public class MainViewPresenter implements Initializable {
 
     ctx.addBinding(statusProperty);
 
-    mdPane = new MasterDetailPane(Side.RIGHT);
     VncView vncView = new VncView();
-    mdPane.setMasterNode(vncView.getView());
-
     DetailView detailView = new DetailView();
-    mdPane.setDetailNode(detailView.getView());
-    mdPane.setDividerPosition(0.75);
-    ctx.bind(mdPane.dividerPositionProperty(), "detailDividerPosition");
-    mdPane.setShowDetailNode(true);
 
-    StatusBar statusBar = new StatusBar();
-    statusBar.getStyleClass().add("menu-status-bar");
+    splitPane.getItems().addAll(vncView.getView(), detailView.getView());
+    splitPane.getDividers().get(0).setPosition(1.0);
 
-    mainPane.setCenter(mdPane);
-    mainPane.setBottom(statusBar);
+    statusLabel.textProperty().bind(statusProperty);
 
-    statusBar.textProperty().bind(statusProperty);
+    gearBtn.selectedProperty().addListener(l -> {
+      SplitPane.Divider divider = splitPane.getDividers().get(0);
+      KeyValue value = new KeyValue(divider.positionProperty(), gearBtn.isSelected() ? 0.80 : 1.0);
+      new Timeline(new KeyFrame(Duration.seconds(0.2), value)).play();
+    });
+    gearBtn.setSelected(true);
 
-    ToggleButton gearButton = new ToggleButton("", new Pane());
-    gearButton.setId("menu-settings");
-    gearButton.selectedProperty().bindBidirectional(mdPane.showDetailNodeProperty());
-
-    Button connectBtn = new Button();
     connectBtn.textProperty().bind(Bindings.createStringBinding(
         () -> service.listeningModeProperty().get() ? rb.getString("button.listening") : rb.getString("button.connect"), service.listeningModeProperty()));
-    connectBtn.setOnAction(a -> service.connect());
 
-    Button disconnectBtn = new Button();
     disconnectBtn.textProperty().bind(Bindings.createStringBinding(
         () -> service.listeningModeProperty().get() ? rb.getString("button.cancel") : rb.getString("button.disconnect"), service.listeningModeProperty()));
     disconnectBtn.disableProperty().bind(connectBtn.disabledProperty().not());
-    disconnectBtn.setOnAction(a -> service.disconnect());
 
-    ToggleButton switchFullScreen = new ToggleButton("", new Pane());
-    switchFullScreen.setId("menu-fullscreen");
-    switchFullScreen.selectedProperty().bindBidirectional(service.fullSceenProperty());
-    switchFullScreen.selectedProperty().addListener((l, o, n) -> switchFullScreen.pseudoClassStateChanged(WINDOW_CLASS, n));
+    fullScreenBtn.selectedProperty().bindBidirectional(service.fullSceenProperty());
+    fullScreenBtn.selectedProperty().addListener((l, o, n) -> fullScreenBtn.pseudoClassStateChanged(WINDOW_CLASS, n));
 
-    ProgressIndicator progressIndicator = new ProgressIndicator(-1);
-    progressIndicator.visibleProperty().bind(service.connectingProperty());
-    progressIndicator.setPrefSize(16, 16);
+    progress.visibleProperty().bind(service.connectingProperty());
+    zoomSlider.valueProperty().bindBidirectional(service.zoomLevelProperty());
 
-    PlusMinusSlider zoomSlider = new PlusMinusSlider();
-    zoomSlider.setOnValueChanged(e -> service.zoomLevelProperty().set(e.getValue() + 1));
-
-    mdPane.setOnScroll(e -> service.zoomLevelProperty().set(service.zoomLevelProperty().get() + (e.getDeltaY() > 0.0 ? 0.01 : -0.01)));
+    vncView.getView().setOnScroll(e -> service.zoomLevelProperty().set(service.zoomLevelProperty().get() + (e.getDeltaY() > 0.0 ? 0.01 : -0.01)));
 
     service.zoomLevelProperty()
         .addListener((l, o, z) -> statusProperty.set(MessageFormat.format(rb.getString("status.zoom.scale"), Math.floor(z.doubleValue() * 100))));
-
-    statusBar.getRightItems().addAll(progressIndicator, createSpace(10, 20), Borders.wrap(zoomSlider).emptyBorder().buildAll(), createSpace(10, 20),
-        switchFullScreen, createSpace(10, 20), connectBtn, disconnectBtn, createSpace(10, 20), gearButton);
 
     service.protocolStateProperty().addListener((l, o, event) -> Platform.runLater(() -> {
       switch (event) {
@@ -141,7 +144,7 @@ public class MainViewPresenter implements Initializable {
           break;
         case HANDSHAKE_COMPLETE:
           statusProperty.set(rb.getString("status.open"));
-          gearButton.setSelected(false);
+          gearBtn.setSelected(false);
           break;
         case SECURITY_FAILED:
           statusProperty.set(rb.getString("status.auth.failed"));
@@ -157,16 +160,26 @@ public class MainViewPresenter implements Initializable {
 
     service.connectedProperty().addListener((l, o, n) -> Platform.runLater(() -> connectBtn.setDisable(n)));
 
-    service.connectingProperty().addListener((l, o, n) -> Platform.runLater(() -> gearButton.pseudoClassStateChanged(CONNECT_CLASS, n)));
-    service.onlineProperty().addListener((l, o, n) -> Platform.runLater(() -> gearButton.pseudoClassStateChanged(ONLINE_CLASS, n)));
+    service.connectingProperty().addListener((l, o, n) -> Platform.runLater(() -> gearBtn.pseudoClassStateChanged(CONNECT_CLASS, n)));
+    service.onlineProperty().addListener((l, o, n) -> Platform.runLater(() -> gearBtn.pseudoClassStateChanged(ONLINE_CLASS, n)));
 
     service.exceptionCaughtProperty().addListener((l, o, n) -> Platform.runLater(() -> {
-      Notifications.create().owner(mainPane).position(Pos.TOP_CENTER).text(n.getMessage()).showError();
+      // Notifications.create().owner(mainPane).position(Pos.TOP_CENTER).text(n.getMessage()).showError();
       statusProperty.set(n.getMessage());
     }));
 
     service.bellProperty().addListener(l -> bell());
 
+  }
+
+  @FXML
+  void connect(ActionEvent event) {
+    service.connect();
+  }
+
+  @FXML
+  void disconnect(ActionEvent event) {
+    service.disconnect();
   }
 
   private void bell() {
@@ -178,13 +191,5 @@ public class MainViewPresenter implements Initializable {
     Toolkit.getDefaultToolkit().beep();
     Platform.runLater(() -> statusProperty.set("Bell"));
   }
-
-  private Pane createSpace(double w, double h) {
-    Pane space = new Pane();
-    space.setPrefSize(w, h);
-    return space;
-  }
-
-
 
 }

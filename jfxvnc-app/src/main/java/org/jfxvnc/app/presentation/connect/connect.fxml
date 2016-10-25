@@ -175,7 +175,7 @@
 						<CheckBox fx:id="copyrectCB" mnemonicParsing="false"
 							selected="true" text="" GridPane.columnIndex="1"
 							GridPane.rowIndex="12" />
-						<CheckBox fx:id="hextileCB" disable="true"
+						<CheckBox fx:id="hextileCB"
 							mnemonicParsing="false" text="" GridPane.columnIndex="1"
 							GridPane.rowIndex="13" />
 						<CheckBox fx:id="cursorCB" mnemonicParsing="false"

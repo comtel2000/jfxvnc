@@ -164,10 +164,10 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
       switch (value) {
         case COPY_RECT:
           return config.copyRectEncProperty().get();
-        case RAW:
-          return config.rawEncProperty().get();
         case HEXTILE:
           return config.hextileEncProperty().get();
+        case RAW:
+          return config.rawEncProperty().get();
         case CURSOR:
           return config.clientCursorProperty().get();
         case DESKTOP_SIZE:
@@ -179,7 +179,7 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
       }
     }).toArray(Encoding[]::new);
 
-    logger.debug("encodings: {}", Arrays.toString(enc));
+    logger.info("encodings: {}", Arrays.toString(enc));
     return new PreferedEncoding(enc);
   }
 

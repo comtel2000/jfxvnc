@@ -10,6 +10,7 @@ import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
 import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
 import org.jfxvnc.net.rfb.render.rect.CopyImageRect;
 import org.jfxvnc.net.rfb.render.rect.CursorImageRect;
+import org.jfxvnc.net.rfb.render.rect.HextileImageRect;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;
 import org.jfxvnc.net.rfb.render.rect.RawImageRect;
 import org.jfxvnc.ui.CutTextEventHandler;
@@ -26,6 +27,7 @@ import javafx.scene.ImageCursor;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 
 public class VncImageView extends ImageView implements Consumer<ImageRect> {
@@ -105,6 +107,14 @@ public class VncImageView extends ImageView implements Consumer<ImageRect> {
   private void render(ImageRect rect) {
     try {
       switch (rect.getEncoding()) {
+        case HEXTILE:
+          HextileImageRect hextileRect = (HextileImageRect) rect;
+          //PixelWriter writer = vncImage.getPixelWriter();
+          for (RawImageRect rawRect : hextileRect.getRects()){
+            vncImage.getPixelWriter().setPixels(rawRect.getX(), rawRect.getY(), rawRect.getWidth(), rawRect.getHeight(), pixelFormat.get(),
+                rawRect.getPixels().nioBuffer(), rawRect.getScanlineStride());
+          }
+          break;
         case RAW:
         case ZLIB:
           RawImageRect rawRect = (RawImageRect) rect;
