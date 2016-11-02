@@ -1,12 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="mainPane" xmlns="http://javafx.com/javafx/8"
-	xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jfxvnc.app.presentation.MainViewPresenter">
+
+<BorderPane fx:id="mainPane" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.jfxvnc.app.presentation.MainViewPresenter">
+   <bottom>
+      <HBox alignment="CENTER" prefHeight="30.0" prefWidth="800.0" spacing="15.0" styleClass="status-bar">
+         <children>
+            <Label fx:id="statusLabel" maxWidth="1.7976931348623157E308" text="Status" HBox.hgrow="ALWAYS">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Label>
+            <ProgressIndicator fx:id="progress" prefHeight="16.0" prefWidth="16.0" HBox.hgrow="NEVER" />
+            <Slider fx:id="zoomSlider" blockIncrement="0.1" majorTickUnit="2.0" max="5.0" min="0.2" minorTickCount="1" value="1.0" />
+            <ToggleButton id="menu-fullscreen" fx:id="fullScreenBtn" mnemonicParsing="false">
+               <graphic>
+                  <Pane prefHeight="25.0" prefWidth="25.0" />
+               </graphic>
+            </ToggleButton>
+            <Button fx:id="connectBtn" mnemonicParsing="false" onAction="#connect" prefWidth="80.0" text="Connect" />
+            <Button fx:id="disconnectBtn" mnemonicParsing="false" onAction="#disconnect" prefWidth="80.0" text="Disconnect" />
+            <ToggleButton id="menu-settings" fx:id="gearBtn" mnemonicParsing="false">
+               <graphic>
+                  <Pane prefHeight="20.0" prefWidth="20.0" />
+               </graphic>
+            </ToggleButton>
+         </children>
+         <padding>
+            <Insets left="5.0" right="5.0" />
+         </padding>
+      </HBox>
+   </bottom>
+   <center>
+      <SplitPane fx:id="splitPane" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
 </BorderPane>

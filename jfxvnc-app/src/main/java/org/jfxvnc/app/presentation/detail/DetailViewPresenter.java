@@ -47,7 +47,7 @@ public class DetailViewPresenter implements Initializable {
     ConnectView connectView = new ConnectView();
     InfoView infoView = new InfoView();
     AboutView aboutView = new AboutView();
-
+    detailPane.setMinWidth(0.0);
     detailPane.getPanes().addAll((TitledPane) connectView.getView(), (TitledPane) infoView.getView(), (TitledPane) aboutView.getView());
     detailPane.setExpandedPane((TitledPane) connectView.getView());
 

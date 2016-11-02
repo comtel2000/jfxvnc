@@ -3,13 +3,15 @@ package org.jfxvnc.ui.control;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.jfxvnc.net.rfb.codec.decoder.ColourMapEvent;
+import org.jfxvnc.net.rfb.codec.decoder.ServerDecoderEvent;
 import org.jfxvnc.net.rfb.codec.encoder.InputEventListener;
 import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
 import org.jfxvnc.net.rfb.render.rect.CopyImageRect;
 import org.jfxvnc.net.rfb.render.rect.CursorImageRect;
+import org.jfxvnc.net.rfb.render.rect.HextileImageRect;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;
 import org.jfxvnc.net.rfb.render.rect.RawImageRect;
 import org.jfxvnc.ui.CutTextEventHandler;
@@ -28,7 +30,7 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 
-public class VncImageView extends ImageView implements Consumer<ImageRect> {
+public class VncImageView extends ImageView implements BiConsumer<ServerDecoderEvent, ImageRect> {
 
   private final static org.slf4j.Logger logger = LoggerFactory.getLogger(VncImageView.class);
 
@@ -76,10 +78,6 @@ public class VncImageView extends ImageView implements Consumer<ImageRect> {
   }
 
   public void setPixelFormat(ColourMapEvent event) {
-    if (event == null) {
-      pixelFormat.set(DEFAULT_PIXELFORMAT);
-      return;
-    }
 
     int[] colors = new int[event.getNumberOfColor()];
     int r, g, b;
@@ -94,17 +92,32 @@ public class VncImageView extends ImageView implements Consumer<ImageRect> {
   }
 
   @Override
-  public void accept(ImageRect rect) {
-    if (vncImage == null) {
-      logger.error("canvas image has not been initialized");
-      return;
+  public void accept(ServerDecoderEvent event, ImageRect rect) {
+    if (event instanceof ConnectInfoEvent){
+      Platform.runLater(() -> setConnectInfoEvent((ConnectInfoEvent) event));
+    }else  if (event instanceof ColourMapEvent){
+      Platform.runLater(() -> setPixelFormat((ColourMapEvent) event));
     }
-    Platform.runLater(() -> render(rect));
+    if (rect != null){
+      Platform.runLater(() -> render(rect));
+    }
   }
 
   private void render(ImageRect rect) {
     try {
+      if (vncImage == null) {
+        logger.error("canvas image has not been initialized");
+        return;
+      }
       switch (rect.getEncoding()) {
+        case HEXTILE:
+          HextileImageRect hextileRect = (HextileImageRect) rect;
+          //PixelWriter writer = vncImage.getPixelWriter();
+          for (RawImageRect rawRect : hextileRect.getRects()){
+            vncImage.getPixelWriter().setPixels(rawRect.getX(), rawRect.getY(), rawRect.getWidth(), rawRect.getHeight(), pixelFormat.get(),
+                rawRect.getPixels().nioBuffer(), rawRect.getScanlineStride());
+          }
+          break;
         case RAW:
         case ZLIB:
           RawImageRect rawRect = (RawImageRect) rect;
@@ -180,6 +193,23 @@ public class VncImageView extends ImageView implements Consumer<ImageRect> {
     cutTextHandler.setInputEventListener(listener);
   }
 
+  public void unregisterInputEventListener() {
+    if (pointerHandler != null) {
+      pointerHandler.unregister(this);
+      pointerHandler = null;
+    }
+
+    if (keyHandler != null) {
+      keyHandler.unregister(getScene());
+      keyHandler = null;
+    }
+    
+    if (cutTextHandler != null) {
+      cutTextHandler.setInputEventListener(null);
+      cutTextHandler = null;
+    }
+  }
+  
   public DoubleProperty zoomLevelProperty() {
     if (zoomLevel == null) {
       zoomLevel = new SimpleDoubleProperty(1.0);
@@ -209,7 +239,7 @@ public class VncImageView extends ImageView implements Consumer<ImageRect> {
   public void setConnectInfoEvent(ConnectInfoEvent e) {
     setImage(vncImage = new WritableImage(e.getFrameWidth(), e.getFrameHeight()));
     setFitHeight(getImage().getHeight() * zoomLevelProperty().get());
-    setPixelFormat(null);
+    pixelFormat.set(DEFAULT_PIXELFORMAT);
   }
 
 }
