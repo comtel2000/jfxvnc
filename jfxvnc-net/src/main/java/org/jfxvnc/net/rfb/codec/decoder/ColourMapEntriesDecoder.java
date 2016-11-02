@@ -16,36 +16,39 @@ package org.jfxvnc.net.rfb.codec.decoder;
 import java.util.List;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 
 class ColourMapEntriesDecoder implements FrameDecoder {
 
-  protected ByteBuf colorBuf;
+  enum State {
+    INIT, READ_MAP;
+  }
 
-  private int firstColor;
-  private int numberOfColor;
+  private State state = State.INIT;
+  private int firstColor, numberOfColor, bufferSize;
 
   public ColourMapEntriesDecoder() {}
 
   @Override
   public boolean decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-
-    if (colorBuf == null) {
+    if (state == State.INIT) {
       if (!in.isReadable(12)) {
         return false;
       }
       in.skipBytes(2);
       firstColor = in.readUnsignedShort();
       numberOfColor = in.readUnsignedShort();
-      int size = numberOfColor - firstColor;
-      colorBuf = Unpooled.buffer(size * 6, size * 6);
+      bufferSize = (numberOfColor - firstColor) * 6;
+      state = State.READ_MAP;
     }
-    colorBuf.writeBytes(in);
+    if (state == State.READ_MAP) {
+      if (!in.isReadable(bufferSize)) {
+        return false;
+      }
+      state = State.INIT;
+      return out.add(new ColourMapEvent(firstColor, numberOfColor, in.readSlice(bufferSize).retain()));
+    }
 
-    if (!colorBuf.isWritable()) {
-      return out.add(new ColourMapEvent(firstColor, numberOfColor, colorBuf));
-    }
     return false;
   }
 

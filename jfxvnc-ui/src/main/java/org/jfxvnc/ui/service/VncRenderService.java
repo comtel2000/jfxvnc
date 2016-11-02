@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.jfxvnc.ui.service;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.jfxvnc.net.rfb.VncConnection;
 import org.jfxvnc.net.rfb.codec.ProtocolState;
@@ -47,7 +47,7 @@ public class VncRenderService implements RenderProtocol {
 
   private final VncConnection con;
 
-  private Consumer<ImageRect> imageConsumer;
+  private BiConsumer<ServerDecoderEvent, ImageRect> eventConsumer;
 
   private final BooleanProperty listeningMode = new SimpleBooleanProperty(false);
 
@@ -87,8 +87,8 @@ public class VncRenderService implements RenderProtocol {
 
   }
 
-  public void setImageConsumer(Consumer<ImageRect> c) {
-    imageConsumer = c;
+  public void setEventConsumer(BiConsumer<ServerDecoderEvent, ImageRect> c) {
+    eventConsumer = c;
   }
 
   public ProtocolConfiguration getConfiguration() {
@@ -123,8 +123,8 @@ public class VncRenderService implements RenderProtocol {
 
   @Override
   public void render(ImageRect rect, RenderCallback callback) {
-    if (imageConsumer != null) {
-      imageConsumer.accept(rect);
+    if (eventConsumer != null) {
+      eventConsumer.accept(null, rect);
     }
     if (image != null) {
       image.set(rect);
@@ -134,7 +134,12 @@ public class VncRenderService implements RenderProtocol {
 
   @Override
   public void eventReceived(ServerDecoderEvent event) {
-    logger.trace("event received: {}", event);
+    logger.debug("event received: {}", event);
+    
+    if (eventConsumer != null) {
+      eventConsumer.accept(event, null);
+    }
+    
     if (event instanceof ConnectInfoEvent) {
       connectInfo.set((ConnectInfoEvent) event);
       online.set(true);

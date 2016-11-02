@@ -21,7 +21,6 @@ import javax.inject.Inject;
 import org.jfxvnc.app.persist.SessionContext;
 import org.jfxvnc.ui.control.VncImageView;
 import org.jfxvnc.ui.service.VncRenderService;
-import org.slf4j.LoggerFactory;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -50,10 +49,9 @@ public class VncViewPresenter implements Initializable {
 
     vncView = new VncImageView();
     scrollPane.setContent(vncView);
-    
-    con.setImageConsumer(vncView);
-    con.colourMapEventProperty().addListener(l -> vncView.setPixelFormat(con.colourMapEventProperty().get()));
+    con.setEventConsumer(vncView);
     con.serverCutTextProperty().addListener((l, old, text) -> vncView.addClipboardText(text));
+    
     con.onlineProperty().addListener((l, old, online) -> Platform.runLater(() -> {
       vncView.setDisable(!online);
       vncView.setEffect(online ? null : blurEffect);
@@ -65,8 +63,6 @@ public class VncViewPresenter implements Initializable {
     vncView.setOnZoom(e -> con.zoomLevelProperty().set(e.getTotalZoomFactor()));
 
     con.zoomLevelProperty().addListener((l, old, zoom) -> vncView.zoomLevelProperty().set(zoom.doubleValue()));
-
-    con.connectInfoProperty().addListener((l, a, e) -> Platform.runLater(() -> vncView.setConnectInfoEvent(e)));
 
   }
 

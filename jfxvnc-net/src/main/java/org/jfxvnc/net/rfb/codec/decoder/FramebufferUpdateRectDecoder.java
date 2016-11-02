@@ -82,7 +82,7 @@ class FramebufferUpdateRectDecoder implements FrameDecoder {
   public boolean decode(ChannelHandlerContext ctx, ByteBuf m, List<Object> out) throws Exception {
 
     if (state == State.INIT) {
-      logger.debug("init readable {} bytes", m.readableBytes());
+      logger.trace("init readable {} bytes", m.readableBytes());
       if (!m.isReadable()) {
         return false;
       }
@@ -97,7 +97,7 @@ class FramebufferUpdateRectDecoder implements FrameDecoder {
       m.skipBytes(2); // padding
       numberRects = m.readUnsignedShort();
       currentRect = 0;
-      logger.debug("number of rectangles: {}", numberRects);
+      logger.trace("number of rectangles: {}", numberRects);
       if (numberRects < 1) {
         return true;
       }

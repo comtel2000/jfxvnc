@@ -46,7 +46,7 @@ public class RawRectDecoder implements FrameRectDecoder {
       return false;
     }
 
-    sendRect(ctx, in.readRetainedSlice(capacity), out);
+    sendRect(ctx, in.readSlice(capacity).retain(), out);
     return true;
   }
 
@@ -63,7 +63,7 @@ public class RawRectDecoder implements FrameRectDecoder {
     }
 
     // reduce 4 byte to 3 byte
-    int size = capacity - (capacity / 4);
+    int size = (capacity * 3) / 4;
     ByteBuf pixels = ctx.alloc().buffer(size);
     byte[] buffer = new byte[3];
     while (pixels.isWritable()) {

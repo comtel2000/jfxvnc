@@ -2,8 +2,7 @@ package org.jfxvnc.net.rfb;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -37,7 +36,7 @@ public class VncConnection {
   private final ReadOnlyBooleanWrapper connected = new ReadOnlyBooleanWrapper(false);
   private final ReadOnlyBooleanWrapper connecting = new ReadOnlyBooleanWrapper(false);
 
-  private final ExecutorService executor;
+  private final ThreadFactory executor;
 
   private NioEventLoopGroup workerGroup;
 
@@ -46,15 +45,18 @@ public class VncConnection {
   private NioEventLoopGroup bossGroup;
 
   public VncConnection() {
-    this(Executors.newCachedThreadPool(r -> {
-      Thread t = new Thread(r);
-      t.setName("vnc-connection-" + t.getId());
-      t.setDaemon(true);
-      return t;
-    }));
+    this(new ThreadFactory() {
+      @Override
+      public Thread newThread(Runnable r) {
+        Thread t = new Thread(r);
+        t.setName("vnc-connection-" + t.getId());
+        t.setDaemon(true);
+        return t;
+      }
+    });
   }
 
-  public VncConnection(ExecutorService executor) {
+  public VncConnection(ThreadFactory executor) {
     this.executor = Objects.requireNonNull(executor);
     this.config = new DefaultProtocolConfiguration();
   }
@@ -156,7 +158,7 @@ public class VncConnection {
     return CompletableFuture.supplyAsync(() -> {
       shutdown();
       return this;
-    }, executor);
+    });
 
   }
 
