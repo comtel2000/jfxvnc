@@ -64,29 +64,10 @@ public class VncComponent extends JComponent {
     this.imgWidth = 0;
     this.imgHeight = 0;
 
-    // Kick off a timer to free up the volatile image if there have been no
-    // recent updates
-    // (e.g. the player is paused)
-    //
-    
-//    if (useVolatile){
-//      resourceTimer = new Timer(2500, resourceReaper);
-//    }
-
-    //
-    // Don't use a layout manager - the output component will positioned
-    // within this
-    // component according to the aspect ratio and scaling mode
-    //
-    if (resizable){
+    if (resizable) {
       setLayout(null);
     }
     add(renderComponent = new RenderComponent());
-
-    //
-    // Listen for the child changing its preferred size to the size of the
-    // video stream.
-    //
 
     if (resizable) {
       renderComponent.addPropertyChangeListener("preferredSize", (evt) -> {
@@ -94,9 +75,6 @@ public class VncComponent extends JComponent {
       });
     }
 
-    //
-    // Scale the video output in response to this component being resized
-    //
     if (resizable) {
       addComponentListener(new ComponentAdapter() {
         @Override
@@ -105,23 +83,20 @@ public class VncComponent extends JComponent {
         }
       });
     }
-    //renderComponent.setBounds(getBounds());
+    // renderComponent.setBounds(getBounds());
     setOpaque(false);
   }
 
-  public void setResourceTimerEnabled(boolean flag, int delay){
-    if (resourceTimer != null){
+  public void setResourceTimerEnabled(boolean flag, int delay) {
+    if (resourceTimer != null) {
       resourceTimer.stop();
       resourceTimer = null;
     }
-    if (flag && useVolatile){
+    if (flag && useVolatile) {
       resourceTimer = new Timer(delay, resourceReaper);
     }
   }
-  
-  /**
-   * Scales the video output component according to its aspect ratio
-   */
+
   private void scaleVideoOutput() {
     if (fixBounds != null) {
       renderComponent.setBounds(fixBounds);
@@ -131,19 +106,13 @@ public class VncComponent extends JComponent {
     final Component child = renderComponent;
     final Dimension childSize = child.getPreferredSize();
     final int width = getWidth(), height = getHeight();
-    // Figure out the aspect ratio
+
     double aspect = keepAspect ? (double) childSize.width / (double) childSize.height : 1.0f;
 
-    // Now scale and position the videoChild component to be in the correct
-    // position to keep the aspect ratio correct.
     int scaledHeight = (int) ((double) width / aspect);
     if (!keepAspect) {
-      // Just make the child match the parent
       child.setBounds(child.getX(), child.getY(), width, height);
     } else if (scaledHeight < height) {
-      // Output window is taller than the image is when scaled, so move
-      // the video component to sit vertically in the centre of the
-      // VideoComponent.
       final int y = (height - scaledHeight) / 2;
       child.setBounds(0, y, width, scaledHeight);
     } else {
@@ -162,16 +131,15 @@ public class VncComponent extends JComponent {
   }
 
   protected ActionListener resourceReaper = (t) -> {
-      if (!frameRendered) {
-        if (volatileImage != null) {
-          volatileImage.flush();
-          volatileImage = null;
-        }
-        // Stop the timer so we don't wakeup needlessly
-        resourceTimer.stop();
+    if (!frameRendered) {
+      if (volatileImage != null) {
+        volatileImage.flush();
+        volatileImage = null;
       }
-      frameRendered = false;
-    };
+      resourceTimer.stop();
+    }
+    frameRendered = false;
+  };
 
 
   public void setKeepAspect(boolean keepAspect) {
@@ -195,19 +163,17 @@ public class VncComponent extends JComponent {
 
   private void renderVolatileImage(BufferedImage bufferedImage, int x, int y, int w, int h) {
     do {
-      
       final GraphicsConfiguration gc = getGraphicsConfiguration();
       if (volatileImage == null || volatileImage.getWidth() != imgWidth || volatileImage.getHeight() != imgHeight
           || volatileImage.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE) {
-        
+
         if (volatileImage != null) {
           volatileImage.flush();
         }
-        
+
         volatileImage = gc.createCompatibleVolatileImage(w, h);
         volatileImage.setAccelerationPriority(1.0f);
       }
-      // Now paint the BufferedImage into the accelerated image
       Graphics2D g = volatileImage.createGraphics();
       // g.drawImage(bufferedImage, 0,0, null);
       g.drawImage(bufferedImage, x, y, x + w, y + h, x, y, x + w, y + h, null);
@@ -215,16 +181,7 @@ public class VncComponent extends JComponent {
     } while (volatileImage.contentsLost());
   }
 
-  /**
-   * Renders to a volatile image, and then paints that to the screen. This helps with scaling
-   * performance on accelerated surfaces (e.g. OpenGL)
-   *
-   * @param g the graphics to paint the image to
-   * @param x the left coordinate to start painting at.
-   * @param y the top coordinate to start painting at.
-   * @param w the width of the paint area
-   * @param h the height of the paint area
-   */
+
   private void volatileRender(Graphics g, int x, int y, int w, int h) {
     do {
       if (updatePending || volatileImage == null || volatileImage.validate(getGraphicsConfiguration()) != VolatileImage.IMAGE_OK) {
@@ -240,39 +197,18 @@ public class VncComponent extends JComponent {
     } while (volatileImage.contentsLost());
   }
 
-  /**
-   * Renders directly to the given <tt>Graphics</tt>. This is only really useful on MacOS where
-   * swing graphics are unaccelerated so using a volatile just incurs an extra memcpy().
-   *
-   * @param g the graphics to paint the image to
-   * @param x the left coordinate to start painting at.
-   * @param y the top coordinate to start painting at.
-   * @param w the width of the paint area
-   * @param h the height of the paint area
-   */
   private void heapRender(Graphics g, int x, int y, int w, int h) {
     updatePending = false;
     g.drawImage(currentImage, x, y, w, h, null);
 
   }
 
-  /**
-   * Renders the current frame to the given <tt>Graphics</tt>.
-   *
-   * @param g the graphics to paint the image to
-   * @param x the left coordinate to start painting at.
-   * @param y the top coordinate to start painting at.
-   * @param w the width of the paint area
-   * @param h the height of the paint area
-   */
   private void render(Graphics g, int x, int y, int w, int h) {
     if (useVolatile) {
       volatileRender(g, x, y, w, h);
     } else {
       heapRender(g, x, y, w, h);
     }
-
-    // Restart the resource reaper timer if neccessary
     if (!frameRendered) {
       frameRendered = true;
       if (resourceTimer != null && !resourceTimer.isRunning()) {
@@ -284,7 +220,6 @@ public class VncComponent extends JComponent {
 
   protected final void update(final int x, final int y, final int width, final int height) {
     SwingUtilities.invokeLater(() -> {
-      // If the image changed size, resize the component to fit
       if (currentImage.getWidth() != imgWidth || currentImage.getHeight() != imgHeight) {
         imgWidth = currentImage.getWidth();
         imgHeight = currentImage.getHeight();
@@ -336,7 +271,6 @@ public class VncComponent extends JComponent {
 
   protected void renderFrame(boolean isPrerollFrame, int x, int y, int width, int height, ByteBuf img) {
 
-    // If there is already a swing update pending, also drop this frame.
     if (updatePending && !isPrerollFrame) {
       return;
     }
@@ -345,31 +279,12 @@ public class VncComponent extends JComponent {
     if (img.hasArray()) {
       raster.setDataElements(x, y, width, height, img.array());
     } else {
-       byte[] pixels = new byte[img.readableBytes()];
-       img.readBytes(pixels);
-       raster.setDataElements(x, y, width, height, pixels);
-
-//      SampleModel sm = currentImage.getSampleModel();
-//      int numDataElems = sm.getNumDataElements();
-//      byte[] btemp = new byte[numDataElems];
-//
-//      int cnt = 0;
-//      int x1 = x + width;
-//      int y1 = y + height;
-//
-//      for (int i = y; i < y1; i++) {
-//        for (int j = x; j < x1; j++) {
-//          for (int k = 0; k < numDataElems; k++) {
-//            btemp[k] = img.getByte(cnt++);
-//          }
-//          sm.setDataElements(j, i, btemp, raster.getDataBuffer());
-//        }
-//      }
-
+      byte[] pixels = new byte[img.readableBytes()];
+      img.readBytes(pixels);
+      raster.setDataElements(x, y, width, height, pixels);
     }
     updatePending = true;
 
-    // Tell swing to use the new buffer
     update(x, y, width, height);
   }
 
@@ -409,6 +324,5 @@ public class VncComponent extends JComponent {
       return true;
     }
   }
-
 
 }

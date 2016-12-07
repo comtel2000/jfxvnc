@@ -1,4 +1,5 @@
 *.class
+*.versionsBackup
 /.settings/
 /.project
 /**/.settings/

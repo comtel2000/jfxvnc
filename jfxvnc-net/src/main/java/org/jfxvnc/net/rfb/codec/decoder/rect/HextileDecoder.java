@@ -113,7 +113,7 @@ public class HextileDecoder extends RawRectDecoder {
           }
         }
         logger.trace("hextile (raw): {}x{} {}", partRect.getWidth(), partRect.getHeight(), frame.readableBytes());
-        imageRect.getRects().add(new RawImageRect(partRect.getX(), partRect.getY(), partRect.getWidth(), partRect.getHeight(), frame.copy(),
+        imageRect.getRects().add(new RawImageRect(partRect.getX(), partRect.getY(), partRect.getWidth(), partRect.getHeight(), frame,
             partRect.getWidth() * Math.min(3, bytesPerPixel)));
         state = State.NEXT_TILE;
       } else {
@@ -207,9 +207,8 @@ public class HextileDecoder extends RawRectDecoder {
     }
     if (state == State.ADD_TILE) {
       frame.writerIndex(frameStartIndex + frame.capacity());
-      imageRect.getRects().add(new RawImageRect(partRect.getX(), partRect.getY(), partRect.getWidth(), partRect.getHeight(), frame.copy(),
+      imageRect.getRects().add(new RawImageRect(partRect.getX(), partRect.getY(), partRect.getWidth(), partRect.getHeight(), frame,
           partRect.getWidth() * Math.min(3, bytesPerPixel)));
-      // frame.release();
       state = State.NEXT_TILE;
     }
 

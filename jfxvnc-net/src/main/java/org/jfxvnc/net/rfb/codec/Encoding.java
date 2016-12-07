@@ -13,6 +13,9 @@
  *******************************************************************************/
 package org.jfxvnc.net.rfb.codec;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Encoding types
  * 
@@ -20,20 +23,21 @@ package org.jfxvnc.net.rfb.codec;
  * 0 Raw<br>
  * 1 CopyRect<br>
  * 2 RRE<br>
+ * 4 coRRE<br>
  * 5 Hextile<br>
- * 16 ZRLE<br>
- * -239 Cursor pseudo-encoding<br>
- * -223 DesktopSize pseudo-encoding<br>
  * 4 CoRRE<br>
  * 6 zlib<br>
  * 7 tight<br>
  * 8 zlibhex<br>
  * 15 TRLE<br>
+ * 16 ZRLE<br>
  * 17 Hitachi ZYWRLE<br>
  * 18 Adam Walling XZ<br>
  * 19 Adam Walling XZYW<br>
  * -1 to -222<br>
+ * -223 DesktopSize pseudo-encoding<br>
  * -224 to -238<br>
+ * -239 Cursor pseudo-encoding<br>
  * -240 to -256 tight options<br>
  * -257 to -272 Anthony Liguori<br>
  * -273 to -304 VMWare<br>
@@ -51,6 +55,8 @@ package org.jfxvnc.net.rfb.codec;
  *
  */
 public enum Encoding {
+
+
 
   UNKNOWN(Integer.MIN_VALUE),
 
@@ -84,6 +90,8 @@ public enum Encoding {
 
   CURSOR(-239);
 
+  private static Logger logger = LoggerFactory.getLogger(Encoding.class);
+
   private final int type;
 
   private Encoding(int type) {
@@ -96,6 +104,7 @@ public enum Encoding {
         return e;
       }
     }
+    logger.error("unknown encoding: {}", type);
     return UNKNOWN;
   }
 

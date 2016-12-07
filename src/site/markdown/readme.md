@@ -8,11 +8,12 @@
 ## Modules
 - jfxvnc-net (netty based VNC / RFB protocol)
 - jfxvnc-ui (JavaFX VNC components)
+- jfxvnc-swing (Java Swing VNC components)
 - jfxvnc-app (JavaFX VNC client app)
 
 ## Supports
 - RFB 3.3 to 3.8 protocol
-- RAW, Copy Rect, Zlib (0.0.2), Cursor, Desktop Resize Encoding
+- RAW, Copy Rect, Zlib (0.0.2), Cursor, Desktop Resize Encoding, Hextile (1.0.2)
 - VNC Auth security and SSL
 - true/full color pixel format (24 depth) + 8bpp
 - Server/Client clipboard transfer
@@ -21,8 +22,7 @@
 - VNC listening mode (0.0.3)
 
 ## Roadmap
-- Hextile, TRLE, ZRLE, Tight, Turbo, etc. encodings
-- Restricted color maps
+- TRLE, ZRLE, Tight, Turbo, etc. encodings
 - more than 'VNC Auth' security
 - ...
 

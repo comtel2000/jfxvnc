@@ -27,6 +27,7 @@ import org.jfxvnc.net.rfb.codec.decoder.rect.FrameRect;
 import org.jfxvnc.net.rfb.codec.decoder.rect.FrameRectDecoder;
 import org.jfxvnc.net.rfb.codec.decoder.rect.HextileDecoder;
 import org.jfxvnc.net.rfb.codec.decoder.rect.RawRectDecoder;
+import org.jfxvnc.net.rfb.codec.decoder.rect.UnknownRectDecoder;
 import org.jfxvnc.net.rfb.codec.decoder.rect.ZlibRectDecoder;
 import org.jfxvnc.net.rfb.exception.ProtocolException;
 import org.slf4j.Logger;
@@ -67,6 +68,8 @@ class FramebufferUpdateRectDecoder implements FrameDecoder {
     frameRectDecoder.put(Encoding.RAW, new RawRectDecoder(pixelFormat));
     frameRectDecoder.put(Encoding.CURSOR, new CursorRectDecoder(pixelFormat));
     frameRectDecoder.put(Encoding.DESKTOP_SIZE, new DesktopSizeRectDecoder(pixelFormat));
+    
+    frameRectDecoder.put(Encoding.UNKNOWN, new UnknownRectDecoder(pixelFormat));
   }
 
   public Encoding[] getSupportedEncodings() {
