@@ -33,7 +33,7 @@ public class ProtocolInitializer extends ChannelInitializer<SocketChannel> {
   @Override
   public void initChannel(SocketChannel ch) throws Exception {
     ChannelPipeline pipeline = ch.pipeline();
-    // pipeline.addLast(new LoggingHandler(LogLevel.DEBUG));
+    //pipeline.addLast(new LoggingHandler(LogLevel.INFO));
     pipeline.addLast(new ProtocolHandler(render, config));
 
   }

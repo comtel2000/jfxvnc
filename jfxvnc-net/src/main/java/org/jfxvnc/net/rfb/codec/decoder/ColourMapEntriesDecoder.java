@@ -46,7 +46,10 @@ class ColourMapEntriesDecoder implements FrameDecoder {
         return false;
       }
       state = State.INIT;
-      return out.add(new ColourMapEvent(firstColor, numberOfColor, in.readSlice(bufferSize).retain()));
+//      ByteBuf col = ctx.alloc().buffer(bufferSize);
+//      in.readBytes(col);
+      ByteBuf col = in.readRetainedSlice(bufferSize);
+      return out.add(new ColourMapEvent(firstColor, numberOfColor, col));
     }
 
     return false;

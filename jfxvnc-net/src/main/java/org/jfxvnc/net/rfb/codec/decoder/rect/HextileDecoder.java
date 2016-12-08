@@ -98,7 +98,8 @@ public class HextileDecoder extends RawRectDecoder {
           return false;
         }
         if (bytesPerPixel == 1) {
-          frame = in.readSlice(pixels).retain();
+          frame = ctx.alloc().buffer(pixels);
+          in.readBytes(frame);
         } else {
           // reduce 4 byte to 3 byte
           int size = (pixels * 3) / 4;
@@ -118,12 +119,7 @@ public class HextileDecoder extends RawRectDecoder {
         state = State.NEXT_TILE;
       } else {
         int pixels = partRect.getPixelCount(bytesPerPixel);
-        if (bytesPerPixel == 1) {
-          frame = ctx.alloc().buffer(pixels);
-        } else {
-          int size = (pixels * 3) / 4;
-          frame = ctx.alloc().buffer(size);
-        }
+        frame = ctx.alloc().buffer(bytesPerPixel == 1 ? pixels : (pixels * 3) / 4);
         frameStartIndex = frame.readerIndex();
         state = State.BG_FILL;
       }

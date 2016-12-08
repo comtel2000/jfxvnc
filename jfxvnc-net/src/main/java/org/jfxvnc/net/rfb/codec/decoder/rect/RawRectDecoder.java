@@ -46,7 +46,7 @@ public class RawRectDecoder implements FrameRectDecoder {
       return false;
     }
 
-    sendRect(ctx, in.readSlice(capacity).retain(), out);
+    sendRect(ctx, in.readRetainedSlice(capacity), out);
     return true;
   }
 
@@ -58,7 +58,10 @@ public class RawRectDecoder implements FrameRectDecoder {
 
   protected void sendRect(ChannelHandlerContext ctx, ByteBuf frame, List<Object> out) {
     if (bpp == 1) {
-      out.add(new RawImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), frame.copy(), rect.getWidth()));
+      ByteBuf pixels = ctx.alloc().buffer(capacity);
+      frame.readBytes(pixels);
+      frame.release();
+      out.add(new RawImageRect(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight(), pixels, rect.getWidth()));
       return;
     }
 
@@ -66,7 +69,7 @@ public class RawRectDecoder implements FrameRectDecoder {
     int size = (capacity * 3) / 4;
     ByteBuf pixels = ctx.alloc().buffer(size);
     byte[] buffer = new byte[3];
-    while (pixels.isWritable()) {
+    while (pixels.isWritable(3)) {
       buffer[redPos] = frame.readByte();
       buffer[1] = frame.readByte();
       buffer[bluePos] = frame.readByte();

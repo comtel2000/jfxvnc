@@ -137,7 +137,7 @@ public class SwingDemo implements InternalFrameListener {
     }
     //ResourceLeakDetector.setLevel(Level.ADVANCED);
     ProtocolConfiguration prop = vncService.getConfiguration();
-    prop.hostProperty().set("192.168.100.250");
+    prop.hostProperty().set("127.0.0.1");
     prop.portProperty().set(5900);
     prop.clientPixelFormatProperty().set(PixelFormat.RGB_555);
     prop.rawEncProperty().set(true);
