@@ -13,7 +13,44 @@
  *******************************************************************************/
 package org.jfxvnc.net.rfb.render;
 
+@FunctionalInterface
 public interface RenderCallback {
 
-  void renderComplete();
+  static class Rect {
+
+    final int x;
+    final int y;
+    final int width;
+    final int height;
+
+    public Rect(int x, int y, int width, int height) {
+      this.x = x;
+      this.y = y;
+      this.width = width;
+      this.height = height;
+    }
+
+    public int getX() {
+      return x;
+    }
+
+    public int getY() {
+      return y;
+    }
+
+    public int getWidth() {
+      return width;
+    }
+
+    public int getHeight() {
+      return height;
+    }
+
+  }
+
+  default void renderComplete() {
+    renderComplete(null);
+  }
+
+  void renderComplete(Rect rect);
 }

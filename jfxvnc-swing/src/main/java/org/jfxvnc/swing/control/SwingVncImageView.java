@@ -114,13 +114,13 @@ public class SwingVncImageView extends VncComponent implements BiConsumer<Server
           HextileImageRect hextileRect = (HextileImageRect) rect;
           //PixelWriter writer = vncImage.getPixelWriter();
           for (RawImageRect rawRect : hextileRect.getRects()){
-            renderFrame(true, rawRect.getX(), rawRect.getY(), rawRect.getWidth(), rawRect.getHeight(), rawRect.getPixels());
+            renderFrame(rawRect.getX(), rawRect.getY(), rawRect.getWidth(), rawRect.getHeight(), rawRect.getPixels());
           }
           break;
         case RAW:
         case ZLIB:
           RawImageRect rawRect = (RawImageRect) rect;
-          renderFrame(true, rawRect.getX(), rawRect.getY(), rawRect.getWidth(), rawRect.getHeight(), rawRect.getPixels());
+          renderFrame(rawRect.getX(), rawRect.getY(), rawRect.getWidth(), rawRect.getHeight(), rawRect.getPixels());
           break;
         case COPY_RECT:
           CopyImageRect copy = (CopyImageRect) rect;

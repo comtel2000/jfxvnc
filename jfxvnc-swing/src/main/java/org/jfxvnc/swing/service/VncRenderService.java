@@ -15,6 +15,8 @@ package org.jfxvnc.swing.service;
 
 import java.util.function.BiConsumer;
 
+import javax.swing.SwingUtilities;
+
 import org.jfxvnc.net.rfb.VncConnection;
 import org.jfxvnc.net.rfb.codec.ProtocolState;
 import org.jfxvnc.net.rfb.codec.decoder.BellEvent;
@@ -122,16 +124,21 @@ public class VncRenderService implements RenderProtocol {
   }
 
   @Override
-  public void render(ImageRect rect, RenderCallback callback) {
+  public void render(ImageRect rect) {
     if (eventConsumer != null) {
       eventConsumer.accept(null, rect);
     }
     if (image != null) {
       image.set(rect);
     }
-    callback.renderComplete();
   }
 
+  @Override
+  public void renderComplete(RenderCallback callback) {
+    SwingUtilities.invokeLater(() -> callback.renderComplete());
+  }
+  
+  
   @Override
   public void eventReceived(ServerDecoderEvent event) {
     logger.debug("event received: {}", event);

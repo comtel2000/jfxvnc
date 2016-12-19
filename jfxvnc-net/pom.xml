@@ -21,5 +21,10 @@
 			<artifactId>netty-handler</artifactId>
 			<version>${netty.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.21.0-GA</version>
+		</dependency>
 	</dependencies>
 </project>

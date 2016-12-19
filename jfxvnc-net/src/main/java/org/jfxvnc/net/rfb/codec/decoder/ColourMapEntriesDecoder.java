@@ -16,6 +16,7 @@ package org.jfxvnc.net.rfb.codec.decoder;
 import java.util.List;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 
 class ColourMapEntriesDecoder implements FrameDecoder {
@@ -46,9 +47,8 @@ class ColourMapEntriesDecoder implements FrameDecoder {
         return false;
       }
       state = State.INIT;
-//      ByteBuf col = ctx.alloc().buffer(bufferSize);
-//      in.readBytes(col);
-      ByteBuf col = in.readRetainedSlice(bufferSize);
+      ByteBuf col = Unpooled.buffer(bufferSize);
+      in.readBytes(col);
       return out.add(new ColourMapEvent(firstColor, numberOfColor, col));
     }
 

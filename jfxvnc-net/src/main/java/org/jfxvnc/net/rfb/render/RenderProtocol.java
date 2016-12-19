@@ -20,8 +20,10 @@ import org.jfxvnc.net.rfb.render.rect.ImageRect;
 
 public interface RenderProtocol {
 
-  void render(ImageRect rect, RenderCallback callback);
+  void render(ImageRect rect);
 
+  void renderComplete(RenderCallback callback);
+  
   void eventReceived(ServerDecoderEvent event);
 
   void exceptionCaught(Throwable t);

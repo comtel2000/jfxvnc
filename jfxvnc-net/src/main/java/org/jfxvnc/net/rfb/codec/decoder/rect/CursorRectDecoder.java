@@ -32,26 +32,28 @@ public class CursorRectDecoder extends RawRectDecoder {
 
   @Override
   public void setRect(FrameRect rect) {
-      this.rect = rect;
-      this.bitMaskLength = Math.floorDiv(rect.getWidth() + 7, 8) * rect.getHeight();
-      this.capacity = (rect.getWidth() * rect.getHeight() * bpp) + bitMaskLength;
+    this.rect = rect;
+    this.bitMaskLength = Math.floorDiv(rect.getWidth() + 7, 8) * rect.getHeight();
+    this.capacity = (rect.getWidth() * rect.getHeight() * bpp) + bitMaskLength;
 
   }
 
   @Override
   protected void sendRect(ChannelHandlerContext ctx, ByteBuf frame, List<Object> out) {
-    int i = 0;
     ByteBuf pixels = ctx.alloc().buffer(capacity - bitMaskLength);
+    int[] buffer = new int[3];
     while (pixels.isWritable(4)) {
+      buffer[0] = frame.readUnsignedByte();
+      buffer[1] = frame.readUnsignedByte();
+      buffer[2] = frame.readUnsignedByte();
+      frame.skipBytes(1);
+      // RGBA
       pixels.writeInt(
-          frame.getUnsignedByte(i * 4 + redPos) << pixelFormat.getRedShift() | frame.getUnsignedByte(i * 4 + 1) << pixelFormat.getGreenShift()
-              | frame.getUnsignedByte(i * 4 + bluePos) << pixelFormat.getBlueShift() | 0xff000000);
-      i++;
+          buffer[redPos] << pixelFormat.getRedShift() | buffer[1] << pixelFormat.getGreenShift() | buffer[bluePos] << pixelFormat.getBlueShift() | 0xff000000);
     }
 
     if (bitMaskLength > 0) {
-      ByteBuf bitmask = ctx.alloc().buffer(bitMaskLength);
-      frame.getBytes(capacity - bitMaskLength, bitmask);
+      ByteBuf bitmask = frame.readRetainedSlice(bitMaskLength);
       // remove transparent pixels
       int maskBytesPerRow = Math.floorDiv((rect.getWidth() + 7), 8);
       IntStream.range(0, rect.getHeight())

@@ -29,6 +29,7 @@ import org.jfxvnc.net.rfb.render.RenderProtocol;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;
 import org.slf4j.LoggerFactory;
 
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -122,16 +123,21 @@ public class VncRenderService implements RenderProtocol {
   }
 
   @Override
-  public void render(ImageRect rect, RenderCallback callback) {
+  public void render(ImageRect rect) {
     if (eventConsumer != null) {
       eventConsumer.accept(null, rect);
     }
     if (image != null) {
       image.set(rect);
     }
-    callback.renderComplete();
+    
   }
 
+  @Override
+  public void renderComplete(RenderCallback callback) {
+    Platform.runLater(() -> callback.renderComplete());
+  }
+  
   @Override
   public void eventReceived(ServerDecoderEvent event) {
     logger.debug("event received: {}", event);

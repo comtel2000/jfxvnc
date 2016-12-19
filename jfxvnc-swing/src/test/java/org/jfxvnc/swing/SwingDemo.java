@@ -70,7 +70,7 @@ public class SwingDemo implements InternalFrameListener {
   private JComponent createVncView() {
 
     vncService = new VncRenderService();
-    vncView = new SwingVncImageView(false, false);
+    vncView = new SwingVncImageView(true, false);
     //vncView.setFixBounds(0, 0, 800, 600);
     vncService.setEventConsumer(vncView);
     vncService.inputEventListenerProperty().addListener(l -> vncView.registerInputEventListener(vncService.inputEventListenerProperty().get()));
@@ -135,17 +135,18 @@ public class SwingDemo implements InternalFrameListener {
       System.err.println("not initialized");
       return;
     }
+    System.setSecurityManager(null);
     //ResourceLeakDetector.setLevel(Level.ADVANCED);
     ProtocolConfiguration prop = vncService.getConfiguration();
     prop.hostProperty().set("127.0.0.1");
-    prop.portProperty().set(5900);
+    prop.portProperty().set(5902);
     prop.clientPixelFormatProperty().set(PixelFormat.RGB_555);
     prop.rawEncProperty().set(true);
     prop.hextileEncProperty().set(true);
     prop.zlibEncProperty().set(true);
     prop.securityProperty().set(SecurityType.NONE);
-//    prop.securityProperty().set(SecurityType.VNC_Auth);
-//    prop.passwordProperty().set("");
+    prop.securityProperty().set(SecurityType.VNC_Auth);
+    prop.passwordProperty().set("comtel");
     vncView.setEnabled(true);
     vncService.connect();
   }

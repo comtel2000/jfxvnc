@@ -15,6 +15,7 @@ package org.jfxvnc.net.rfb.codec;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.jfxvnc.net.rfb.codec.decoder.FrameDecoderHandler;
@@ -29,15 +30,12 @@ import org.jfxvnc.net.rfb.codec.handshaker.event.ServerInitEvent;
 import org.jfxvnc.net.rfb.exception.ProtocolException;
 import org.jfxvnc.net.rfb.render.ConnectInfoEvent;
 import org.jfxvnc.net.rfb.render.ProtocolConfiguration;
-import org.jfxvnc.net.rfb.render.RenderCallback;
 import org.jfxvnc.net.rfb.render.RenderProtocol;
 import org.jfxvnc.net.rfb.render.rect.ImageRect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.MessageToMessageDecoder;
@@ -55,18 +53,13 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
 
   private RenderProtocol render;
   
-  private final RenderCallback voidCallback = () -> {};
-  
   private final AtomicReference<ProtocolState> state = new AtomicReference<ProtocolState>(ProtocolState.HANDSHAKE_STARTED);
 
   private SslContext sslContext;
 
   public ProtocolHandler(RenderProtocol render, ProtocolConfiguration config) {
-    if (config == null) {
-      throw new IllegalArgumentException("configuration must not be empty");
-    }
-    this.config = config;
-    this.render = render;
+    this.config = Objects.requireNonNull(config, "configuration must not be empty");
+    this.render = Objects.requireNonNull(render, "render must not be empty");
   }
 
   @Override
@@ -95,11 +88,13 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
   protected void decode(final ChannelHandlerContext ctx, Object msg, List<Object> out) throws Exception {
 
     if (msg instanceof ImageRect) {
-      render.render((ImageRect) msg, voidCallback);
+      final ImageRect rect = (ImageRect) msg;
+      render.render(rect);
       return;
     }
     if (msg instanceof ServerDecoderEvent) {
-      render.eventReceived((ServerDecoderEvent) msg);
+      final ServerDecoderEvent event = (ServerDecoderEvent) msg;
+      render.eventReceived(event);
       return;
     }
 
@@ -218,7 +213,13 @@ public class ProtocolHandler extends MessageToMessageDecoder<Object> {
       ProtocolState uvent = (ProtocolState) evt;
       state.set(uvent);
       if (uvent == ProtocolState.FBU_REQUEST) {
-        sendFramebufferUpdateRequest(ctx, true, 0, 0, serverInit.getFrameBufferWidth(), serverInit.getFrameBufferHeight());
+        render.renderComplete((rect) -> {
+          if (rect != null){
+            sendFramebufferUpdateRequest(ctx, true, rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+          }else{
+            sendFramebufferUpdateRequest(ctx, true, 0, 0, serverInit.getFrameBufferWidth(), serverInit.getFrameBufferHeight());
+          }
+        });
       }
 
       render.stateChanged(uvent);

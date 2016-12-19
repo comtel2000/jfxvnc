@@ -19,19 +19,19 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Rectangle;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
+import java.awt.image.Raster;
+import java.awt.image.SampleModel;
 import java.awt.image.VolatileImage;
 import java.awt.image.WritableRaster;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 import io.netty.buffer.ByteBuf;
 
@@ -47,12 +47,10 @@ public class VncComponent extends JComponent {
   private final boolean resizable;
   private Rectangle fixBounds;
 
-  private Timer resourceTimer;
   private VolatileImage volatileImage;
-  private boolean frameRendered = false;
-  private volatile boolean updatePending = false;
   private final boolean useVolatile;
-
+  private volatile boolean updatePending = false;
+  
   public VncComponent() {
     this(true, true);
   }
@@ -83,18 +81,8 @@ public class VncComponent extends JComponent {
         }
       });
     }
-    // renderComponent.setBounds(getBounds());
+    renderComponent.setBounds(getBounds());
     setOpaque(false);
-  }
-
-  public void setResourceTimerEnabled(boolean flag, int delay) {
-    if (resourceTimer != null) {
-      resourceTimer.stop();
-      resourceTimer = null;
-    }
-    if (flag && useVolatile) {
-      resourceTimer = new Timer(delay, resourceReaper);
-    }
   }
 
   private void scaleVideoOutput() {
@@ -130,18 +118,6 @@ public class VncComponent extends JComponent {
     return resizable;
   }
 
-  protected ActionListener resourceReaper = (t) -> {
-    if (!frameRendered) {
-      if (volatileImage != null) {
-        volatileImage.flush();
-        volatileImage = null;
-      }
-      resourceTimer.stop();
-    }
-    frameRendered = false;
-  };
-
-
   public void setKeepAspect(boolean keepAspect) {
     this.keepAspect = keepAspect;
   }
@@ -153,15 +129,9 @@ public class VncComponent extends JComponent {
 
   @Override
   protected void paintComponent(Graphics g) {
-    if (isOpaque()) {
-      Graphics2D g2d = (Graphics2D) g.create();
-      g2d.setColor(getBackground());
-      g2d.fillRect(0, 0, getWidth(), getHeight());
-      g2d.dispose();
-    }
   }
-
-  private void renderVolatileImage(BufferedImage bufferedImage, int x, int y, int w, int h) {
+  
+  private void renderVolatileImage(int x, int y, int w, int h) {
     do {
       final GraphicsConfiguration gc = getGraphicsConfiguration();
       if (volatileImage == null || volatileImage.getWidth() != imgWidth || volatileImage.getHeight() != imgHeight
@@ -175,12 +145,19 @@ public class VncComponent extends JComponent {
         volatileImage.setAccelerationPriority(1.0f);
       }
       Graphics2D g = volatileImage.createGraphics();
-      // g.drawImage(bufferedImage, 0,0, null);
-      g.drawImage(bufferedImage, x, y, x + w, y + h, x, y, x + w, y + h, null);
+      g.drawImage(currentImage, x, y, x + w, y + h, x, y, x + w, y + h, null);
       g.dispose();
     } while (volatileImage.contentsLost());
   }
 
+  private void render(Graphics g, int x, int y, int w, int h) {
+    if (useVolatile) {
+      volatileRender(g, x, y, w, h);
+    } else {
+      updatePending = false;
+      g.drawImage(currentImage, x, y, w, h, null);
+    }
+  }
 
   private void volatileRender(Graphics g, int x, int y, int w, int h) {
     do {
@@ -188,7 +165,7 @@ public class VncComponent extends JComponent {
         bufferLock.lock();
         try {
           updatePending = false;
-          renderVolatileImage(currentImage, x, y, w, h);
+          renderVolatileImage(x, y, w, h);
         } finally {
           bufferLock.unlock();
         }
@@ -196,30 +173,9 @@ public class VncComponent extends JComponent {
       g.drawImage(volatileImage, x, y, w, h, null);
     } while (volatileImage.contentsLost());
   }
-
-  private void heapRender(Graphics g, int x, int y, int w, int h) {
-    updatePending = false;
-    g.drawImage(currentImage, x, y, w, h, null);
-
-  }
-
-  private void render(Graphics g, int x, int y, int w, int h) {
-    if (useVolatile) {
-      volatileRender(g, x, y, w, h);
-    } else {
-      heapRender(g, x, y, w, h);
-    }
-    if (!frameRendered) {
-      frameRendered = true;
-      if (resourceTimer != null && !resourceTimer.isRunning()) {
-        resourceTimer.restart();
-      }
-    }
-  }
-
-
+  
   protected final void update(final int x, final int y, final int width, final int height) {
-    SwingUtilities.invokeLater(() -> {
+    
       if (currentImage.getWidth() != imgWidth || currentImage.getHeight() != imgHeight) {
         imgWidth = currentImage.getWidth();
         imgHeight = currentImage.getHeight();
@@ -237,10 +193,8 @@ public class VncComponent extends JComponent {
 
       }
       if (renderComponent.isVisible()) {
-        // renderComponent.paintImmediately(x, y, width, height);
         renderComponent.repaint(x, y, width, height);
       }
-    });
   }
 
   protected BufferedImage getBufferedImage(int width, int height, int type) {
@@ -250,12 +204,13 @@ public class VncComponent extends JComponent {
     if (currentImage != null) {
       currentImage.flush();
     }
+
     currentImage = new BufferedImage(width, height, type);
-    currentImage.setAccelerationPriority(0.0f);
+    currentImage.setAccelerationPriority(1.0f);
     return currentImage;
   }
 
-  protected BufferedImage getBufferedImage(int width, int height, IndexColorModel cm) {
+  protected BufferedImage getBufferedImage(int width, int height, IndexColorModel colorModel) {
     if (currentImage != null && currentImage.getWidth() == width && currentImage.getHeight() == height
         && currentImage.getType() == BufferedImage.TYPE_BYTE_INDEXED) {
       return currentImage;
@@ -263,31 +218,47 @@ public class VncComponent extends JComponent {
     if (currentImage != null) {
       currentImage.flush();
     }
-    currentImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED, cm);
-    currentImage.setAccelerationPriority(0.0f);
+    currentImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED, colorModel);
+    currentImage.setAccelerationPriority(1.0f);
     return currentImage;
   }
 
 
-  protected void renderFrame(boolean isPrerollFrame, int x, int y, int width, int height, ByteBuf img) {
-
-    if (updatePending && !isPrerollFrame) {
-      return;
-    }
+  protected void renderFrame(int x, int y, int width, int height, ByteBuf img) {
 
     final WritableRaster raster = currentImage.getRaster();
     if (img.hasArray()) {
-      raster.setDataElements(x, y, width, height, img.array());
+      byte[] data = new byte[img.readableBytes()];
+      System.arraycopy(img.array(), img.arrayOffset(), data, 0, data.length);
+      raster.setDataElements(x, y, width, height, data);
     } else {
-      byte[] pixels = new byte[img.readableBytes()];
-      img.readBytes(pixels);
-      raster.setDataElements(x, y, width, height, pixels);
+//      byte[] pixels = new byte[img.readableBytes()];
+//      img.readBytes(pixels);
+//      raster.setDataElements(x, y, width, height, pixels);
+      updateRaster(raster, x - raster.getSampleModelTranslateX(), y - raster.getSampleModelTranslateY(), width, height , img);
     }
     updatePending = true;
-
     update(x, y, width, height);
+    //SwingUtilities.invokeLater(() -> update(x, y, width, height));
   }
 
+  
+  private void updateRaster(Raster raster, int x, int y, int w, int h, ByteBuf img) {
+
+    final DataBuffer data = raster.getDataBuffer();
+    final SampleModel model = raster.getSampleModel();
+    int x1 = x + w;
+    int y1 = y + h;
+
+    byte[] buffer = new byte[model.getNumDataElements()];
+
+    for (int i = y; i < y1; i++) {
+      for (int j = x; j < x1; j++) {
+        img.readBytes(buffer);
+        model.setDataElements(j, i, buffer, data);
+      }
+    }
+  }
 
   public void clear() {
     renderComponent.removeAll();
