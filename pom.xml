@@ -5,12 +5,7 @@
 	<artifactId>jfxvnc-parent</artifactId>
 	<version>1.2.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>9</version>
-	</parent>
-	<name>JFxVNC</name>
+	<name>jfxvnc</name>
 	<description>JFX VNC is a Java VNC remote desktop client based on JavaFX and divided into two parts. One module (jfxvnc-net) contains RFB/VNC protocol codec and handler. The other module (jfxvnc-ui) wraps JavaFX UI components with the VNC viewer app.</description>
 	<url>http://jfxvnc.org</url>
 	<licenses>
@@ -44,7 +39,7 @@
 		<github.global.server>github</github.global.server>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<netty.version>4.1.6.Final</netty.version>
+		<netty.version>4.1.8.Final</netty.version>
 	</properties>
 
 	<dependencies>
@@ -276,7 +271,7 @@
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.6.5</version>
+						<version>1.6.7</version>
 						<extensions>true</extensions>
 						<configuration>
 							<serverId>ossrh</serverId>
@@ -343,5 +338,4 @@
 			</plugin>
 		</plugins>
 	</reporting>
-
 </project>
