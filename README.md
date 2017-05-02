@@ -1,7 +1,7 @@
 # JFX VNC
 [![Build Status](https://travis-ci.org/comtel2000/jfxvnc.png)](https://travis-ci.org/comtel2000/jfxvnc)  [![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jfxvnc/jfxvnc-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jfxvnc/jfxvnc-parent)
 
-[JFX VNC](http://jfxvnc.org) is a Java VNC remote desktop client based on JavaFX and divided into two parts. One module (jfxvnc-net) is a RFB/VNC remote desktop protocol based on [Netty](https://github.com/netty/netty). The other module (jfxvnc-ui) contains the JavaFX based VNC viewer UI armed with many great [ControlsFX controls](https://bitbucket.org/controlsfx/controlsfx/) and the just-enough MVP framework [afterburner.fx](https://github.com/AdamBien/afterburner.fx)
+[JFX VNC](http://jfxvnc.org) is a Java VNC remote desktop client based on JavaFX and divided into two parts. One module (jfxvnc-net) is a RFB/VNC remote desktop protocol based on [Netty](https://github.com/netty/netty). The other module (jfxvnc-ui) contains the JavaFX based VNC viewer build with the just-enough MVP framework [afterburner.fx](https://github.com/AdamBien/afterburner.fx)
 
 [![video](http://img.youtube.com/vi/hbsgvLNvPCc/0.jpg)](http://youtu.be/hbsgvLNvPCc)
 
@@ -55,6 +55,12 @@ java -jar jfxvnc-app/target/jfxvnc-jar-with-dependencies.jar
 
 <dependency>
   <groupId>org.jfxvnc</groupId>
+  <artifactId>jfxvnc-swing</artifactId>
+  <version>[LATEST_RELEASE]</version>
+</dependency>
+
+<dependency>
+  <groupId>org.jfxvnc</groupId>
   <artifactId>jfxvnc-app</artifactId>
   <version>[LATEST_RELEASE]</version>
 </dependency>
@@ -63,7 +69,6 @@ java -jar jfxvnc-app/target/jfxvnc-jar-with-dependencies.jar
 
 ## Links
 - [Netty](https://github.com/netty/netty)
-- [ControlsFX](https://bitbucket.org/controlsfx/controlsfx)
 - [afterburner.fx](https://github.com/AdamBien/afterburner.fx)
 
 ## License

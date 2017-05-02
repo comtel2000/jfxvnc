@@ -45,7 +45,7 @@
 						</executions>
 						<configuration>
 							<descriptorId>jar-with-dependencies</descriptorId>
-							<finalName>jfxvnc</finalName>
+							<finalName>${project.name}</finalName>
 							<archive>
 								<manifest>
 									<mainClass>${app.main.class}</mainClass>
@@ -71,9 +71,6 @@
 					</resource>
 					<resource>
 						<directory>src/main/resources</directory>
-						<includes>
-							<include>**/*</include>
-						</includes>
 					</resource>
 				</resources>
 			</build>
@@ -97,7 +94,7 @@
 						</executions>
 						<configuration>
 							<descriptorId>jar-with-dependencies</descriptorId>
-							<finalName>jfxvnc</finalName>
+							<finalName>${project.name}</finalName>
 							<archive>
 								<manifest>
 									<mainClass>${app.main.class}</mainClass>
@@ -131,7 +128,7 @@
 										<argument>-outdir</argument>
 										<argument>target</argument>
 										<argument>-outfile</argument>
-										<argument>jfxvnc-app</argument>
+										<argument>${project.name}</argument>
 										<argument>-v</argument>
 									</arguments>
 								</configuration>
@@ -150,21 +147,21 @@
 										<argument>-native</argument>
 										<argument>installer</argument>
 										<argument>-name</argument>
-										<argument>jfxvnc</argument>
+										<argument>${project.name}</argument>
 										<argument>-title</argument>
-										<argument>JFxVNC</argument>
+										<argument>JavaFX VNC Client</argument>
 										<argument>-vendor</argument>
 										<argument>comtel2000</argument>
 										<argument>-appclass</argument>
 										<argument>${app.main.class}</argument>
 										<argument>-srcfiles</argument>
-										<argument>${project.build.directory}/jfxvnc-jar-with-dependencies.jar</argument>
+										<argument>${project.build.directory}/${project.name}-jar-with-dependencies.jar</argument>
 										<argument>-outdir</argument>
 										<argument>${project.build.directory}/installer</argument>
 										<argument>-outfile</argument>
-										<argument>jfxvnc-app</argument>
+										<argument>${project.name}</argument>
 										<argument>-BclassPath=.</argument>
-										<argument>-BappVersion=0.0.3</argument>
+										<argument>-BappVersion=1.2.1</argument>
 										<argument>-BsystemWide=true</argument>
 										<argument>-Bwin.menuGroup=comtel2000</argument>
 										<argument>-v</argument>
@@ -197,6 +194,7 @@
 			</build>
 		</profile>
 	</profiles>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.airhacks</groupId>
@@ -213,7 +211,19 @@
 			<artifactId>jfxvnc-ui</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.2.3</version>
+		</dependency>
 	</dependencies>
-
 
 </project>

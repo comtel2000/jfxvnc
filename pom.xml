@@ -39,29 +39,27 @@
 		<github.global.server>github</github.global.server>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<netty.version>4.1.8.Final</netty.version>
+		<netty.version>4.1.10.Final</netty.version>
+		<slf4j.version>1.7.25</slf4j.version>
+		<junit.version>4.12</junit.version>
 	</properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.21</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.21</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
-	</dependencies>
 
 	<profiles>
 		<profile>
@@ -75,12 +73,12 @@
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-jar-plugin</artifactId>
-							<version>2.5</version>
+							<version>3.0.2</version>
 						</plugin>
 						<plugin>
 							<groupId>org.jacoco</groupId>
 							<artifactId>jacoco-maven-plugin</artifactId>
-							<version>0.7.2.201409121644</version>
+							<version>0.7.7.201606060606</version>
 							<executions>
 								<execution>
 									<goals>
@@ -96,64 +94,13 @@
 								</execution>
 							</executions>
 						</plugin>
-						<!--This plugin's configuration is used to store Eclipse m2e settings 
-							only. It has no influence on the Maven build itself. -->
-						<plugin>
-							<groupId>org.eclipse.m2e</groupId>
-							<artifactId>lifecycle-mapping</artifactId>
-							<version>1.0.0</version>
-							<configuration>
-								<lifecycleMappingMetadata>
-									<pluginExecutions>
-										<pluginExecution>
-											<pluginExecutionFilter>
-												<groupId>
-													org.codehaus.mojo
-												</groupId>
-												<artifactId>
-													license-maven-plugin
-												</artifactId>
-												<versionRange>
-													[1.8,)
-												</versionRange>
-												<goals>
-													<goal>
-														update-file-header
-													</goal>
-												</goals>
-											</pluginExecutionFilter>
-											<action>
-												<ignore></ignore>
-											</action>
-										</pluginExecution>
-										<pluginExecution>
-											<pluginExecutionFilter>
-												<groupId>org.jacoco</groupId>
-												<artifactId>
-													jacoco-maven-plugin
-												</artifactId>
-												<versionRange>
-													[0.7.0.201403182114,)
-												</versionRange>
-												<goals>
-													<goal>prepare-agent</goal>
-												</goals>
-											</pluginExecutionFilter>
-											<action>
-												<ignore></ignore>
-											</action>
-										</pluginExecution>
-									</pluginExecutions>
-								</lifecycleMappingMetadata>
-							</configuration>
-						</plugin>
 					</plugins>
 				</pluginManagement>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-site-plugin</artifactId>
-						<version>3.4</version>
+						<version>3.5.1</version>
 						<executions>
 							<execution>
 								<id>attach-descriptor</id>
@@ -202,13 +149,12 @@
 					<plugin>
 						<groupId>com.github.github</groupId>
 						<artifactId>site-maven-plugin</artifactId>
-						<version>0.11</version>
+						<version>0.12</version>
 						<inherited>false</inherited>
 						<configuration>
 							<message>Generating site content for ${project.version}</message>
 							<repositoryOwner>comtel2000</repositoryOwner>
 							<repositoryName>jfxvnc</repositoryName>
-
 							<dryRun>true</dryRun>
 						</configuration>
 						<executions>
@@ -319,7 +265,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
+				<version>2.10.4</version>
 				<reportSets>
 					<reportSet>
 						<reports>
