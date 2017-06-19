@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Date-Revision-yyyymmdd" content="20170619" />
     <meta http-equiv="Content-Language" content="en" />
-    <title>jfxvnc &#x2013; JFX VNC</title>
+    <title>jfxvnc &#x2013; Source Code Management</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.6.min.css" />
     <link rel="stylesheet" href="./css/site.css" />
     <link rel="stylesheet" href="./css/print.css" media="print" />
@@ -44,15 +44,31 @@
           <div class="well sidebar-nav">
 <ul class="nav nav-list">
           <li class="nav-header">Overview</li>
-    <li class="active"><a href="#"><span class="none"></span>Home</a>
-  </li>
+    <li><a href="readme.html" title="Home"><span class="none"></span>Home</a>  </li>
     <li><a href="index.html" title="Introduction"><span class="none"></span>Introduction</a>  </li>
           <li class="nav-header">Downloads</li>
     <li><a href="https://github.com/comtel2000/jfxvnc/archive/master.zip" class="externalLink" title="Source (zip)"><span class="none"></span>Source (zip)</a>  </li>
     <li><a href="https://github.com/comtel2000/jfxvnc/archive/master.tar.gz" class="externalLink" title="Source (tar.gz)"><span class="none"></span>Source (tar.gz)</a>  </li>
     <li><a href="https://github.com/comtel2000/jfxvnc/releases" class="externalLink" title="Installer"><span class="none"></span>Installer</a>  </li>
           <li class="nav-header">Project Documentation</li>
-    <li><a href="project-info.html" title="Project Information"><span class="icon-chevron-right"></span>Project Information</a>  </li>
+    <li><a href="project-info.html" title="Project Information"><span class="icon-chevron-down"></span>Project Information</a>
+      <ul class="nav nav-list">
+    <li><a href="integration.html" title="CI Management"><span class="none"></span>CI Management</a>  </li>
+    <li><a href="dependency-convergence.html" title="Dependency Convergence"><span class="none"></span>Dependency Convergence</a>  </li>
+    <li><a href="dependency-info.html" title="Dependency Information"><span class="none"></span>Dependency Information</a>  </li>
+    <li><a href="dependency-management.html" title="Dependency Management"><span class="none"></span>Dependency Management</a>  </li>
+    <li><a href="index.html" title="About"><span class="none"></span>About</a>  </li>
+    <li><a href="issue-tracking.html" title="Issue Management"><span class="none"></span>Issue Management</a>  </li>
+    <li><a href="license.html" title="Licenses"><span class="none"></span>Licenses</a>  </li>
+    <li><a href="modules.html" title="Project Modules"><span class="none"></span>Project Modules</a>  </li>
+    <li><a href="plugin-management.html" title="Plugin Management"><span class="none"></span>Plugin Management</a>  </li>
+    <li><a href="plugins.html" title="Plugins"><span class="none"></span>Plugins</a>  </li>
+    <li><a href="team-list.html" title="Team"><span class="none"></span>Team</a>  </li>
+    <li class="active"><a href="#"><span class="none"></span>Source Code Management</a>
+  </li>
+    <li><a href="project-summary.html" title="Summary"><span class="none"></span>Summary</a>  </li>
+      </ul>
+  </li>
   </ul>
           <hr />
           <div id="poweredBy">
@@ -69,111 +85,24 @@
           </div>
         </div>
         <div id="bodyColumn"  class="span10" >
-<h1>JFX VNC</h1>
-<p><a class="externalLink" href="https://travis-ci.org/comtel2000/jfxvnc"><img src="https://travis-ci.org/comtel2000/jfxvnc.png" alt="Build Status" /></a> <a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache_2-blue.svg" alt="License" /></a> <a class="externalLink" href="https://maven-badges.herokuapp.com/maven-central/org.jfxvnc/jfxvnc-parent"><img src="https://maven-badges.herokuapp.com/maven-central/org.jfxvnc/jfxvnc-parent/badge.svg" alt="Maven Central" /></a></p>
-<p><a class="externalLink" href="http://jfxvnc.org">JFX VNC</a> is a Java VNC remote desktop client based on JavaFX and divided into two parts. One module (jfxvnc-net) is a RFB/VNC remote desktop protocol based on <a class="externalLink" href="https://github.com/netty/netty">Netty</a>. The other module (jfxvnc-ui) contains the JavaFX based VNC viewer build with the just-enough MVP framework <a class="externalLink" href="https://github.com/AdamBien/afterburner.fx">afterburner.fx</a></p>
-<p><a class="externalLink" href="http://youtu.be/hbsgvLNvPCc"><img src="http://img.youtube.com/vi/hbsgvLNvPCc/0.jpg" alt="video" /></a></p>
 <div class="section">
-<h2><a name="Modules"></a>Modules</h2>
-
-<ul>
-  
-<li>jfxvnc-net (netty based VNC / RFB protocol)</li>
-  
-<li>jfxvnc-ui (JavaFX VNC components)</li>
-  
-<li>jfxvnc-swing (Java Swing VNC components)</li>
-  
-<li>jfxvnc-app (JavaFX VNC client app)</li>
-</ul></div>
+<h2><a name="Overview"></a>Overview</h2><a name="Overview"></a>
+<p>This project uses <a class="externalLink" href="http://git-scm.com/">Git</a> to manage its source code. Instructions on Git use can be found at <a class="externalLink" href="http://git-scm.com/documentation">http://git-scm.com/documentation</a>.</p></div>
 <div class="section">
-<h2><a name="Supports"></a>Supports</h2>
-
-<ul>
-  
-<li>RFB 3.3 to 3.8 protocol</li>
-  
-<li>RAW, Copy Rect, Zlib (0.0.2), Cursor, Desktop Resize Encoding, Hextile (1.0.2)</li>
-  
-<li>VNC Auth security and SSL</li>
-  
-<li>true/full color pixel format (24 depth) + 8bpp</li>
-  
-<li>Server/Client clipboard transfer</li>
-  
-<li>Zoom, Full screen (0.0.2)</li>
-  
-<li>Touch gesture support</li>
-  
-<li>VNC listening mode (0.0.3)</li>
-</ul></div>
+<h2><a name="Web_Browser_Access"></a>Web Browser Access</h2><a name="Web_Browser_Access"></a>
+<p>The following is a link to a browsable version of the source repository:</p>
+<div class="source"><pre class="prettyprint"><a href="git:git@github.com:comtel2000/jfxvnc.git">git:git@github.com:comtel2000/jfxvnc.git</a></pre></div></div>
 <div class="section">
-<h2><a name="Roadmap"></a>Roadmap</h2>
-
-<ul>
-  
-<li>TRLE, ZRLE, Tight, Turbo, etc. encodings</li>
-  
-<li>more than &#x2018;VNC Auth&#x2019; security</li>
-  
-<li>&#x2026;</li>
-</ul></div>
+<h2><a name="Anonymous_Access"></a>Anonymous Access</h2><a name="Anonymous_Access"></a>
+<p>The source can be checked out anonymously from Git with this command (See <a class="externalLink" href="http://git-scm.com/docs/git-clone">http://git-scm.com/docs/git-clone</a>):</p>
+<div class="source"><pre class="prettyprint">$ git clone git@github.com:comtel2000/jfxvnc.git</pre></div></div>
 <div class="section">
-<h2><a name="How_to_build_and_run"></a>How to build and run</h2>
-<p>What is required:</p>
-
-<ul>
-  
-<li>Latest stable <a class="externalLink" href="http://www.oracle.com/technetwork/java">Oracle JDK 8</a></li>
-  
-<li>Latest stable <a class="externalLink" href="http://maven.apache.org">Apache Maven</a></li>
-</ul>
-
-<div class="source">
-<div class="source"><pre class="prettyprint">mvn clean install
-java -jar jfxvnc-app/target/jfxvnc-jar-with-dependencies.jar
-</pre></div></div></div>
+<h2><a name="Developer_Access"></a>Developer Access</h2><a name="Developer_Access"></a>
+<p>Only project developers can access the Git tree via this method (See <a class="externalLink" href="http://git-scm.com/docs/git-clone">http://git-scm.com/docs/git-clone</a>).</p>
+<div class="source"><pre class="prettyprint">$ git clone git@github.com:comtel2000/jfxvnc.git</pre></div></div>
 <div class="section">
-<h2><a name="Maven_central_repository"></a>Maven central repository</h2>
-
-<div class="source">
-<div class="source"><pre class="prettyprint">&lt;dependency&gt;
-  &lt;groupId&gt;org.jfxvnc&lt;/groupId&gt;
-  &lt;artifactId&gt;jfxvnc-net&lt;/artifactId&gt;
-  &lt;version&gt;[LATEST_RELEASE]&lt;/version&gt;
-&lt;/dependency&gt;
-
-&lt;dependency&gt;
-  &lt;groupId&gt;org.jfxvnc&lt;/groupId&gt;
-  &lt;artifactId&gt;jfxvnc-ui&lt;/artifactId&gt;
-  &lt;version&gt;[LATEST_RELEASE]&lt;/version&gt;
-&lt;/dependency&gt;
-
-&lt;dependency&gt;
-  &lt;groupId&gt;org.jfxvnc&lt;/groupId&gt;
-  &lt;artifactId&gt;jfxvnc-swing&lt;/artifactId&gt;
-  &lt;version&gt;[LATEST_RELEASE]&lt;/version&gt;
-&lt;/dependency&gt;
-
-&lt;dependency&gt;
-  &lt;groupId&gt;org.jfxvnc&lt;/groupId&gt;
-  &lt;artifactId&gt;jfxvnc-app&lt;/artifactId&gt;
-  &lt;version&gt;[LATEST_RELEASE]&lt;/version&gt;
-&lt;/dependency&gt;
-
-</pre></div></div></div>
-<div class="section">
-<h2><a name="Links"></a>Links</h2>
-
-<ul>
-  
-<li><a class="externalLink" href="https://github.com/netty/netty">Netty</a></li>
-  
-<li><a class="externalLink" href="https://github.com/AdamBien/afterburner.fx">afterburner.fx</a></li>
-</ul></div>
-<div class="section">
-<h2><a name="License"></a>License</h2>
-<p><a class="externalLink" href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a></p></div>
+<h2><a name="Access_from_Behind_a_Firewall"></a>Access from Behind a Firewall</h2><a name="Access_from_Behind_a_Firewall"></a>
+<p>Refer to the documentation of the SCM used for more information about access behind a firewall.</p></div>
         </div>
       </div>
     </div>

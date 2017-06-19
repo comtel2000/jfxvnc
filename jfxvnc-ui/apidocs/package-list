@@ -1,9 +1,0 @@
-org.jfxvnc.ui
-org.jfxvnc.ui.persist
-org.jfxvnc.ui.presentation
-org.jfxvnc.ui.presentation.connect
-org.jfxvnc.ui.presentation.detail
-org.jfxvnc.ui.presentation.info
-org.jfxvnc.ui.presentation.statistics
-org.jfxvnc.ui.presentation.vnc
-org.jfxvnc.ui.service
