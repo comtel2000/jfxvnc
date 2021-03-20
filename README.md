@@ -1,9 +1,13 @@
 # JFX VNC
-[![Build Status](https://travis-ci.org/comtel2000/jfxvnc.png)](https://travis-ci.org/comtel2000/jfxvnc)  [![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jfxvnc/jfxvnc-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jfxvnc/jfxvnc-parent)
+[![Build Status](https://travis-ci.org/comtel2000/jfxvnc.png)](https://travis-ci.org/comtel2000/jfxvnc) [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcomtel2000%2Fjfxvnc.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcomtel2000%2Fjfxvnc?ref=badge_shield)
+ [![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)  [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.jfxvnc/jfxvnc-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.jfxvnc/jfxvnc-parent)
 
 [JFX VNC](http://jfxvnc.org) is a Java VNC remote desktop client based on JavaFX and divided into two parts. One module (jfxvnc-net) is a RFB/VNC remote desktop protocol based on [Netty](https://github.com/netty/netty). The other module (jfxvnc-ui) contains the JavaFX based VNC viewer build with the just-enough MVP framework [afterburner.fx](https://github.com/AdamBien/afterburner.fx)
 
 [![video](http://img.youtube.com/vi/hbsgvLNvPCc/0.jpg)](http://youtu.be/hbsgvLNvPCc)
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcomtel2000%2Fjfxvnc.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcomtel2000%2Fjfxvnc?ref=badge_large)
 
 ## Modules
 - jfxvnc-net (netty based VNC / RFB protocol)
