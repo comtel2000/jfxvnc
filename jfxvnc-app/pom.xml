@@ -33,7 +33,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>2.4.1</version>
+						<version>3.3.0</version>
 						<executions>
 							<execution>
 								<id>make-assembly</id>
@@ -82,7 +82,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-assembly-plugin</artifactId>
-						<version>2.4.1</version>
+						<version>3.3.0</version>
 						<executions>
 							<execution>
 								<id>make-assembly</id>
